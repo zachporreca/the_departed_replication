@@ -1,0 +1,14 @@
+# Sensitive / local data
+intermediate_outputs/
+input_data/
+tmp_transfer/
+  
+  # RStudio / R local files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# OS files
+.DS_Store
+Thumbs.db
