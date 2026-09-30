@@ -54,7 +54,7 @@ hh_id1900 <- data.frame(
   unique_id = hh_serial1900$unique_id,
   hh_1900 = hh_serial1900$hh,
   owned_1900 = hh_serial1900$owned / hh_serial1900$hh,
-  owned_free_1900 = hh_serial1900$owned_free / hh_serial1900$hh,
+  owned_free_1900 = hh_serial1900$owned_free / hh_serial1900$owned,
   rent_1900 = hh_serial1900$rent / hh_serial1900$hh
 )
 
@@ -188,7 +188,7 @@ hh_id1910 <- data.frame(
   unique_id = hh_serial1910$unique_id,
   hh_1910 = hh_serial1910$hh,
   owned_1910 = hh_serial1910$owned / hh_serial1910$hh,
-  owned_free_1910 = hh_serial1910$owned_free / hh_serial1910$hh,
+  owned_free_1910 = hh_serial1910$owned_free / hh_serial1910$owned,
   rent_1910 = hh_serial1910$rent / hh_serial1910$hh
 )
 
@@ -200,8 +200,8 @@ data1 <- data[data$AGE >= 14, ]
 emp1910 <- data1 %>%
   group_by(unique_id) %>%
   summarise(lforce_1910 = mean(LABFORCE == 2, na.rm = TRUE),
-            emp_1910 = mean(EMPSTAT == 1, na.rm = TRUE),
-            unemp_1910 = mean(EMPSTAT == 2, na.rm = TRUE),
+            emp_1910 = sum(EMPSTAT == 1, na.rm = TRUE) / sum(LABFORCE == 2, na.rm = TRUE),
+            unemp_1910 = sum(EMPSTAT == 2, na.rm = TRUE) / sum(LABFORCE == 2, na.rm = TRUE),
             wap_1910 = n()
   )
 
@@ -340,7 +340,7 @@ data1 <- data[data$AGE >= 14, ]
 #General employment measures
 emp1920 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(lforce_1920 = sum(LABFORCE == 2, na.rm = TRUE),
+  summarise(lforce_1920 = mean(LABFORCE == 2, na.rm = TRUE),
             wap_1920 = n()
   )
 
@@ -611,9 +611,9 @@ data1 <- data[data$AGE >= 14, ]
 #General employment measures
 emp1940 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(lforce_1940 = sum(LABFORCE == 2, na.rm = TRUE),
-            emp_1940 = sum(EMPSTAT == 1, na.rm = TRUE),
-            unemp_1940 = sum(EMPSTAT == 2, na.rm = TRUE),
+  summarise(lforce_1940 = mean(LABFORCE == 2, na.rm = TRUE),
+            emp_1940 = sum(EMPSTAT == 1, na.rm = TRUE) / sum(LABFORCE == 2, na.rm = TRUE),
+            unemp_1940 = sum(EMPSTAT == 2, na.rm = TRUE) / sum(LABFORCE == 2, na.rm = TRUE),
             wap_1940 = n()
   )
 
@@ -691,4 +691,3 @@ final$rent_1940[is.na(final$owned_1940) & final$rent_1940 == 0] <- NA
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1940.csv")
 rm(list = ls())
 gc()
-
