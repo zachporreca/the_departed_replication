@@ -62,13 +62,6 @@ hh_id1900 <- data.frame(
 #Working age population
 data1 <- data[data$AGE >= 14, ]
 
-#General
-emp1900 <- data1 %>%
-  group_by(unique_id) %>%
-  summarise(lforce_1900 = mean(LABFORCE == 2, na.rm = TRUE),
-            wap_1900 = n()
-  )
-
 #Industries
 #Recode industries
 data1$IND1950[data1$IND1950 %in% c("105", "116", "126")] <- "Agriculture"
@@ -101,24 +94,24 @@ data1$IND1950[data1$IND1950 %in% c("991", "995", "997", "998", "999")] <- "Other
 #Get means and wap and allathat
 person1900 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(
-    ind_ag_1900 = mean(IND1950 == "Agriculture", na.rm = TRUE),
-    ind_min_1900 = mean(IND1950 == "Mining", na.rm = TRUE),
-    ind_cons_1900 = mean(IND1950 == "Construction", na.rm = TRUE),
-    ind_dman_1900 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
-    ind_ndman_1900 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
-    ind_trans_1900 = mean(IND1950 == "Transportation", na.rm = TRUE),
-    ind_tele_1900 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
-    ind_util_1900 = mean(IND1950 == "Utilities", na.rm = TRUE),
-    ind_wt_1900 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
-    ind_rt_1900 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
-    ind_fin_1900 = mean(IND1950 == "Finance", na.rm = TRUE),
-    ind_bs_1900 = mean(IND1950 == "Business Services", na.rm = TRUE),
-    ind_ps_1900 = mean(IND1950 == "Personal Services", na.rm = TRUE),
-    ind_ent_1900 = mean(IND1950 == "Entertainment", na.rm = TRUE),
-    ind_prof_1900 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
-    ind_pa_1900 = mean(IND1950 == "Public Administration", na.rm = TRUE),
-    ind_other_1900 = mean(IND1950 == "Other", na.rm = TRUE))
+  summarise(wap_1900 = n(),
+            ind_ag_1900 = mean(IND1950 == "Agriculture", na.rm = TRUE),
+            ind_min_1900 = mean(IND1950 == "Mining", na.rm = TRUE),
+            ind_cons_1900 = mean(IND1950 == "Construction", na.rm = TRUE),
+            ind_dman_1900 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
+            ind_ndman_1900 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
+            ind_trans_1900 = mean(IND1950 == "Transportation", na.rm = TRUE),
+            ind_tele_1900 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
+            ind_util_1900 = mean(IND1950 == "Utilities", na.rm = TRUE),
+            ind_wt_1900 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
+            ind_rt_1900 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
+            ind_fin_1900 = mean(IND1950 == "Finance", na.rm = TRUE),
+            ind_bs_1900 = mean(IND1950 == "Business Services", na.rm = TRUE),
+            ind_ps_1900 = mean(IND1950 == "Personal Services", na.rm = TRUE),
+            ind_ent_1900 = mean(IND1950 == "Entertainment", na.rm = TRUE),
+            ind_prof_1900 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
+            ind_pa_1900 = mean(IND1950 == "Public Administration", na.rm = TRUE),
+            ind_other_1900 = mean(IND1950 == "Other", na.rm = TRUE))
 
 
 
@@ -130,7 +123,7 @@ ec1900 <- data1 %>%
 
 
 #COMBINE DATA
-final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1900, ec1900, person1900, emp1900))
+final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1900, ec1900, person1900))
 
 
 
@@ -203,7 +196,7 @@ hh_id1910 <- data.frame(
 #Working age population
 data1 <- data[data$AGE >= 14, ]
 
-#General
+#General employment measures
 emp1910 <- data1 %>%
   group_by(unique_id) %>%
   summarise(lforce_1910 = mean(LABFORCE == 2, na.rm = TRUE),
@@ -244,24 +237,23 @@ data1$IND1950[data1$IND1950 %in% c("991", "995", "997", "998", "999")] <- "Other
 #Get means and wap and allathat
 person1910 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(
-    ind_ag_1910 = mean(IND1950 == "Agriculture", na.rm = TRUE),
-    ind_min_1910 = mean(IND1950 == "Mining", na.rm = TRUE),
-    ind_cons_1910 = mean(IND1950 == "Construction", na.rm = TRUE),
-    ind_dman_1910 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
-    ind_ndman_1910 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
-    ind_trans_1910 = mean(IND1950 == "Transportation", na.rm = TRUE),
-    ind_tele_1910 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
-    ind_util_1910 = mean(IND1950 == "Utilities", na.rm = TRUE),
-    ind_wt_1910 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
-    ind_rt_1910 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
-    ind_fin_1910 = mean(IND1950 == "Finance", na.rm = TRUE),
-    ind_bs_1910 = mean(IND1950 == "Business Services", na.rm = TRUE),
-    ind_ps_1910 = mean(IND1950 == "Personal Services", na.rm = TRUE),
-    ind_ent_1910 = mean(IND1950 == "Entertainment", na.rm = TRUE),
-    ind_prof_1910 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
-    ind_pa_1910 = mean(IND1950 == "Public Administration", na.rm = TRUE),
-    ind_other_1910 = mean(IND1950 == "Other", na.rm = TRUE))
+  summarise(ind_ag_1910 = mean(IND1950 == "Agriculture", na.rm = TRUE),
+            ind_min_1910 = mean(IND1950 == "Mining", na.rm = TRUE),
+            ind_cons_1910 = mean(IND1950 == "Construction", na.rm = TRUE),
+            ind_dman_1910 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
+            ind_ndman_1910 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
+            ind_trans_1910 = mean(IND1950 == "Transportation", na.rm = TRUE),
+            ind_tele_1910 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
+            ind_util_1910 = mean(IND1950 == "Utilities", na.rm = TRUE),
+            ind_wt_1910 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
+            ind_rt_1910 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
+            ind_fin_1910 = mean(IND1950 == "Finance", na.rm = TRUE),
+            ind_bs_1910 = mean(IND1950 == "Business Services", na.rm = TRUE),
+            ind_ps_1910 = mean(IND1950 == "Personal Services", na.rm = TRUE),
+            ind_ent_1910 = mean(IND1950 == "Entertainment", na.rm = TRUE),
+            ind_prof_1910 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
+            ind_pa_1910 = mean(IND1950 == "Public Administration", na.rm = TRUE),
+            ind_other_1910 = mean(IND1950 == "Other", na.rm = TRUE))
 
 
 
@@ -345,10 +337,10 @@ hh_id1920 <- data.frame(
 #Working age population
 data1 <- data[data$AGE >= 14, ]
 
-#General
+#General employment measures
 emp1920 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(lforce_1920 = mean(LABFORCE == 2, na.rm = TRUE),
+  summarise(lforce_1920 = sum(LABFORCE == 2, na.rm = TRUE),
             wap_1920 = n()
   )
 
@@ -384,24 +376,23 @@ data1$IND1950[data1$IND1950 %in% c("991", "995", "997", "998", "999")] <- "Other
 #Get means and wap and allathat
 person1920 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(
-    ind_ag_1920 = mean(IND1950 == "Agriculture", na.rm = TRUE),
-    ind_min_1920 = mean(IND1950 == "Mining", na.rm = TRUE),
-    ind_cons_1920 = mean(IND1950 == "Construction", na.rm = TRUE),
-    ind_dman_1920 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
-    ind_ndman_1920 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
-    ind_trans_1920 = mean(IND1950 == "Transportation", na.rm = TRUE),
-    ind_tele_1920 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
-    ind_util_1920 = mean(IND1950 == "Utilities", na.rm = TRUE),
-    ind_wt_1920 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
-    ind_rt_1920 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
-    ind_fin_1920 = mean(IND1950 == "Finance", na.rm = TRUE),
-    ind_bs_1920 = mean(IND1950 == "Business Services", na.rm = TRUE),
-    ind_ps_1920 = mean(IND1950 == "Personal Services", na.rm = TRUE),
-    ind_ent_1920 = mean(IND1950 == "Entertainment", na.rm = TRUE),
-    ind_prof_1920 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
-    ind_pa_1920 = mean(IND1950 == "Public Administration", na.rm = TRUE),
-    ind_other_1920 = mean(IND1950 == "Other", na.rm = TRUE))
+  summarise(ind_ag_1920 = mean(IND1950 == "Agriculture", na.rm = TRUE),
+            ind_min_1920 = mean(IND1950 == "Mining", na.rm = TRUE),
+            ind_cons_1920 = mean(IND1950 == "Construction", na.rm = TRUE),
+            ind_dman_1920 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
+            ind_ndman_1920 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
+            ind_trans_1920 = mean(IND1950 == "Transportation", na.rm = TRUE),
+            ind_tele_1920 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
+            ind_util_1920 = mean(IND1950 == "Utilities", na.rm = TRUE),
+            ind_wt_1920 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
+            ind_rt_1920 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
+            ind_fin_1920 = mean(IND1950 == "Finance", na.rm = TRUE),
+            ind_bs_1920 = mean(IND1950 == "Business Services", na.rm = TRUE),
+            ind_ps_1920 = mean(IND1950 == "Personal Services", na.rm = TRUE),
+            ind_ent_1920 = mean(IND1950 == "Entertainment", na.rm = TRUE),
+            ind_prof_1920 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
+            ind_pa_1920 = mean(IND1950 == "Public Administration", na.rm = TRUE),
+            ind_other_1920 = mean(IND1950 == "Other", na.rm = TRUE))
 
 
 
@@ -451,13 +442,11 @@ data$SEI <- as.numeric(data$SEI)
 hh1930 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
-            owned_free = sum(MORTGAGE == 1, na.rm = TRUE), 
             rent = sum(OWNERSHP == 2, na.rm = TRUE))
 
 #Make ownership/rent variables binary
 hh_serial1930 <- hh1930 %>%
   mutate(owned = ifelse(owned >= 1, 1, owned),
-         owned_free = ifelse(owned_free >= 1, 1, owned_free),
          rent = ifelse(rent >= 1, 1, rent)
   )
 
@@ -465,7 +454,6 @@ hh_serial1930 <- hh1930 %>%
 hh_serial1930 <- hh_serial1930 %>%
   group_by(unique_id) %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
-            owned_free = sum(owned_free == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
             rent = sum(rent == 1, na.rm = TRUE)
             
@@ -477,7 +465,6 @@ hh_id1930 <- data.frame(
   unique_id = hh_serial1930$unique_id,
   hh_1930 = hh_serial1930$hh,
   owned_1930 = hh_serial1930$owned / hh_serial1930$hh,
-  owned_free_1930 = hh_serial1930$owned_free / hh_serial1930$hh,
   rent_1930 = hh_serial1930$rent / hh_serial1930$hh
 )
 
@@ -485,12 +472,12 @@ hh_id1930 <- data.frame(
 #Working age population
 data1 <- data[data$AGE >= 14, ]
 
-#General
+#General employment measures
 emp1930 <- data1 %>%
   group_by(unique_id) %>%
   summarise(lforce_1930 = mean(LABFORCE == 2, na.rm = TRUE),
-            emp_1930 = mean(EMPSTAT == 1, na.rm = TRUE),
-            unemp_1930 = mean(EMPSTAT == 2, na.rm = TRUE),
+            emp_1930 = sum(EMPSTAT == 1, na.rm = TRUE) / sum(LABFORCE == 2, na.rm = TRUE),
+            unemp_1930 = sum(EMPSTAT == 2, na.rm = TRUE) / sum(LABFORCE == 2, na.rm = TRUE),
             wap_1930 = n()
   )
 
@@ -526,24 +513,23 @@ data1$IND1950[data1$IND1950 %in% c("991", "995", "997", "998", "999")] <- "Other
 #Get means and wap and allathat
 person1930 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(
-    ind_ag_1930 = mean(IND1950 == "Agriculture", na.rm = TRUE),
-    ind_min_1930 = mean(IND1950 == "Mining", na.rm = TRUE),
-    ind_cons_1930 = mean(IND1950 == "Construction", na.rm = TRUE),
-    ind_dman_1930 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
-    ind_ndman_1930 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
-    ind_trans_1930 = mean(IND1950 == "Transportation", na.rm = TRUE),
-    ind_tele_1930 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
-    ind_util_1930 = mean(IND1950 == "Utilities", na.rm = TRUE),
-    ind_wt_1930 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
-    ind_rt_1930 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
-    ind_fin_1930 = mean(IND1950 == "Finance", na.rm = TRUE),
-    ind_bs_1930 = mean(IND1950 == "Business Services", na.rm = TRUE),
-    ind_ps_1930 = mean(IND1950 == "Personal Services", na.rm = TRUE),
-    ind_ent_1930 = mean(IND1950 == "Entertainment", na.rm = TRUE),
-    ind_prof_1930 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
-    ind_pa_1930 = mean(IND1950 == "Public Administration", na.rm = TRUE),
-    ind_other_1930 = mean(IND1950 == "Other", na.rm = TRUE))
+  summarise(ind_ag_1930 = mean(IND1950 == "Agriculture", na.rm = TRUE),
+            ind_min_1930 = mean(IND1950 == "Mining", na.rm = TRUE),
+            ind_cons_1930 = mean(IND1950 == "Construction", na.rm = TRUE),
+            ind_dman_1930 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
+            ind_ndman_1930 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
+            ind_trans_1930 = mean(IND1950 == "Transportation", na.rm = TRUE),
+            ind_tele_1930 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
+            ind_util_1930 = mean(IND1950 == "Utilities", na.rm = TRUE),
+            ind_wt_1930 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
+            ind_rt_1930 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
+            ind_fin_1930 = mean(IND1950 == "Finance", na.rm = TRUE),
+            ind_bs_1930 = mean(IND1950 == "Business Services", na.rm = TRUE),
+            ind_ps_1930 = mean(IND1950 == "Personal Services", na.rm = TRUE),
+            ind_ent_1930 = mean(IND1950 == "Entertainment", na.rm = TRUE),
+            ind_prof_1930 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
+            ind_pa_1930 = mean(IND1950 == "Public Administration", na.rm = TRUE),
+            ind_other_1930 = mean(IND1950 == "Other", na.rm = TRUE))
 
 
 
@@ -561,7 +547,6 @@ final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1930, ec
 
 #CLEAN
 #Make NaN values NA for ease
-final$owned_free_1930[is.nan(final$owned_free_1930)] <- NA 
 #Make values where homeownership not reported NA
 final$owned_1930[final$owned_1930 == 0 & final$rent_1930 == 0] <- NA
 final$rent_1930[is.na(final$owned_1930) & final$rent_1930 == 0] <- NA
@@ -593,13 +578,11 @@ data$SEI <- as.numeric(data$SEI)
 hh1940 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
-            owned_free = sum(MORTGAGE == 1, na.rm = TRUE), 
             rent = sum(OWNERSHP == 2, na.rm = TRUE))
 
 #Make ownership/rent variables binary
 hh_serial1940 <- hh1940 %>%
   mutate(owned = ifelse(owned >= 1, 1, owned),
-         owned_free = ifelse(owned_free >= 1, 1, owned_free),
          rent = ifelse(rent >= 1, 1, rent)
   )
 
@@ -607,7 +590,6 @@ hh_serial1940 <- hh1940 %>%
 hh_serial1940 <- hh_serial1940 %>%
   group_by(unique_id) %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
-            owned_free = sum(owned_free == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
             rent = sum(rent == 1, na.rm = TRUE)
             
@@ -619,7 +601,6 @@ hh_id1940 <- data.frame(
   unique_id = hh_serial1940$unique_id,
   hh_1940 = hh_serial1940$hh,
   owned_1940 = hh_serial1940$owned / hh_serial1940$hh,
-  owned_free_1940 = hh_serial1940$owned_free / hh_serial1940$hh,
   rent_1940 = hh_serial1940$rent / hh_serial1940$hh
 )
 
@@ -627,12 +608,12 @@ hh_id1940 <- data.frame(
 #Working age population
 data1 <- data[data$AGE >= 14, ]
 
-#General
+#General employment measures
 emp1940 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(lforce_1940 = mean(LABFORCE == 2, na.rm = TRUE),
-            emp_1940 = mean(EMPSTAT == 1, na.rm = TRUE),
-            unemp_1940 = mean(EMPSTAT == 2, na.rm = TRUE),
+  summarise(lforce_1940 = sum(LABFORCE == 2, na.rm = TRUE),
+            emp_1940 = sum(EMPSTAT == 1, na.rm = TRUE),
+            unemp_1940 = sum(EMPSTAT == 2, na.rm = TRUE),
             wap_1940 = n()
   )
 
@@ -668,24 +649,23 @@ data1$IND1950[data1$IND1950 %in% c("991", "995", "997", "998", "999")] <- "Other
 #Get means and wap and allathat
 person1940 <- data1 %>%
   group_by(unique_id) %>%
-  summarise(
-    ind_ag_1940 = mean(IND1950 == "Agriculture", na.rm = TRUE),
-    ind_min_1940 = mean(IND1950 == "Mining", na.rm = TRUE),
-    ind_cons_1940 = mean(IND1950 == "Construction", na.rm = TRUE),
-    ind_dman_1940 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
-    ind_ndman_1940 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
-    ind_trans_1940 = mean(IND1950 == "Transportation", na.rm = TRUE),
-    ind_tele_1940 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
-    ind_util_1940 = mean(IND1950 == "Utilities", na.rm = TRUE),
-    ind_wt_1940 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
-    ind_rt_1940 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
-    ind_fin_1940 = mean(IND1950 == "Finance", na.rm = TRUE),
-    ind_bs_1940 = mean(IND1950 == "Business Services", na.rm = TRUE),
-    ind_ps_1940 = mean(IND1950 == "Personal Services", na.rm = TRUE),
-    ind_ent_1940 = mean(IND1950 == "Entertainment", na.rm = TRUE),
-    ind_prof_1940 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
-    ind_pa_1940 = mean(IND1950 == "Public Administration", na.rm = TRUE),
-    ind_other_1940 = mean(IND1950 == "Other", na.rm = TRUE))
+  summarise(ind_ag_1940 = mean(IND1950 == "Agriculture", na.rm = TRUE),
+            ind_min_1940 = mean(IND1950 == "Mining", na.rm = TRUE),
+            ind_cons_1940 = mean(IND1950 == "Construction", na.rm = TRUE),
+            ind_dman_1940 = mean(IND1950 == "Durable Manufacturing", na.rm = TRUE),
+            ind_ndman_1940 = mean(IND1950 == "Non-Durable Manufacturing", na.rm = TRUE),
+            ind_trans_1940 = mean(IND1950 == "Transportation", na.rm = TRUE),
+            ind_tele_1940 = mean(IND1950 == "Telecommunications", na.rm = TRUE),
+            ind_util_1940 = mean(IND1950 == "Utilities", na.rm = TRUE),
+            ind_wt_1940 = mean(IND1950 == "Wholesale Trade", na.rm = TRUE),
+            ind_rt_1940 = mean(IND1950 == "Retail Trade", na.rm = TRUE),
+            ind_fin_1940 = mean(IND1950 == "Finance", na.rm = TRUE),
+            ind_bs_1940 = mean(IND1950 == "Business Services", na.rm = TRUE),
+            ind_ps_1940 = mean(IND1950 == "Personal Services", na.rm = TRUE),
+            ind_ent_1940 = mean(IND1950 == "Entertainment", na.rm = TRUE),
+            ind_prof_1940 = mean(IND1950 == "Professional and Related", na.rm = TRUE),
+            ind_pa_1940 = mean(IND1950 == "Public Administration", na.rm = TRUE),
+            ind_other_1940 = mean(IND1950 == "Other", na.rm = TRUE))
 
 
 
@@ -703,7 +683,6 @@ final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1940, ec
 
 #CLEAN
 #Make NaN values NA for ease
-final$owned_free_1940[is.nan(final$owned_free_1940)] <- NA 
 #Make values where homeownership not reported NA
 final$owned_1940[final$owned_1940 == 0 & final$rent_1940 == 0] <- NA
 final$rent_1940[is.na(final$owned_1940) & final$rent_1940 == 0] <- NA
@@ -712,5 +691,3 @@ final$rent_1940[is.na(final$owned_1940) & final$rent_1940 == 0] <- NA
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1940.csv")
 rm(list = ls())
 gc()
-
-print("complete")
