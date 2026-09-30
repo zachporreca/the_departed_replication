@@ -691,3 +691,4 @@ final$rent_1940[is.na(final$owned_1940) & final$rent_1940 == 0] <- NA
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1940.csv")
 rm(list = ls())
 gc()
+

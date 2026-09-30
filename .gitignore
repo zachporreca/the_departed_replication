@@ -2,6 +2,7 @@
 intermediate_outputs/
 input_data/
 tmp_transfer/
+github-token
   
   # RStudio / R local files
 .Rproj.user/
