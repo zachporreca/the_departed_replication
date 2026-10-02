@@ -1,6 +1,9 @@
-
-
-
+#############################################################################################################################################
+################# STEP 3E: CONSTRUCTION OF HEX MAT OBJECTS. THESE OBJECTS ARE COMBINATIONS OF PREVIOUSLY   ##################################
+#################          GENERATED OBJECTS BUILT INTO A HEXAGON BY CENSUS "PANEL". THIS SCRIPT GENERATES ##################################
+#################          INDIVIDUAL FILES FOR EACH CITY IN EACH CENSUS YEAR, FOR LATER COMBINING INTO A  ##################################
+#################          ANALYSIS-READY PANEL FOR FIRST STAGE RESULTS                                    ##################################
+#############################################################################################################################################
 
 
 load("intermediate_outputs/addresses_book.rda")
@@ -13290,8 +13293,6 @@ load("intermediate_outputs/step_2_intersections/intersections_Manhattan_1900.rda
 load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1900.rda")
 load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1900.rda")
 load("intermediate_outputs/step_2_intersections/intersections_StLouis_1900.rda")
-load("intermediate_outputs/incarceration_rates/ed_incarceration_rates_1900.rda") 
-ed_incarceration_rates_1900[is.na(ed_incarceration_rates_1900)]=0
 load("intermediate_outputs/outputs_for_hexagons/household_sample_1900.rda") #this is matched from numident
 load("intermediate_outputs/outputs_for_hexagons/household_sample_mori_1900.rda") #mori subset of numident
 load("intermediate_outputs/outputs_for_hexagons/household_sample_non_mori_1900.rda") #non-mori sicilian subset of numident
@@ -13312,29 +13313,7 @@ intersections_Philadelphia_1900$ED=paste0("14_1010_", intersections_Philadelphia
 intersections_Pittsburgh_1900$ED=paste0("14_30_", intersections_Pittsburgh_1900$ED)
 intersections_StLouis_1900$ED=paste0("34_5100_", intersections_StLouis_1900$ED)
 
-load("intermediate_outputs/step_2_intersections/intersections_Baltimore_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Boston_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Brooklyn_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Chicago_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Cincinnati_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Cleveland_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Detroit_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Manhattan_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1890.rda")
-load("intermediate_outputs/step_2_intersections/intersections_StLouis_1890.rda")
 
-intersections_Baltimore_1890$ED=paste0("52_5100_",intersections_Baltimore_1890$ED)
-intersections_Boston_1890$ED=paste0("3_250_", intersections_Boston_1890$ED)
-intersections_Brooklyn_1890$ED=paste0("13_470_", intersections_Brooklyn_1890$ED)
-intersections_Chicago_1890$ED=paste0("21_310_", intersections_Chicago_1890$ED)
-intersections_Cincinnati_1890$ED=paste0("24_610_", intersections_Cincinnati_1890$ED)
-intersections_Cleveland_1890$ED=paste0("24_350_", intersections_Cleveland_1890$ED)
-intersections_Detroit_1890$ED=paste0("23_1630_", intersections_Detroit_1890$ED)
-intersections_Manhattan_1890$ED=paste0("13_610_", intersections_Manhattan_1890$ED)
-intersections_Philadelphia_1890$ED=paste0("14_1010_", intersections_Philadelphia_1890$ED)
-intersections_Pittsburgh_1890$ED=paste0("14_30_", intersections_Pittsburgh_1890$ED)
-intersections_StLouis_1890$ED=paste0("34_5100_", intersections_StLouis_1890$ED)
 
 household_sample_1900$enumdist=as.character(household_sample_1900$enumdist)
 household_sample_1900$ed=as.numeric(substr(household_sample_1900$enumdist, 4, nchar(household_sample_1900$enumdist)))
@@ -13371,10 +13350,6 @@ ethnic_frag_1900$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", ethnic_frag_1900
 ethnic_frag_1900$ed=gsub("^.*?_.*?_(.*)$", "\\1", ethnic_frag_1900$enum_dist)
 ethnic_frag_1900$ed=as.numeric(substr(ethnic_frag_1900$ed, 4, nchar(ethnic_frag_1900$ed)))
 ethnic_frag_1900$ed=paste0(ethnic_frag_1900$state_county,ethnic_frag_1900$ed)
-ed_incarceration_rates_1900$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", ed_incarceration_rates_1900$ed_state_county_id)
-ed_incarceration_rates_1900$ed=as.numeric(substr(ed_incarceration_rates_1900$enum_dist, 4, nchar(ed_incarceration_rates_1900$enum_dist)))
-ed_incarceration_rates_1900$ed=as.character(ed_incarceration_rates_1900$ed)
-ed_incarceration_rates_1900$ed=paste0(ed_incarceration_rates_1900$state_county,ed_incarceration_rates_1900$ed)
 ED_1900=c(unique(intersections_Baltimore_1900$ED), unique(intersections_Boston_1900$ED), unique(intersections_Brooklyn_1900$ED),
           unique(intersections_Chicago_1900$ED), unique(intersections_Cincinnati_1900$ED), unique(intersections_Cleveland_1900$ED),
           unique(intersections_Detroit_1900$ED), unique(intersections_Manhattan_1900$ED), unique(intersections_Philadelphia_1900$ED),
@@ -13401,6 +13376,23 @@ colnames(census_econ)=gsub("_1900", "",colnames(census_econ))
 colnames(census_econ)=gsub("1900", "",colnames(census_econ))
 census_econ$owned_free=0 ##### variable availble in previous years. not available in present census. setting to 0 to maintain dimensions of objects
 
+hex_mat_columns_1900=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag",
+  "median_home_value","median_home_value_coverage",
+  "ital_prop","incarc_abe_prop","incarc_mlp_prop","incarc_cs_prop",
+  "any_mori","any_non_mori_sicilians","any_cutrera_1900_sicilians",
+  "any_damiani_1885_sicilians","any_cutrera_or_damiani_maps_sicilians","any_sicilians",
+  "foreign_prop","year","city",
+  "working_age_pop","household_count","occ_score","sei","owned","owned_free","rent",
+  "construction","transportation","retail_trade","business_services","finance",
+  "public_admin","professional_services",
+  "mafia_book_geo","mafia_pre_geo","mafia_book_hex","mafia_pre_hex",
+  "cutrera_hex","damiani_hex","cutrera_or_damiani_hex"
+)
+
 ###########################################
 ########## 1900- BALTIMORE ################
 ###########################################
@@ -13413,21 +13405,9 @@ intersections_Baltimore_1900[is.na(intersections_Baltimore_1900$italian_populati
 intersections_Baltimore_1900$pop_weighted=intersections_Baltimore_1900$population*intersections_Baltimore_1900$proportion_intersected
 intersections_Baltimore_1900$ital_weighted=intersections_Baltimore_1900$italian_population*intersections_Baltimore_1900$proportion_intersected
 
-intersections_Baltimore_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Baltimore_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Baltimore_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Baltimore_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Baltimore_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Baltimore_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Baltimore_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Baltimore_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Baltimore_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Baltimore_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Baltimore_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Baltimore_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Baltimore_1890$pop_mlp_weighted=intersections_Baltimore_1890$pop_mlp*intersections_Baltimore_1890$proportion_intersected
-intersections_Baltimore_1890$pop_abe_weighted=intersections_Baltimore_1890$pop_abe*intersections_Baltimore_1890$proportion_intersected
-intersections_Baltimore_1890$pop_cs_weighted=intersections_Baltimore_1890$pop_cs*intersections_Baltimore_1890$proportion_intersected
 
-intersections_Baltimore_1890$incarc_mlp_weighted=intersections_Baltimore_1890$incarc_mlp*intersections_Baltimore_1890$proportion_intersected
-intersections_Baltimore_1890$incarc_abe_weighted=intersections_Baltimore_1890$incarc_abe*intersections_Baltimore_1890$proportion_intersected
-intersections_Baltimore_1890$incarc_cs_weighted=intersections_Baltimore_1890$incarc_cs*intersections_Baltimore_1890$proportion_intersected
 
 intersections_Baltimore_1900$mori=0
 
@@ -13578,11 +13558,17 @@ colnames(hex_mat_Baltimore_1900)=c(
 hex_mat_Baltimore_1900[,"hex_id"]=unique(intersections_Baltimore_1900$hex_id)
 hex_mat_Baltimore_1900=as.data.frame(hex_mat_Baltimore_1900)
 
+hex_mat_Baltimore_1900$pop_mlp=NA_real_
+hex_mat_Baltimore_1900$pop_abe=NA_real_
+hex_mat_Baltimore_1900$pop_cs=NA_real_
+hex_mat_Baltimore_1900$incarc_mlp=NA_real_
+hex_mat_Baltimore_1900$incarc_abe=NA_real_
+hex_mat_Baltimore_1900$incarc_cs=NA_real_
+
 hex_mat_Baltimore_1900$median_home_value=NA_real_
 hex_mat_Baltimore_1900$median_home_value_coverage=NA_real_
 
 intersections_Baltimore_1900=st_drop_geometry(intersections_Baltimore_1900)
-intersections_Baltimore_1890=st_drop_geometry(intersections_Baltimore_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -13611,12 +13597,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Baltimore_1900)){
   hex_mat_Baltimore_1900[i,"pop"]=sum(intersections_Baltimore_1900[which(intersections_Baltimore_1900$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Baltimore_1900[i,"italian_pop"]=sum(intersections_Baltimore_1900[which(intersections_Baltimore_1900$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Baltimore_1900[i,"pop_mlp"]=sum(intersections_Baltimore_1890[which(intersections_Baltimore_1890$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Baltimore_1900[i,"pop_abe"]=sum(intersections_Baltimore_1890[which(intersections_Baltimore_1890$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Baltimore_1900[i,"pop_cs"]=sum(intersections_Baltimore_1890[which(intersections_Baltimore_1890$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Baltimore_1900[i,"incarc_mlp"]=sum(intersections_Baltimore_1890[which(intersections_Baltimore_1890$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Baltimore_1900[i,"incarc_abe"]=sum(intersections_Baltimore_1890[which(intersections_Baltimore_1890$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Baltimore_1900[i,"incarc_cs"]=sum(intersections_Baltimore_1890[which(intersections_Baltimore_1890$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Baltimore_1900[i,"mori"]=sum(intersections_Baltimore_1900[which(intersections_Baltimore_1900$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Baltimore_1900[i,"non_mori_sicilians"]=sum(intersections_Baltimore_1900[which(intersections_Baltimore_1900$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Baltimore_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Baltimore_1900[which(intersections_Baltimore_1900$hex_id==hex_mat_Baltimore_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -13788,6 +13768,10 @@ hex_mat_Baltimore_1900$cutrera_hex= ifelse(hex_mat_Baltimore_1900$hex_id %in% cu
 hex_mat_Baltimore_1900$damiani_hex=ifelse(hex_mat_Baltimore_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Baltimore_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Baltimore_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Baltimore_1900=hex_mat_Baltimore_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Baltimore_1900)==54)
+stopifnot(identical(names(hex_mat_Baltimore_1900),hex_mat_columns_1900))
+
 save(hex_mat_Baltimore_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Baltimore_1900.rda")
 
 ###########################################
@@ -13802,21 +13786,9 @@ intersections_Brooklyn_1900[is.na(intersections_Brooklyn_1900$italian_population
 intersections_Brooklyn_1900$pop_weighted=intersections_Brooklyn_1900$population*intersections_Brooklyn_1900$proportion_intersected
 intersections_Brooklyn_1900$ital_weighted=intersections_Brooklyn_1900$italian_population*intersections_Brooklyn_1900$proportion_intersected
 
-intersections_Brooklyn_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Brooklyn_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Brooklyn_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Brooklyn_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Brooklyn_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Brooklyn_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Brooklyn_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Brooklyn_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Brooklyn_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Brooklyn_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Brooklyn_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Brooklyn_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Brooklyn_1890$pop_mlp_weighted=intersections_Brooklyn_1890$pop_mlp*intersections_Brooklyn_1890$proportion_intersected
-intersections_Brooklyn_1890$pop_abe_weighted=intersections_Brooklyn_1890$pop_abe*intersections_Brooklyn_1890$proportion_intersected
-intersections_Brooklyn_1890$pop_cs_weighted=intersections_Brooklyn_1890$pop_cs*intersections_Brooklyn_1890$proportion_intersected
 
-intersections_Brooklyn_1890$incarc_mlp_weighted=intersections_Brooklyn_1890$incarc_mlp*intersections_Brooklyn_1890$proportion_intersected
-intersections_Brooklyn_1890$incarc_abe_weighted=intersections_Brooklyn_1890$incarc_abe*intersections_Brooklyn_1890$proportion_intersected
-intersections_Brooklyn_1890$incarc_cs_weighted=intersections_Brooklyn_1890$incarc_cs*intersections_Brooklyn_1890$proportion_intersected
 
 intersections_Brooklyn_1900$mori=0
 
@@ -13967,11 +13939,17 @@ colnames(hex_mat_Brooklyn_1900)=c(
 hex_mat_Brooklyn_1900[,"hex_id"]=unique(intersections_Brooklyn_1900$hex_id)
 hex_mat_Brooklyn_1900=as.data.frame(hex_mat_Brooklyn_1900)
 
+hex_mat_Brooklyn_1900$pop_mlp=NA_real_
+hex_mat_Brooklyn_1900$pop_abe=NA_real_
+hex_mat_Brooklyn_1900$pop_cs=NA_real_
+hex_mat_Brooklyn_1900$incarc_mlp=NA_real_
+hex_mat_Brooklyn_1900$incarc_abe=NA_real_
+hex_mat_Brooklyn_1900$incarc_cs=NA_real_
+
 hex_mat_Brooklyn_1900$median_home_value=NA_real_
 hex_mat_Brooklyn_1900$median_home_value_coverage=NA_real_
 
 intersections_Brooklyn_1900=st_drop_geometry(intersections_Brooklyn_1900)
-intersections_Brooklyn_1890=st_drop_geometry(intersections_Brooklyn_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -14000,12 +13978,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Brooklyn_1900)){
   hex_mat_Brooklyn_1900[i,"pop"]=sum(intersections_Brooklyn_1900[which(intersections_Brooklyn_1900$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Brooklyn_1900[i,"italian_pop"]=sum(intersections_Brooklyn_1900[which(intersections_Brooklyn_1900$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Brooklyn_1900[i,"pop_mlp"]=sum(intersections_Brooklyn_1890[which(intersections_Brooklyn_1890$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Brooklyn_1900[i,"pop_abe"]=sum(intersections_Brooklyn_1890[which(intersections_Brooklyn_1890$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Brooklyn_1900[i,"pop_cs"]=sum(intersections_Brooklyn_1890[which(intersections_Brooklyn_1890$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Brooklyn_1900[i,"incarc_mlp"]=sum(intersections_Brooklyn_1890[which(intersections_Brooklyn_1890$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Brooklyn_1900[i,"incarc_abe"]=sum(intersections_Brooklyn_1890[which(intersections_Brooklyn_1890$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Brooklyn_1900[i,"incarc_cs"]=sum(intersections_Brooklyn_1890[which(intersections_Brooklyn_1890$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Brooklyn_1900[i,"mori"]=sum(intersections_Brooklyn_1900[which(intersections_Brooklyn_1900$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Brooklyn_1900[i,"non_mori_sicilians"]=sum(intersections_Brooklyn_1900[which(intersections_Brooklyn_1900$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Brooklyn_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Brooklyn_1900[which(intersections_Brooklyn_1900$hex_id==hex_mat_Brooklyn_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -14177,6 +14149,10 @@ hex_mat_Brooklyn_1900$cutrera_hex= ifelse(hex_mat_Brooklyn_1900$hex_id %in% cutr
 hex_mat_Brooklyn_1900$damiani_hex=ifelse(hex_mat_Brooklyn_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Brooklyn_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Brooklyn_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Brooklyn_1900=hex_mat_Brooklyn_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Brooklyn_1900)==54)
+stopifnot(identical(names(hex_mat_Brooklyn_1900),hex_mat_columns_1900))
+
 save(hex_mat_Brooklyn_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Brooklyn_1900.rda")
 
 ###########################################
@@ -14191,21 +14167,9 @@ intersections_Boston_1900[is.na(intersections_Boston_1900$italian_population),"i
 intersections_Boston_1900$pop_weighted=intersections_Boston_1900$population*intersections_Boston_1900$proportion_intersected
 intersections_Boston_1900$ital_weighted=intersections_Boston_1900$italian_population*intersections_Boston_1900$proportion_intersected
 
-intersections_Boston_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Boston_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Boston_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Boston_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Boston_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Boston_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Boston_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Boston_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Boston_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Boston_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Boston_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Boston_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Boston_1890$pop_mlp_weighted=intersections_Boston_1890$pop_mlp*intersections_Boston_1890$proportion_intersected
-intersections_Boston_1890$pop_abe_weighted=intersections_Boston_1890$pop_abe*intersections_Boston_1890$proportion_intersected
-intersections_Boston_1890$pop_cs_weighted=intersections_Boston_1890$pop_cs*intersections_Boston_1890$proportion_intersected
 
-intersections_Boston_1890$incarc_mlp_weighted=intersections_Boston_1890$incarc_mlp*intersections_Boston_1890$proportion_intersected
-intersections_Boston_1890$incarc_abe_weighted=intersections_Boston_1890$incarc_abe*intersections_Boston_1890$proportion_intersected
-intersections_Boston_1890$incarc_cs_weighted=intersections_Boston_1890$incarc_cs*intersections_Boston_1890$proportion_intersected
 
 intersections_Boston_1900$mori=0
 
@@ -14356,11 +14320,17 @@ colnames(hex_mat_Boston_1900)=c(
 hex_mat_Boston_1900[,"hex_id"]=unique(intersections_Boston_1900$hex_id)
 hex_mat_Boston_1900=as.data.frame(hex_mat_Boston_1900)
 
+hex_mat_Boston_1900$pop_mlp=NA_real_
+hex_mat_Boston_1900$pop_abe=NA_real_
+hex_mat_Boston_1900$pop_cs=NA_real_
+hex_mat_Boston_1900$incarc_mlp=NA_real_
+hex_mat_Boston_1900$incarc_abe=NA_real_
+hex_mat_Boston_1900$incarc_cs=NA_real_
+
 hex_mat_Boston_1900$median_home_value=NA_real_
 hex_mat_Boston_1900$median_home_value_coverage=NA_real_
 
 intersections_Boston_1900=st_drop_geometry(intersections_Boston_1900)
-intersections_Boston_1890=st_drop_geometry(intersections_Boston_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -14389,12 +14359,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Boston_1900)){
   hex_mat_Boston_1900[i,"pop"]=sum(intersections_Boston_1900[which(intersections_Boston_1900$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Boston_1900[i,"italian_pop"]=sum(intersections_Boston_1900[which(intersections_Boston_1900$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Boston_1900[i,"pop_mlp"]=sum(intersections_Boston_1890[which(intersections_Boston_1890$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Boston_1900[i,"pop_abe"]=sum(intersections_Boston_1890[which(intersections_Boston_1890$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Boston_1900[i,"pop_cs"]=sum(intersections_Boston_1890[which(intersections_Boston_1890$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Boston_1900[i,"incarc_mlp"]=sum(intersections_Boston_1890[which(intersections_Boston_1890$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Boston_1900[i,"incarc_abe"]=sum(intersections_Boston_1890[which(intersections_Boston_1890$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Boston_1900[i,"incarc_cs"]=sum(intersections_Boston_1890[which(intersections_Boston_1890$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Boston_1900[i,"mori"]=sum(intersections_Boston_1900[which(intersections_Boston_1900$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Boston_1900[i,"non_mori_sicilians"]=sum(intersections_Boston_1900[which(intersections_Boston_1900$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Boston_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Boston_1900[which(intersections_Boston_1900$hex_id==hex_mat_Boston_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -14566,6 +14530,10 @@ hex_mat_Boston_1900$cutrera_hex= ifelse(hex_mat_Boston_1900$hex_id %in% cutrera_
 hex_mat_Boston_1900$damiani_hex=ifelse(hex_mat_Boston_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Boston_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Boston_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Boston_1900=hex_mat_Boston_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Boston_1900)==54)
+stopifnot(identical(names(hex_mat_Boston_1900),hex_mat_columns_1900))
+
 save(hex_mat_Boston_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Boston_1900.rda")
 
 ###########################################
@@ -14580,21 +14548,9 @@ intersections_Chicago_1900[is.na(intersections_Chicago_1900$italian_population),
 intersections_Chicago_1900$pop_weighted=intersections_Chicago_1900$population*intersections_Chicago_1900$proportion_intersected
 intersections_Chicago_1900$ital_weighted=intersections_Chicago_1900$italian_population*intersections_Chicago_1900$proportion_intersected
 
-intersections_Chicago_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Chicago_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Chicago_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Chicago_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Chicago_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Chicago_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Chicago_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Chicago_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Chicago_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Chicago_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Chicago_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Chicago_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Chicago_1890$pop_mlp_weighted=intersections_Chicago_1890$pop_mlp*intersections_Chicago_1890$proportion_intersected
-intersections_Chicago_1890$pop_abe_weighted=intersections_Chicago_1890$pop_abe*intersections_Chicago_1890$proportion_intersected
-intersections_Chicago_1890$pop_cs_weighted=intersections_Chicago_1890$pop_cs*intersections_Chicago_1890$proportion_intersected
 
-intersections_Chicago_1890$incarc_mlp_weighted=intersections_Chicago_1890$incarc_mlp*intersections_Chicago_1890$proportion_intersected
-intersections_Chicago_1890$incarc_abe_weighted=intersections_Chicago_1890$incarc_abe*intersections_Chicago_1890$proportion_intersected
-intersections_Chicago_1890$incarc_cs_weighted=intersections_Chicago_1890$incarc_cs*intersections_Chicago_1890$proportion_intersected
 
 intersections_Chicago_1900$mori=0
 
@@ -14745,11 +14701,17 @@ colnames(hex_mat_Chicago_1900)=c(
 hex_mat_Chicago_1900[,"hex_id"]=unique(intersections_Chicago_1900$hex_id)
 hex_mat_Chicago_1900=as.data.frame(hex_mat_Chicago_1900)
 
+hex_mat_Chicago_1900$pop_mlp=NA_real_
+hex_mat_Chicago_1900$pop_abe=NA_real_
+hex_mat_Chicago_1900$pop_cs=NA_real_
+hex_mat_Chicago_1900$incarc_mlp=NA_real_
+hex_mat_Chicago_1900$incarc_abe=NA_real_
+hex_mat_Chicago_1900$incarc_cs=NA_real_
+
 hex_mat_Chicago_1900$median_home_value=NA_real_
 hex_mat_Chicago_1900$median_home_value_coverage=NA_real_
 
 intersections_Chicago_1900=st_drop_geometry(intersections_Chicago_1900)
-intersections_Chicago_1890=st_drop_geometry(intersections_Chicago_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -14778,12 +14740,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Chicago_1900)){
   hex_mat_Chicago_1900[i,"pop"]=sum(intersections_Chicago_1900[which(intersections_Chicago_1900$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Chicago_1900[i,"italian_pop"]=sum(intersections_Chicago_1900[which(intersections_Chicago_1900$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Chicago_1900[i,"pop_mlp"]=sum(intersections_Chicago_1890[which(intersections_Chicago_1890$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Chicago_1900[i,"pop_abe"]=sum(intersections_Chicago_1890[which(intersections_Chicago_1890$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Chicago_1900[i,"pop_cs"]=sum(intersections_Chicago_1890[which(intersections_Chicago_1890$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Chicago_1900[i,"incarc_mlp"]=sum(intersections_Chicago_1890[which(intersections_Chicago_1890$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Chicago_1900[i,"incarc_abe"]=sum(intersections_Chicago_1890[which(intersections_Chicago_1890$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Chicago_1900[i,"incarc_cs"]=sum(intersections_Chicago_1890[which(intersections_Chicago_1890$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Chicago_1900[i,"mori"]=sum(intersections_Chicago_1900[which(intersections_Chicago_1900$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Chicago_1900[i,"non_mori_sicilians"]=sum(intersections_Chicago_1900[which(intersections_Chicago_1900$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Chicago_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Chicago_1900[which(intersections_Chicago_1900$hex_id==hex_mat_Chicago_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -14955,6 +14911,10 @@ hex_mat_Chicago_1900$cutrera_hex= ifelse(hex_mat_Chicago_1900$hex_id %in% cutrer
 hex_mat_Chicago_1900$damiani_hex=ifelse(hex_mat_Chicago_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Chicago_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Chicago_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Chicago_1900=hex_mat_Chicago_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Chicago_1900)==54)
+stopifnot(identical(names(hex_mat_Chicago_1900),hex_mat_columns_1900))
+
 save(hex_mat_Chicago_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Chicago_1900.rda")
 
 ###########################################
@@ -14969,21 +14929,9 @@ intersections_Cleveland_1900[is.na(intersections_Cleveland_1900$italian_populati
 intersections_Cleveland_1900$pop_weighted=intersections_Cleveland_1900$population*intersections_Cleveland_1900$proportion_intersected
 intersections_Cleveland_1900$ital_weighted=intersections_Cleveland_1900$italian_population*intersections_Cleveland_1900$proportion_intersected
 
-intersections_Cleveland_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Cleveland_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Cleveland_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Cleveland_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Cleveland_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Cleveland_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Cleveland_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Cleveland_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Cleveland_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Cleveland_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Cleveland_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Cleveland_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Cleveland_1890$pop_mlp_weighted=intersections_Cleveland_1890$pop_mlp*intersections_Cleveland_1890$proportion_intersected
-intersections_Cleveland_1890$pop_abe_weighted=intersections_Cleveland_1890$pop_abe*intersections_Cleveland_1890$proportion_intersected
-intersections_Cleveland_1890$pop_cs_weighted=intersections_Cleveland_1890$pop_cs*intersections_Cleveland_1890$proportion_intersected
 
-intersections_Cleveland_1890$incarc_mlp_weighted=intersections_Cleveland_1890$incarc_mlp*intersections_Cleveland_1890$proportion_intersected
-intersections_Cleveland_1890$incarc_abe_weighted=intersections_Cleveland_1890$incarc_abe*intersections_Cleveland_1890$proportion_intersected
-intersections_Cleveland_1890$incarc_cs_weighted=intersections_Cleveland_1890$incarc_cs*intersections_Cleveland_1890$proportion_intersected
 
 intersections_Cleveland_1900$mori=0
 
@@ -15134,11 +15082,17 @@ colnames(hex_mat_Cleveland_1900)=c(
 hex_mat_Cleveland_1900[,"hex_id"]=unique(intersections_Cleveland_1900$hex_id)
 hex_mat_Cleveland_1900=as.data.frame(hex_mat_Cleveland_1900)
 
+hex_mat_Cleveland_1900$pop_mlp=NA_real_
+hex_mat_Cleveland_1900$pop_abe=NA_real_
+hex_mat_Cleveland_1900$pop_cs=NA_real_
+hex_mat_Cleveland_1900$incarc_mlp=NA_real_
+hex_mat_Cleveland_1900$incarc_abe=NA_real_
+hex_mat_Cleveland_1900$incarc_cs=NA_real_
+
 hex_mat_Cleveland_1900$median_home_value=NA_real_
 hex_mat_Cleveland_1900$median_home_value_coverage=NA_real_
 
 intersections_Cleveland_1900=st_drop_geometry(intersections_Cleveland_1900)
-intersections_Cleveland_1890=st_drop_geometry(intersections_Cleveland_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -15167,12 +15121,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Cleveland_1900)){
   hex_mat_Cleveland_1900[i,"pop"]=sum(intersections_Cleveland_1900[which(intersections_Cleveland_1900$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Cleveland_1900[i,"italian_pop"]=sum(intersections_Cleveland_1900[which(intersections_Cleveland_1900$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Cleveland_1900[i,"pop_mlp"]=sum(intersections_Cleveland_1890[which(intersections_Cleveland_1890$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Cleveland_1900[i,"pop_abe"]=sum(intersections_Cleveland_1890[which(intersections_Cleveland_1890$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Cleveland_1900[i,"pop_cs"]=sum(intersections_Cleveland_1890[which(intersections_Cleveland_1890$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Cleveland_1900[i,"incarc_mlp"]=sum(intersections_Cleveland_1890[which(intersections_Cleveland_1890$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Cleveland_1900[i,"incarc_abe"]=sum(intersections_Cleveland_1890[which(intersections_Cleveland_1890$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Cleveland_1900[i,"incarc_cs"]=sum(intersections_Cleveland_1890[which(intersections_Cleveland_1890$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Cleveland_1900[i,"mori"]=sum(intersections_Cleveland_1900[which(intersections_Cleveland_1900$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Cleveland_1900[i,"non_mori_sicilians"]=sum(intersections_Cleveland_1900[which(intersections_Cleveland_1900$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Cleveland_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Cleveland_1900[which(intersections_Cleveland_1900$hex_id==hex_mat_Cleveland_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -15344,6 +15292,10 @@ hex_mat_Cleveland_1900$cutrera_hex= ifelse(hex_mat_Cleveland_1900$hex_id %in% cu
 hex_mat_Cleveland_1900$damiani_hex=ifelse(hex_mat_Cleveland_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Cleveland_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Cleveland_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Cleveland_1900=hex_mat_Cleveland_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Cleveland_1900)==54)
+stopifnot(identical(names(hex_mat_Cleveland_1900),hex_mat_columns_1900))
+
 save(hex_mat_Cleveland_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Cleveland_1900.rda")
 
 ###########################################
@@ -15358,21 +15310,9 @@ intersections_Cincinnati_1900[is.na(intersections_Cincinnati_1900$italian_popula
 intersections_Cincinnati_1900$pop_weighted=intersections_Cincinnati_1900$population*intersections_Cincinnati_1900$proportion_intersected
 intersections_Cincinnati_1900$ital_weighted=intersections_Cincinnati_1900$italian_population*intersections_Cincinnati_1900$proportion_intersected
 
-intersections_Cincinnati_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Cincinnati_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Cincinnati_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Cincinnati_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Cincinnati_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Cincinnati_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Cincinnati_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Cincinnati_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Cincinnati_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Cincinnati_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Cincinnati_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Cincinnati_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Cincinnati_1890$pop_mlp_weighted=intersections_Cincinnati_1890$pop_mlp*intersections_Cincinnati_1890$proportion_intersected
-intersections_Cincinnati_1890$pop_abe_weighted=intersections_Cincinnati_1890$pop_abe*intersections_Cincinnati_1890$proportion_intersected
-intersections_Cincinnati_1890$pop_cs_weighted=intersections_Cincinnati_1890$pop_cs*intersections_Cincinnati_1890$proportion_intersected
 
-intersections_Cincinnati_1890$incarc_mlp_weighted=intersections_Cincinnati_1890$incarc_mlp*intersections_Cincinnati_1890$proportion_intersected
-intersections_Cincinnati_1890$incarc_abe_weighted=intersections_Cincinnati_1890$incarc_abe*intersections_Cincinnati_1890$proportion_intersected
-intersections_Cincinnati_1890$incarc_cs_weighted=intersections_Cincinnati_1890$incarc_cs*intersections_Cincinnati_1890$proportion_intersected
 
 intersections_Cincinnati_1900$mori=0
 
@@ -15523,11 +15463,17 @@ colnames(hex_mat_Cincinnati_1900)=c(
 hex_mat_Cincinnati_1900[,"hex_id"]=unique(intersections_Cincinnati_1900$hex_id)
 hex_mat_Cincinnati_1900=as.data.frame(hex_mat_Cincinnati_1900)
 
+hex_mat_Cincinnati_1900$pop_mlp=NA_real_
+hex_mat_Cincinnati_1900$pop_abe=NA_real_
+hex_mat_Cincinnati_1900$pop_cs=NA_real_
+hex_mat_Cincinnati_1900$incarc_mlp=NA_real_
+hex_mat_Cincinnati_1900$incarc_abe=NA_real_
+hex_mat_Cincinnati_1900$incarc_cs=NA_real_
+
 hex_mat_Cincinnati_1900$median_home_value=NA_real_
 hex_mat_Cincinnati_1900$median_home_value_coverage=NA_real_
 
 intersections_Cincinnati_1900=st_drop_geometry(intersections_Cincinnati_1900)
-intersections_Cincinnati_1890=st_drop_geometry(intersections_Cincinnati_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -15556,12 +15502,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Cincinnati_1900)){
   hex_mat_Cincinnati_1900[i,"pop"]=sum(intersections_Cincinnati_1900[which(intersections_Cincinnati_1900$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Cincinnati_1900[i,"italian_pop"]=sum(intersections_Cincinnati_1900[which(intersections_Cincinnati_1900$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Cincinnati_1900[i,"pop_mlp"]=sum(intersections_Cincinnati_1890[which(intersections_Cincinnati_1890$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Cincinnati_1900[i,"pop_abe"]=sum(intersections_Cincinnati_1890[which(intersections_Cincinnati_1890$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Cincinnati_1900[i,"pop_cs"]=sum(intersections_Cincinnati_1890[which(intersections_Cincinnati_1890$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Cincinnati_1900[i,"incarc_mlp"]=sum(intersections_Cincinnati_1890[which(intersections_Cincinnati_1890$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Cincinnati_1900[i,"incarc_abe"]=sum(intersections_Cincinnati_1890[which(intersections_Cincinnati_1890$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Cincinnati_1900[i,"incarc_cs"]=sum(intersections_Cincinnati_1890[which(intersections_Cincinnati_1890$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Cincinnati_1900[i,"mori"]=sum(intersections_Cincinnati_1900[which(intersections_Cincinnati_1900$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Cincinnati_1900[i,"non_mori_sicilians"]=sum(intersections_Cincinnati_1900[which(intersections_Cincinnati_1900$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Cincinnati_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Cincinnati_1900[which(intersections_Cincinnati_1900$hex_id==hex_mat_Cincinnati_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -15733,6 +15673,10 @@ hex_mat_Cincinnati_1900$cutrera_hex= ifelse(hex_mat_Cincinnati_1900$hex_id %in% 
 hex_mat_Cincinnati_1900$damiani_hex=ifelse(hex_mat_Cincinnati_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Cincinnati_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Cincinnati_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Cincinnati_1900=hex_mat_Cincinnati_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Cincinnati_1900)==54)
+stopifnot(identical(names(hex_mat_Cincinnati_1900),hex_mat_columns_1900))
+
 save(hex_mat_Cincinnati_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Cincinnati_1900.rda")
 
 
@@ -15748,21 +15692,9 @@ intersections_Detroit_1900[is.na(intersections_Detroit_1900$italian_population),
 intersections_Detroit_1900$pop_weighted=intersections_Detroit_1900$population*intersections_Detroit_1900$proportion_intersected
 intersections_Detroit_1900$ital_weighted=intersections_Detroit_1900$italian_population*intersections_Detroit_1900$proportion_intersected
 
-intersections_Detroit_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Detroit_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Detroit_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Detroit_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Detroit_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Detroit_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Detroit_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Detroit_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Detroit_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Detroit_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Detroit_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Detroit_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Detroit_1890$pop_mlp_weighted=intersections_Detroit_1890$pop_mlp*intersections_Detroit_1890$proportion_intersected
-intersections_Detroit_1890$pop_abe_weighted=intersections_Detroit_1890$pop_abe*intersections_Detroit_1890$proportion_intersected
-intersections_Detroit_1890$pop_cs_weighted=intersections_Detroit_1890$pop_cs*intersections_Detroit_1890$proportion_intersected
 
-intersections_Detroit_1890$incarc_mlp_weighted=intersections_Detroit_1890$incarc_mlp*intersections_Detroit_1890$proportion_intersected
-intersections_Detroit_1890$incarc_abe_weighted=intersections_Detroit_1890$incarc_abe*intersections_Detroit_1890$proportion_intersected
-intersections_Detroit_1890$incarc_cs_weighted=intersections_Detroit_1890$incarc_cs*intersections_Detroit_1890$proportion_intersected
 
 intersections_Detroit_1900$mori=0
 
@@ -15913,11 +15845,17 @@ colnames(hex_mat_Detroit_1900)=c(
 hex_mat_Detroit_1900[,"hex_id"]=unique(intersections_Detroit_1900$hex_id)
 hex_mat_Detroit_1900=as.data.frame(hex_mat_Detroit_1900)
 
+hex_mat_Detroit_1900$pop_mlp=NA_real_
+hex_mat_Detroit_1900$pop_abe=NA_real_
+hex_mat_Detroit_1900$pop_cs=NA_real_
+hex_mat_Detroit_1900$incarc_mlp=NA_real_
+hex_mat_Detroit_1900$incarc_abe=NA_real_
+hex_mat_Detroit_1900$incarc_cs=NA_real_
+
 hex_mat_Detroit_1900$median_home_value=NA_real_
 hex_mat_Detroit_1900$median_home_value_coverage=NA_real_
 
 intersections_Detroit_1900=st_drop_geometry(intersections_Detroit_1900)
-intersections_Detroit_1890=st_drop_geometry(intersections_Detroit_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -15946,12 +15884,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Detroit_1900)){
   hex_mat_Detroit_1900[i,"pop"]=sum(intersections_Detroit_1900[which(intersections_Detroit_1900$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Detroit_1900[i,"italian_pop"]=sum(intersections_Detroit_1900[which(intersections_Detroit_1900$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Detroit_1900[i,"pop_mlp"]=sum(intersections_Detroit_1890[which(intersections_Detroit_1890$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Detroit_1900[i,"pop_abe"]=sum(intersections_Detroit_1890[which(intersections_Detroit_1890$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Detroit_1900[i,"pop_cs"]=sum(intersections_Detroit_1890[which(intersections_Detroit_1890$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Detroit_1900[i,"incarc_mlp"]=sum(intersections_Detroit_1890[which(intersections_Detroit_1890$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Detroit_1900[i,"incarc_abe"]=sum(intersections_Detroit_1890[which(intersections_Detroit_1890$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Detroit_1900[i,"incarc_cs"]=sum(intersections_Detroit_1890[which(intersections_Detroit_1890$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Detroit_1900[i,"mori"]=sum(intersections_Detroit_1900[which(intersections_Detroit_1900$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Detroit_1900[i,"non_mori_sicilians"]=sum(intersections_Detroit_1900[which(intersections_Detroit_1900$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Detroit_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Detroit_1900[which(intersections_Detroit_1900$hex_id==hex_mat_Detroit_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -16123,6 +16055,10 @@ hex_mat_Detroit_1900$cutrera_hex= ifelse(hex_mat_Detroit_1900$hex_id %in% cutrer
 hex_mat_Detroit_1900$damiani_hex=ifelse(hex_mat_Detroit_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Detroit_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Detroit_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Detroit_1900=hex_mat_Detroit_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Detroit_1900)==54)
+stopifnot(identical(names(hex_mat_Detroit_1900),hex_mat_columns_1900))
+
 save(hex_mat_Detroit_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Detroit_1900.rda")
 
 
@@ -16138,21 +16074,9 @@ intersections_Manhattan_1900[is.na(intersections_Manhattan_1900$italian_populati
 intersections_Manhattan_1900$pop_weighted=intersections_Manhattan_1900$population*intersections_Manhattan_1900$proportion_intersected
 intersections_Manhattan_1900$ital_weighted=intersections_Manhattan_1900$italian_population*intersections_Manhattan_1900$proportion_intersected
 
-intersections_Manhattan_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Manhattan_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Manhattan_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Manhattan_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Manhattan_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Manhattan_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Manhattan_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Manhattan_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Manhattan_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Manhattan_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Manhattan_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Manhattan_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Manhattan_1890$pop_mlp_weighted=intersections_Manhattan_1890$pop_mlp*intersections_Manhattan_1890$proportion_intersected
-intersections_Manhattan_1890$pop_abe_weighted=intersections_Manhattan_1890$pop_abe*intersections_Manhattan_1890$proportion_intersected
-intersections_Manhattan_1890$pop_cs_weighted=intersections_Manhattan_1890$pop_cs*intersections_Manhattan_1890$proportion_intersected
 
-intersections_Manhattan_1890$incarc_mlp_weighted=intersections_Manhattan_1890$incarc_mlp*intersections_Manhattan_1890$proportion_intersected
-intersections_Manhattan_1890$incarc_abe_weighted=intersections_Manhattan_1890$incarc_abe*intersections_Manhattan_1890$proportion_intersected
-intersections_Manhattan_1890$incarc_cs_weighted=intersections_Manhattan_1890$incarc_cs*intersections_Manhattan_1890$proportion_intersected
 
 intersections_Manhattan_1900$mori=0
 
@@ -16303,11 +16227,17 @@ colnames(hex_mat_Manhattan_1900)=c(
 hex_mat_Manhattan_1900[,"hex_id"]=unique(intersections_Manhattan_1900$hex_id)
 hex_mat_Manhattan_1900=as.data.frame(hex_mat_Manhattan_1900)
 
+hex_mat_Manhattan_1900$pop_mlp=NA_real_
+hex_mat_Manhattan_1900$pop_abe=NA_real_
+hex_mat_Manhattan_1900$pop_cs=NA_real_
+hex_mat_Manhattan_1900$incarc_mlp=NA_real_
+hex_mat_Manhattan_1900$incarc_abe=NA_real_
+hex_mat_Manhattan_1900$incarc_cs=NA_real_
+
 hex_mat_Manhattan_1900$median_home_value=NA_real_
 hex_mat_Manhattan_1900$median_home_value_coverage=NA_real_
 
 intersections_Manhattan_1900=st_drop_geometry(intersections_Manhattan_1900)
-intersections_Manhattan_1890=st_drop_geometry(intersections_Manhattan_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -16336,12 +16266,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Manhattan_1900)){
   hex_mat_Manhattan_1900[i,"pop"]=sum(intersections_Manhattan_1900[which(intersections_Manhattan_1900$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Manhattan_1900[i,"italian_pop"]=sum(intersections_Manhattan_1900[which(intersections_Manhattan_1900$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Manhattan_1900[i,"pop_mlp"]=sum(intersections_Manhattan_1890[which(intersections_Manhattan_1890$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Manhattan_1900[i,"pop_abe"]=sum(intersections_Manhattan_1890[which(intersections_Manhattan_1890$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Manhattan_1900[i,"pop_cs"]=sum(intersections_Manhattan_1890[which(intersections_Manhattan_1890$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Manhattan_1900[i,"incarc_mlp"]=sum(intersections_Manhattan_1890[which(intersections_Manhattan_1890$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Manhattan_1900[i,"incarc_abe"]=sum(intersections_Manhattan_1890[which(intersections_Manhattan_1890$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Manhattan_1900[i,"incarc_cs"]=sum(intersections_Manhattan_1890[which(intersections_Manhattan_1890$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Manhattan_1900[i,"mori"]=sum(intersections_Manhattan_1900[which(intersections_Manhattan_1900$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Manhattan_1900[i,"non_mori_sicilians"]=sum(intersections_Manhattan_1900[which(intersections_Manhattan_1900$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Manhattan_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Manhattan_1900[which(intersections_Manhattan_1900$hex_id==hex_mat_Manhattan_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -16513,6 +16437,10 @@ hex_mat_Manhattan_1900$cutrera_hex= ifelse(hex_mat_Manhattan_1900$hex_id %in% cu
 hex_mat_Manhattan_1900$damiani_hex=ifelse(hex_mat_Manhattan_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Manhattan_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Manhattan_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Manhattan_1900=hex_mat_Manhattan_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Manhattan_1900)==54)
+stopifnot(identical(names(hex_mat_Manhattan_1900),hex_mat_columns_1900))
+
 save(hex_mat_Manhattan_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Manhattan_1900.rda")
 
 ###########################################
@@ -16527,21 +16455,9 @@ intersections_Philadelphia_1900[is.na(intersections_Philadelphia_1900$italian_po
 intersections_Philadelphia_1900$pop_weighted=intersections_Philadelphia_1900$population*intersections_Philadelphia_1900$proportion_intersected
 intersections_Philadelphia_1900$ital_weighted=intersections_Philadelphia_1900$italian_population*intersections_Philadelphia_1900$proportion_intersected
 
-intersections_Philadelphia_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Philadelphia_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Philadelphia_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Philadelphia_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Philadelphia_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Philadelphia_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Philadelphia_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Philadelphia_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Philadelphia_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Philadelphia_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Philadelphia_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Philadelphia_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Philadelphia_1890$pop_mlp_weighted=intersections_Philadelphia_1890$pop_mlp*intersections_Philadelphia_1890$proportion_intersected
-intersections_Philadelphia_1890$pop_abe_weighted=intersections_Philadelphia_1890$pop_abe*intersections_Philadelphia_1890$proportion_intersected
-intersections_Philadelphia_1890$pop_cs_weighted=intersections_Philadelphia_1890$pop_cs*intersections_Philadelphia_1890$proportion_intersected
 
-intersections_Philadelphia_1890$incarc_mlp_weighted=intersections_Philadelphia_1890$incarc_mlp*intersections_Philadelphia_1890$proportion_intersected
-intersections_Philadelphia_1890$incarc_abe_weighted=intersections_Philadelphia_1890$incarc_abe*intersections_Philadelphia_1890$proportion_intersected
-intersections_Philadelphia_1890$incarc_cs_weighted=intersections_Philadelphia_1890$incarc_cs*intersections_Philadelphia_1890$proportion_intersected
 
 intersections_Philadelphia_1900$mori=0
 
@@ -16692,11 +16608,17 @@ colnames(hex_mat_Philadelphia_1900)=c(
 hex_mat_Philadelphia_1900[,"hex_id"]=unique(intersections_Philadelphia_1900$hex_id)
 hex_mat_Philadelphia_1900=as.data.frame(hex_mat_Philadelphia_1900)
 
+hex_mat_Philadelphia_1900$pop_mlp=NA_real_
+hex_mat_Philadelphia_1900$pop_abe=NA_real_
+hex_mat_Philadelphia_1900$pop_cs=NA_real_
+hex_mat_Philadelphia_1900$incarc_mlp=NA_real_
+hex_mat_Philadelphia_1900$incarc_abe=NA_real_
+hex_mat_Philadelphia_1900$incarc_cs=NA_real_
+
 hex_mat_Philadelphia_1900$median_home_value=NA_real_
 hex_mat_Philadelphia_1900$median_home_value_coverage=NA_real_
 
 intersections_Philadelphia_1900=st_drop_geometry(intersections_Philadelphia_1900)
-intersections_Philadelphia_1890=st_drop_geometry(intersections_Philadelphia_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -16725,12 +16647,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Philadelphia_1900)){
   hex_mat_Philadelphia_1900[i,"pop"]=sum(intersections_Philadelphia_1900[which(intersections_Philadelphia_1900$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Philadelphia_1900[i,"italian_pop"]=sum(intersections_Philadelphia_1900[which(intersections_Philadelphia_1900$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Philadelphia_1900[i,"pop_mlp"]=sum(intersections_Philadelphia_1890[which(intersections_Philadelphia_1890$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Philadelphia_1900[i,"pop_abe"]=sum(intersections_Philadelphia_1890[which(intersections_Philadelphia_1890$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Philadelphia_1900[i,"pop_cs"]=sum(intersections_Philadelphia_1890[which(intersections_Philadelphia_1890$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Philadelphia_1900[i,"incarc_mlp"]=sum(intersections_Philadelphia_1890[which(intersections_Philadelphia_1890$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Philadelphia_1900[i,"incarc_abe"]=sum(intersections_Philadelphia_1890[which(intersections_Philadelphia_1890$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Philadelphia_1900[i,"incarc_cs"]=sum(intersections_Philadelphia_1890[which(intersections_Philadelphia_1890$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Philadelphia_1900[i,"mori"]=sum(intersections_Philadelphia_1900[which(intersections_Philadelphia_1900$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Philadelphia_1900[i,"non_mori_sicilians"]=sum(intersections_Philadelphia_1900[which(intersections_Philadelphia_1900$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Philadelphia_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Philadelphia_1900[which(intersections_Philadelphia_1900$hex_id==hex_mat_Philadelphia_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -16902,6 +16818,10 @@ hex_mat_Philadelphia_1900$cutrera_hex= ifelse(hex_mat_Philadelphia_1900$hex_id %
 hex_mat_Philadelphia_1900$damiani_hex=ifelse(hex_mat_Philadelphia_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Philadelphia_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Philadelphia_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Philadelphia_1900=hex_mat_Philadelphia_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Philadelphia_1900)==54)
+stopifnot(identical(names(hex_mat_Philadelphia_1900),hex_mat_columns_1900))
+
 save(hex_mat_Philadelphia_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Philadelphia_1900.rda")
 
 ###########################################
@@ -16916,21 +16836,9 @@ intersections_Pittsburgh_1900[is.na(intersections_Pittsburgh_1900$italian_popula
 intersections_Pittsburgh_1900$pop_weighted=intersections_Pittsburgh_1900$population*intersections_Pittsburgh_1900$proportion_intersected
 intersections_Pittsburgh_1900$ital_weighted=intersections_Pittsburgh_1900$italian_population*intersections_Pittsburgh_1900$proportion_intersected
 
-intersections_Pittsburgh_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Pittsburgh_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_Pittsburgh_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Pittsburgh_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_Pittsburgh_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Pittsburgh_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_Pittsburgh_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_Pittsburgh_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_Pittsburgh_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_Pittsburgh_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_Pittsburgh_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_Pittsburgh_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_Pittsburgh_1890$pop_mlp_weighted=intersections_Pittsburgh_1890$pop_mlp*intersections_Pittsburgh_1890$proportion_intersected
-intersections_Pittsburgh_1890$pop_abe_weighted=intersections_Pittsburgh_1890$pop_abe*intersections_Pittsburgh_1890$proportion_intersected
-intersections_Pittsburgh_1890$pop_cs_weighted=intersections_Pittsburgh_1890$pop_cs*intersections_Pittsburgh_1890$proportion_intersected
 
-intersections_Pittsburgh_1890$incarc_mlp_weighted=intersections_Pittsburgh_1890$incarc_mlp*intersections_Pittsburgh_1890$proportion_intersected
-intersections_Pittsburgh_1890$incarc_abe_weighted=intersections_Pittsburgh_1890$incarc_abe*intersections_Pittsburgh_1890$proportion_intersected
-intersections_Pittsburgh_1890$incarc_cs_weighted=intersections_Pittsburgh_1890$incarc_cs*intersections_Pittsburgh_1890$proportion_intersected
 
 intersections_Pittsburgh_1900$mori=0
 
@@ -17081,11 +16989,17 @@ colnames(hex_mat_Pittsburgh_1900)=c(
 hex_mat_Pittsburgh_1900[,"hex_id"]=unique(intersections_Pittsburgh_1900$hex_id)
 hex_mat_Pittsburgh_1900=as.data.frame(hex_mat_Pittsburgh_1900)
 
+hex_mat_Pittsburgh_1900$pop_mlp=NA_real_
+hex_mat_Pittsburgh_1900$pop_abe=NA_real_
+hex_mat_Pittsburgh_1900$pop_cs=NA_real_
+hex_mat_Pittsburgh_1900$incarc_mlp=NA_real_
+hex_mat_Pittsburgh_1900$incarc_abe=NA_real_
+hex_mat_Pittsburgh_1900$incarc_cs=NA_real_
+
 hex_mat_Pittsburgh_1900$median_home_value=NA_real_
 hex_mat_Pittsburgh_1900$median_home_value_coverage=NA_real_
 
 intersections_Pittsburgh_1900=st_drop_geometry(intersections_Pittsburgh_1900)
-intersections_Pittsburgh_1890=st_drop_geometry(intersections_Pittsburgh_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -17114,12 +17028,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_Pittsburgh_1900)){
   hex_mat_Pittsburgh_1900[i,"pop"]=sum(intersections_Pittsburgh_1900[which(intersections_Pittsburgh_1900$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_Pittsburgh_1900[i,"italian_pop"]=sum(intersections_Pittsburgh_1900[which(intersections_Pittsburgh_1900$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_Pittsburgh_1900[i,"pop_mlp"]=sum(intersections_Pittsburgh_1890[which(intersections_Pittsburgh_1890$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_Pittsburgh_1900[i,"pop_abe"]=sum(intersections_Pittsburgh_1890[which(intersections_Pittsburgh_1890$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_Pittsburgh_1900[i,"pop_cs"]=sum(intersections_Pittsburgh_1890[which(intersections_Pittsburgh_1890$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_Pittsburgh_1900[i,"incarc_mlp"]=sum(intersections_Pittsburgh_1890[which(intersections_Pittsburgh_1890$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_Pittsburgh_1900[i,"incarc_abe"]=sum(intersections_Pittsburgh_1890[which(intersections_Pittsburgh_1890$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_Pittsburgh_1900[i,"incarc_cs"]=sum(intersections_Pittsburgh_1890[which(intersections_Pittsburgh_1890$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_Pittsburgh_1900[i,"mori"]=sum(intersections_Pittsburgh_1900[which(intersections_Pittsburgh_1900$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_Pittsburgh_1900[i,"non_mori_sicilians"]=sum(intersections_Pittsburgh_1900[which(intersections_Pittsburgh_1900$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_Pittsburgh_1900[i,"cutrera_1900_sicilians"]=sum(intersections_Pittsburgh_1900[which(intersections_Pittsburgh_1900$hex_id==hex_mat_Pittsburgh_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -17291,6 +17199,10 @@ hex_mat_Pittsburgh_1900$cutrera_hex= ifelse(hex_mat_Pittsburgh_1900$hex_id %in% 
 hex_mat_Pittsburgh_1900$damiani_hex=ifelse(hex_mat_Pittsburgh_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_Pittsburgh_1900$cutrera_or_damiani_hex=ifelse(hex_mat_Pittsburgh_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_Pittsburgh_1900=hex_mat_Pittsburgh_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_Pittsburgh_1900)==54)
+stopifnot(identical(names(hex_mat_Pittsburgh_1900),hex_mat_columns_1900))
+
 save(hex_mat_Pittsburgh_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_Pittsburgh_1900.rda")
 
 ###########################################
@@ -17305,21 +17217,9 @@ intersections_StLouis_1900[is.na(intersections_StLouis_1900$italian_population),
 intersections_StLouis_1900$pop_weighted=intersections_StLouis_1900$population*intersections_StLouis_1900$proportion_intersected
 intersections_StLouis_1900$ital_weighted=intersections_StLouis_1900$italian_population*intersections_StLouis_1900$proportion_intersected
 
-intersections_StLouis_1890$pop_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_StLouis_1890$ED, ed_incarceration_rates_1900$ed),"pop_ipums"])
-intersections_StLouis_1890$pop_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_StLouis_1890$ED, ed_incarceration_rates_1900$ed),"pop_abe"])
-intersections_StLouis_1890$pop_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_StLouis_1890$ED, ed_incarceration_rates_1900$ed),"pop_tree"])
 
-intersections_StLouis_1890$incarc_mlp=as.numeric(ed_incarceration_rates_1900[match(intersections_StLouis_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_ipums"])
-intersections_StLouis_1890$incarc_abe=as.numeric(ed_incarceration_rates_1900[match(intersections_StLouis_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_abe"])
-intersections_StLouis_1890$incarc_cs=as.numeric(ed_incarceration_rates_1900[match(intersections_StLouis_1890$ED, ed_incarceration_rates_1900$ed),"num_incarc_tree"])
 
-intersections_StLouis_1890$pop_mlp_weighted=intersections_StLouis_1890$pop_mlp*intersections_StLouis_1890$proportion_intersected
-intersections_StLouis_1890$pop_abe_weighted=intersections_StLouis_1890$pop_abe*intersections_StLouis_1890$proportion_intersected
-intersections_StLouis_1890$pop_cs_weighted=intersections_StLouis_1890$pop_cs*intersections_StLouis_1890$proportion_intersected
 
-intersections_StLouis_1890$incarc_mlp_weighted=intersections_StLouis_1890$incarc_mlp*intersections_StLouis_1890$proportion_intersected
-intersections_StLouis_1890$incarc_abe_weighted=intersections_StLouis_1890$incarc_abe*intersections_StLouis_1890$proportion_intersected
-intersections_StLouis_1890$incarc_cs_weighted=intersections_StLouis_1890$incarc_cs*intersections_StLouis_1890$proportion_intersected
 
 intersections_StLouis_1900$mori=0
 
@@ -17470,11 +17370,17 @@ colnames(hex_mat_StLouis_1900)=c(
 hex_mat_StLouis_1900[,"hex_id"]=unique(intersections_StLouis_1900$hex_id)
 hex_mat_StLouis_1900=as.data.frame(hex_mat_StLouis_1900)
 
+hex_mat_StLouis_1900$pop_mlp=NA_real_
+hex_mat_StLouis_1900$pop_abe=NA_real_
+hex_mat_StLouis_1900$pop_cs=NA_real_
+hex_mat_StLouis_1900$incarc_mlp=NA_real_
+hex_mat_StLouis_1900$incarc_abe=NA_real_
+hex_mat_StLouis_1900$incarc_cs=NA_real_
+
 hex_mat_StLouis_1900$median_home_value=NA_real_
 hex_mat_StLouis_1900$median_home_value_coverage=NA_real_
 
 intersections_StLouis_1900=st_drop_geometry(intersections_StLouis_1900)
-intersections_StLouis_1890=st_drop_geometry(intersections_StLouis_1890)
 
 ethnic_frag_cols=c(
   "uk",
@@ -17503,12 +17409,6 @@ ethnic_frag_cols=c(
 for (i in 1:nrow(hex_mat_StLouis_1900)){
   hex_mat_StLouis_1900[i,"pop"]=sum(intersections_StLouis_1900[which(intersections_StLouis_1900$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"pop_weighted"])
   hex_mat_StLouis_1900[i,"italian_pop"]=sum(intersections_StLouis_1900[which(intersections_StLouis_1900$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"ital_weighted"])
-  hex_mat_StLouis_1900[i,"pop_mlp"]=sum(intersections_StLouis_1890[which(intersections_StLouis_1890$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"pop_mlp_weighted"])
-  hex_mat_StLouis_1900[i,"pop_abe"]=sum(intersections_StLouis_1890[which(intersections_StLouis_1890$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"pop_abe_weighted"])
-  hex_mat_StLouis_1900[i,"pop_cs"]=sum(intersections_StLouis_1890[which(intersections_StLouis_1890$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"pop_cs_weighted"])
-  hex_mat_StLouis_1900[i,"incarc_mlp"]=sum(intersections_StLouis_1890[which(intersections_StLouis_1890$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"incarc_mlp_weighted"])
-  hex_mat_StLouis_1900[i,"incarc_abe"]=sum(intersections_StLouis_1890[which(intersections_StLouis_1890$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"incarc_abe_weighted"])
-  hex_mat_StLouis_1900[i,"incarc_cs"]=sum(intersections_StLouis_1890[which(intersections_StLouis_1890$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"incarc_cs_weighted"])
   hex_mat_StLouis_1900[i,"mori"]=sum(intersections_StLouis_1900[which(intersections_StLouis_1900$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"mori_weighted"])
   hex_mat_StLouis_1900[i,"non_mori_sicilians"]=sum(intersections_StLouis_1900[which(intersections_StLouis_1900$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"non_mori_sicilians_weighted"])
   hex_mat_StLouis_1900[i,"cutrera_1900_sicilians"]=sum(intersections_StLouis_1900[which(intersections_StLouis_1900$hex_id==hex_mat_StLouis_1900[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
@@ -17680,9 +17580,4712 @@ hex_mat_StLouis_1900$cutrera_hex= ifelse(hex_mat_StLouis_1900$hex_id %in% cutrer
 hex_mat_StLouis_1900$damiani_hex=ifelse(hex_mat_StLouis_1900$hex_id %in% damiani_hex, 1, 0)
 hex_mat_StLouis_1900$cutrera_or_damiani_hex=ifelse(hex_mat_StLouis_1900$hex_id %in% cutrera_or_damiani_hex, 1, 0)
 
+hex_mat_StLouis_1900=hex_mat_StLouis_1900[,hex_mat_columns_1900]
+stopifnot(ncol(hex_mat_StLouis_1900)==54)
+stopifnot(identical(names(hex_mat_StLouis_1900),hex_mat_columns_1900))
+
 save(hex_mat_StLouis_1900, file="intermediate_outputs/step_3_hex_mats/hex_mat_StLouis_1900.rda")
 
 
 
+################################
+########## 1940- ALL AVAILABLE DATA / UNBALANCED ##########
+################################
+
+########################################################
+######## DATA LOADING AND PRELIMINARY PREP #############
+########################################################
+
+load("intermediate_outputs/matched_census_1940_book.rda") #this is 1959 mafia book guys
+load("intermediate_outputs/matched_census_1940_pre.rda") #this is pre-1926 mafia book guys
+
+load("intermediate_outputs//ethnic_frag_1940.rda")
+load("intermediate_outputs/population_1940_relevant.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Baltimore_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Boston_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Chicago_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cincinnati_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cleveland_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_StLouis_1940.rda")
+load("intermediate_outputs/incarceration_rates/ed_incarceration_rates_1940.rda")
+ed_incarceration_rates_1940[is.na(ed_incarceration_rates_1940)]=0
+load("intermediate_outputs/outputs_for_hexagons/household_sample_1940.rda") #this is matched from numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_mori_1940.rda") #mori subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_non_mori_1940.rda") #non-mori sicilian subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_cutrera_1900_1940.rda") #cutrera map subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_damiani_1885_1940.rda") #damiani map subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_cutrera_or_damiani_maps_1940.rda") #cutrera or damiani maps subset of numident
+
+intersections_Baltimore_1940$ED=paste0("52_5100_", intersections_Baltimore_1940$ED)
+intersections_Boston_1940$ED=paste0("3_250_", intersections_Boston_1940$ED)
+intersections_Chicago_1940$ED=paste0("21_310_", intersections_Chicago_1940$ED)
+intersections_Cincinnati_1940$ED=paste0("24_610_", intersections_Cincinnati_1940$ED)
+intersections_Cleveland_1940$ED=paste0("24_350_", intersections_Cleveland_1940$ED)
+intersections_Philadelphia_1940$ED=paste0("14_1010_", intersections_Philadelphia_1940$ED)
+intersections_Pittsburgh_1940$ED=paste0("14_30_", intersections_Pittsburgh_1940$ED)
+intersections_StLouis_1940$ED=paste0("34_5100_", intersections_StLouis_1940$ED)
+
+# 1930 intersections are used to allocate the 1940 incarceration outcomes to the common hex grid.
+load("intermediate_outputs/step_2_intersections/intersections_Baltimore_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Boston_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Brooklyn_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Chicago_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cincinnati_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cleveland_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Detroit_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Manhattan_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_StLouis_1930.rda")
+intersections_Baltimore_1930$ED=paste0("52_5100_", intersections_Baltimore_1930$ED)
+intersections_Boston_1930$ED=paste0("3_250_", intersections_Boston_1930$ED)
+intersections_Brooklyn_1930$ED=paste0("13_470_", intersections_Brooklyn_1930$ED)
+intersections_Chicago_1930$ED=paste0("21_310_", intersections_Chicago_1930$ED)
+intersections_Cincinnati_1930$ED=paste0("24_610_", intersections_Cincinnati_1930$ED)
+intersections_Cleveland_1930$ED=paste0("24_350_", intersections_Cleveland_1930$ED)
+intersections_Detroit_1930$ED=paste0("23_1630_", intersections_Detroit_1930$ED)
+intersections_Manhattan_1930$ED=paste0("13_610_", intersections_Manhattan_1930$ED)
+intersections_Philadelphia_1930$ED=paste0("14_1010_", intersections_Philadelphia_1930$ED)
+intersections_Pittsburgh_1930$ED=paste0("14_30_", intersections_Pittsburgh_1930$ED)
+intersections_StLouis_1930$ED=paste0("34_5100_", intersections_StLouis_1930$ED)
+
+household_sample_1940=as.data.frame(household_sample_1940)
+household_sample_1940$enumdist=as.character(household_sample_1940$enumdist)
+household_sample_1940$ed=substr(household_sample_1940$enumdist, 4, nchar(household_sample_1940$enumdist))
+household_sample_1940$ed=gsub("^0+", "", household_sample_1940$ed)
+household_sample_1940$ed=gsub("0$", "", household_sample_1940$ed)
+household_sample_1940$ed=paste0(household_sample_1940$stateicp,"_",household_sample_1940$countyicp,"_",household_sample_1940$ed)
+
+household_sample_mori_1940=as.data.frame(household_sample_mori_1940)
+household_sample_mori_1940$enumdist=as.character(household_sample_mori_1940$enumdist)
+household_sample_mori_1940$ed=substr(household_sample_mori_1940$enumdist, 4, nchar(household_sample_mori_1940$enumdist))
+household_sample_mori_1940$ed=gsub("^0+", "", household_sample_mori_1940$ed)
+household_sample_mori_1940$ed=gsub("0$", "", household_sample_mori_1940$ed)
+household_sample_mori_1940$ed=paste0(household_sample_mori_1940$stateicp,"_",household_sample_mori_1940$countyicp,"_",household_sample_mori_1940$ed)
+
+household_sample_non_mori_1940=as.data.frame(household_sample_non_mori_1940)
+household_sample_non_mori_1940$enumdist=as.character(household_sample_non_mori_1940$enumdist)
+household_sample_non_mori_1940$ed=substr(household_sample_non_mori_1940$enumdist, 4, nchar(household_sample_non_mori_1940$enumdist))
+household_sample_non_mori_1940$ed=gsub("^0+", "", household_sample_non_mori_1940$ed)
+household_sample_non_mori_1940$ed=gsub("0$", "", household_sample_non_mori_1940$ed)
+household_sample_non_mori_1940$ed=paste0(household_sample_non_mori_1940$stateicp,"_",household_sample_non_mori_1940$countyicp,"_",household_sample_non_mori_1940$ed)
+
+household_sample_cutrera_1900_1940=as.data.frame(household_sample_cutrera_1900_1940)
+household_sample_cutrera_1900_1940$enumdist=as.character(household_sample_cutrera_1900_1940$enumdist)
+household_sample_cutrera_1900_1940$ed=substr(household_sample_cutrera_1900_1940$enumdist, 4, nchar(household_sample_cutrera_1900_1940$enumdist))
+household_sample_cutrera_1900_1940$ed=gsub("^0+", "", household_sample_cutrera_1900_1940$ed)
+household_sample_cutrera_1900_1940$ed=gsub("0$", "", household_sample_cutrera_1900_1940$ed)
+household_sample_cutrera_1900_1940$ed=paste0(household_sample_cutrera_1900_1940$stateicp,"_",household_sample_cutrera_1900_1940$countyicp,"_",household_sample_cutrera_1900_1940$ed)
+
+household_sample_damiani_1885_1940=as.data.frame(household_sample_damiani_1885_1940)
+household_sample_damiani_1885_1940$enumdist=as.character(household_sample_damiani_1885_1940$enumdist)
+household_sample_damiani_1885_1940$ed=substr(household_sample_damiani_1885_1940$enumdist, 4, nchar(household_sample_damiani_1885_1940$enumdist))
+household_sample_damiani_1885_1940$ed=gsub("^0+", "", household_sample_damiani_1885_1940$ed)
+household_sample_damiani_1885_1940$ed=gsub("0$", "", household_sample_damiani_1885_1940$ed)
+household_sample_damiani_1885_1940$ed=paste0(household_sample_damiani_1885_1940$stateicp,"_",household_sample_damiani_1885_1940$countyicp,"_",household_sample_damiani_1885_1940$ed)
+
+household_sample_cutrera_or_damiani_maps_1940=as.data.frame(household_sample_cutrera_or_damiani_maps_1940)
+household_sample_cutrera_or_damiani_maps_1940$enumdist=as.character(household_sample_cutrera_or_damiani_maps_1940$enumdist)
+household_sample_cutrera_or_damiani_maps_1940$ed=substr(household_sample_cutrera_or_damiani_maps_1940$enumdist, 4, nchar(household_sample_cutrera_or_damiani_maps_1940$enumdist))
+household_sample_cutrera_or_damiani_maps_1940$ed=gsub("^0+", "", household_sample_cutrera_or_damiani_maps_1940$ed)
+household_sample_cutrera_or_damiani_maps_1940$ed=gsub("0$", "", household_sample_cutrera_or_damiani_maps_1940$ed)
+household_sample_cutrera_or_damiani_maps_1940$ed=paste0(household_sample_cutrera_or_damiani_maps_1940$stateicp,"_",household_sample_cutrera_or_damiani_maps_1940$countyicp,"_",household_sample_cutrera_or_damiani_maps_1940$ed)
+
+matched_census_1940_book=as.data.frame(matched_census_1940_book)
+matched_census_1940_book$enumdist=as.character(matched_census_1940_book$enumdist)
+matched_census_1940_book$ed=substr(matched_census_1940_book$enumdist, 4, nchar(matched_census_1940_book$enumdist))
+matched_census_1940_book$ed=gsub("^0+", "", matched_census_1940_book$ed)
+matched_census_1940_book$ed=gsub("0$", "", matched_census_1940_book$ed)
+matched_census_1940_book$ed=paste0(matched_census_1940_book$stateicp,"_",matched_census_1940_book$countyicp,"_",matched_census_1940_book$ed)
+
+mafia_book_ed=unique(matched_census_1940_book$ed)
+matched_census_1940_pre=as.data.frame(matched_census_1940_pre)
+matched_census_1940_pre$enumdist=as.character(matched_census_1940_pre$enumdist)
+matched_census_1940_pre$ed=substr(matched_census_1940_pre$enumdist, 4, nchar(matched_census_1940_pre$enumdist))
+matched_census_1940_pre$ed=gsub("^0+", "", matched_census_1940_pre$ed)
+matched_census_1940_pre$ed=gsub("0$", "", matched_census_1940_pre$ed)
+matched_census_1940_pre$ed=paste0(matched_census_1940_pre$stateicp,"_",matched_census_1940_pre$countyicp,"_",matched_census_1940_pre$ed)
+
+mafia_pre_ed=unique(matched_census_1940_pre$ed)
+mori_ed=unique(household_sample_1940[which(household_sample_1940$mori==1),"ed"])
+cutrera_ed=unique(household_sample_1940[which(household_sample_1940$cutrera_1900==1),"ed"])
+damiani_ed=unique(household_sample_1940[which(household_sample_1940$damiani_1885==1),"ed"])
+cutrera_or_damiani_ed=unique(household_sample_1940[which(household_sample_1940$cutrera_or_damiani_maps==1),"ed"])
+
+ethnic_frag_1940$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", ethnic_frag_1940$enum_dist)
+ethnic_frag_1940$ed=gsub("^.*?_.*?_(.*)$", "\\1", ethnic_frag_1940$enum_dist)
+ethnic_frag_1940$ed=as.numeric(substr(ethnic_frag_1940$ed, 4, nchar(ethnic_frag_1940$ed)))
+ethnic_frag_1940$ed=paste0(ethnic_frag_1940$state_county,ethnic_frag_1940$ed)
+
+ed_incarceration_rates_1940$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", ed_incarceration_rates_1940$ed_state_county_id)
+ed_incarceration_rates_1940$ed=as.numeric(substr(ed_incarceration_rates_1940$enum_dist, 4, nchar(ed_incarceration_rates_1940$enum_dist)))
+ed_incarceration_rates_1940$ed=as.character(ed_incarceration_rates_1940$ed)
+ed_incarceration_rates_1940$ed=paste0(ed_incarceration_rates_1940$state_county,ed_incarceration_rates_1940$ed)
+
+ED_1940=c(unique(intersections_Baltimore_1940$ED), unique(intersections_Boston_1940$ED),
+          unique(intersections_Chicago_1940$ED), unique(intersections_Cincinnati_1940$ED), unique(intersections_Cleveland_1940$ED),
+          unique(intersections_Philadelphia_1940$ED), unique(intersections_Pittsburgh_1940$ED), unique(intersections_StLouis_1940$ED))
+
+substr(pop_1940_relevant$enum_dist_id, nchar(pop_1940_relevant$enum_dist_id), nchar(pop_1940_relevant$enum_dist_id))=
+  ifelse(substr(pop_1940_relevant$enum_dist_id, nchar(pop_1940_relevant$enum_dist_id), nchar(pop_1940_relevant$enum_dist_id))=="1", "a", ifelse(
+    substr(pop_1940_relevant$enum_dist_id, nchar(pop_1940_relevant$enum_dist_id), nchar(pop_1940_relevant$enum_dist_id))=="2", "b", "0"
+  ))
+pop_1940_relevant$enum_dist_id=gsub("^0+", "", pop_1940_relevant$enum_dist_id)
+pop_1940_relevant$enum_dist_id=gsub("0$", "", pop_1940_relevant$enum_dist_id)
+pop_1940_relevant=pop_1940_relevant[which(pop_1940_relevant$enum_dist_id %in% ED_1940),]
+
+# Clean median home value before city-level aggregation.
+# Values <= 0 are treated as unavailable; values >= 5,000,000 capture
+# documented sentinel codes and medians contaminated by those codes.
+pop_1940_relevant$median_home_value=as.numeric(pop_1940_relevant$median_home_value)
+pop_1940_relevant$median_home_value[which(
+  pop_1940_relevant$median_home_value <= 0 |
+    pop_1940_relevant$median_home_value >= 5000000
+)]=NA_real_
+
+census_econ=read.csv("intermediate_outputs/census_with_labor/fullclean_1940.csv")
+census_econ$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", census_econ$unique_id)
+census_econ$ed=gsub("^.*?_.*?_(.*)$", "\\1", census_econ$unique_id)
+census_econ$ed=substr(census_econ$ed, 4, nchar(census_econ$ed))
+census_econ$ed=gsub("^0+", "", census_econ$ed)
+census_econ$ed=gsub("0$", "", census_econ$ed)
+census_econ$ed=paste0(census_econ$state_county,census_econ$ed)
+census_econ=census_econ[which(census_econ$ed %in% ED_1940),]
+colnames(census_econ)=gsub("_1940", "",colnames(census_econ))
+colnames(census_econ)=gsub("1940", "",colnames(census_econ))
+census_econ$owned_free=0 #for balance. variable not available in later censuses. Not used in analysis
+
+hex_mat_columns_1940=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag",
+  "median_home_value","median_home_value_coverage",
+  "ital_prop","incarc_abe_prop","incarc_mlp_prop","incarc_cs_prop",
+  "any_mori","any_non_mori_sicilians","any_cutrera_1900_sicilians",
+  "any_damiani_1885_sicilians","any_cutrera_or_damiani_maps_sicilians","any_sicilians",
+  "foreign_prop","year","city",
+  "working_age_pop","household_count","occ_score","sei","owned","owned_free","rent",
+  "construction","transportation","retail_trade","business_services","finance",
+  "public_admin","professional_services",
+  "mafia_book_geo","mafia_pre_geo","mafia_book_hex","mafia_pre_hex",
+  "cutrera_hex","damiani_hex","cutrera_or_damiani_hex"
+)
+
+###########################################
+########## 1940- Baltimore ################
+###########################################
+intersections_Baltimore_1940$population=pop_1940_relevant[match(intersections_Baltimore_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Baltimore_1940$italian_population=pop_1940_relevant[match(intersections_Baltimore_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Baltimore_1940[is.na(intersections_Baltimore_1940$population),"population"]=0
+intersections_Baltimore_1940[is.na(intersections_Baltimore_1940$italian_population),"italian_population"]=0
+
+intersections_Baltimore_1940$pop_weighted=intersections_Baltimore_1940$population*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$ital_weighted=intersections_Baltimore_1940$italian_population*intersections_Baltimore_1940$proportion_intersected
+
+intersections_Baltimore_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Baltimore_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Baltimore_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Baltimore_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Baltimore_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Baltimore_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Baltimore_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Baltimore_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Baltimore_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Baltimore_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Baltimore_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Baltimore_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Baltimore_1930$pop_mlp_weighted=intersections_Baltimore_1930$pop_mlp*intersections_Baltimore_1930$proportion_intersected
+intersections_Baltimore_1930$pop_abe_weighted=intersections_Baltimore_1930$pop_abe*intersections_Baltimore_1930$proportion_intersected
+intersections_Baltimore_1930$pop_cs_weighted=intersections_Baltimore_1930$pop_cs*intersections_Baltimore_1930$proportion_intersected
+intersections_Baltimore_1930$incarc_mlp_weighted=intersections_Baltimore_1930$incarc_mlp*intersections_Baltimore_1930$proportion_intersected
+intersections_Baltimore_1930$incarc_abe_weighted=intersections_Baltimore_1930$incarc_abe*intersections_Baltimore_1930$proportion_intersected
+intersections_Baltimore_1930$incarc_cs_weighted=intersections_Baltimore_1930$incarc_cs*intersections_Baltimore_1930$proportion_intersected
 
 
+
+
+
+intersections_Baltimore_1940$mori=0
+
+intersections_Baltimore_1940$mafia_ed_book=ifelse(intersections_Baltimore_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Baltimore_1940$mafia_ed_pre=ifelse(intersections_Baltimore_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Baltimore_1940$damiani_ed=ifelse(intersections_Baltimore_1940$ED %in% damiani_ed, 1, 0)
+intersections_Baltimore_1940$cutrera_ed=ifelse(intersections_Baltimore_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Baltimore_1940$cutrera_or_damiani_ed=ifelse(intersections_Baltimore_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Baltimore_1940[which(intersections_Baltimore_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Baltimore_1940[which(intersections_Baltimore_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Baltimore_1940[which(intersections_Baltimore_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Baltimore_1940[which(intersections_Baltimore_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Baltimore_1940[which(intersections_Baltimore_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Baltimore_mori=matrix(nrow=length(unique(intersections_Baltimore_1940$ED)), ncol=7)
+colnames(Baltimore_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Baltimore_mori[,"ed"]=unique(intersections_Baltimore_1940$ED)
+
+for (i in 1:nrow(Baltimore_mori)){
+  Baltimore_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Baltimore_mori[i,"ed"]),])
+  Baltimore_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Baltimore_mori[i,"ed"]),])
+  Baltimore_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Baltimore_mori[i,"ed"]),])
+  Baltimore_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Baltimore_mori[i,"ed"]),])
+  Baltimore_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Baltimore_mori[i,"ed"]),])
+  Baltimore_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Baltimore_mori[i,"ed"]),])
+}
+
+Baltimore_mori=as.data.frame(Baltimore_mori)
+
+Baltimore_mori$all_sicilians=as.numeric(Baltimore_mori$all_sicilians)
+Baltimore_mori$mori_sicilians=as.numeric(Baltimore_mori$mori_sicilians)
+Baltimore_mori$non_mori_sicilians=as.numeric(Baltimore_mori$non_mori_sicilians)
+Baltimore_mori$cutrera_1900_sicilians=as.numeric(Baltimore_mori$cutrera_1900_sicilians)
+Baltimore_mori$damiani_1885_sicilians=as.numeric(Baltimore_mori$damiani_1885_sicilians)
+Baltimore_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Baltimore_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Baltimore_1940$mori=Baltimore_mori[match(intersections_Baltimore_1940$ED, Baltimore_mori$ed),"mori_sicilians"]
+intersections_Baltimore_1940$non_mori_sicilians=Baltimore_mori[match(intersections_Baltimore_1940$ED, Baltimore_mori$ed),"non_mori_sicilians"]
+intersections_Baltimore_1940$all_sicilians=Baltimore_mori[match(intersections_Baltimore_1940$ED, Baltimore_mori$ed),"all_sicilians"]
+intersections_Baltimore_1940$cutrera_1900_sicilians=Baltimore_mori[match(intersections_Baltimore_1940$ED, Baltimore_mori$ed),"cutrera_1900_sicilians"]
+intersections_Baltimore_1940$damiani_1885_sicilians=Baltimore_mori[match(intersections_Baltimore_1940$ED, Baltimore_mori$ed),"damiani_1885_sicilians"]
+intersections_Baltimore_1940$cutrera_or_damiani_maps_sicilians=Baltimore_mori[match(intersections_Baltimore_1940$ED, Baltimore_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Baltimore_1940[is.na(intersections_Baltimore_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Baltimore_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Baltimore_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Baltimore_1940$mori_weighted=intersections_Baltimore_1940$mori*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$non_mori_sicilians_weighted=intersections_Baltimore_1940$non_mori_sicilians*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$cutrera_1900_sicilians_weighted=intersections_Baltimore_1940$cutrera_1900_sicilians*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$damiani_1885_sicilians_weighted=intersections_Baltimore_1940$damiani_1885_sicilians*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Baltimore_1940$cutrera_or_damiani_maps_sicilians*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$all_sicilians_weighted=intersections_Baltimore_1940$all_sicilians*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$foreign_weighted=intersections_Baltimore_1940$immpop*intersections_Baltimore_1940$proportion_intersected
+
+intersections_Baltimore_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Baltimore_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Baltimore_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Baltimore_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Baltimore_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Baltimore_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Baltimore_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Baltimore_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Baltimore_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Baltimore_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Baltimore_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Baltimore_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Baltimore_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Baltimore_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Baltimore_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Baltimore_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Baltimore_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Baltimore_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Baltimore_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Baltimore_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Baltimore_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Baltimore_1940[,j]=st_drop_geometry(
+    intersections_Baltimore_1940[,j]*as.numeric(intersections_Baltimore_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Baltimore_1940$black_pop=as.numeric(intersections_Baltimore_1940$bpop*intersections_Baltimore_1940$proportion_intersected)
+intersections_Baltimore_1940$black_pop=intersections_Baltimore_1940$black_pop - intersections_Baltimore_1940$africa
+intersections_Baltimore_1940$usa=intersections_Baltimore_1940$usa - intersections_Baltimore_1940$black_pop
+
+hex_mat_Baltimore_1940=matrix(nrow=length(unique(intersections_Baltimore_1940$hex_id)), ncol=18)
+colnames(hex_mat_Baltimore_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Baltimore_1940[,"hex_id"]=unique(intersections_Baltimore_1940$hex_id)
+hex_mat_Baltimore_1940=as.data.frame(hex_mat_Baltimore_1940)
+
+
+hex_mat_Baltimore_1940$median_home_value=NA_real_
+hex_mat_Baltimore_1940$median_home_value_coverage=NA_real_
+
+intersections_Baltimore_1940=st_drop_geometry(intersections_Baltimore_1940)
+intersections_Baltimore_1930=st_drop_geometry(intersections_Baltimore_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Baltimore_1940)){
+  hex_mat_Baltimore_1940[i,"pop"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Baltimore_1940[i,"italian_pop"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Baltimore_1940[i,"pop_mlp"]=sum(intersections_Baltimore_1930[which(intersections_Baltimore_1930$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Baltimore_1940[i,"pop_abe"]=sum(intersections_Baltimore_1930[which(intersections_Baltimore_1930$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Baltimore_1940[i,"pop_cs"]=sum(intersections_Baltimore_1930[which(intersections_Baltimore_1930$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Baltimore_1940[i,"incarc_mlp"]=sum(intersections_Baltimore_1930[which(intersections_Baltimore_1930$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Baltimore_1940[i,"incarc_abe"]=sum(intersections_Baltimore_1930[which(intersections_Baltimore_1930$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Baltimore_1940[i,"incarc_cs"]=sum(intersections_Baltimore_1930[which(intersections_Baltimore_1930$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Baltimore_1940[i,"mori"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Baltimore_1940[i,"non_mori_sicilians"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Baltimore_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Baltimore_1940[i,"damiani_1885_sicilians"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Baltimore_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Baltimore_1940[i,"all_sicilians"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Baltimore_1940[i,"area"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Baltimore_1940[i,"foreign"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Baltimore_1940$median_home_value[home_value_rows]) &
+      intersections_Baltimore_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Baltimore_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Baltimore_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Baltimore_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Baltimore_1940$median_home_value[valid_home_value_rows],
+      intersections_Baltimore_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Baltimore_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Baltimore_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Baltimore_1940[
+        which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Baltimore_1940[
+        which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Baltimore_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Baltimore_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Baltimore_1940$ital_prop=hex_mat_Baltimore_1940$italian_pop/hex_mat_Baltimore_1940$pop
+hex_mat_Baltimore_1940$incarc_abe_prop=hex_mat_Baltimore_1940$incarc_abe/hex_mat_Baltimore_1940$pop_abe
+hex_mat_Baltimore_1940$incarc_mlp_prop=hex_mat_Baltimore_1940$incarc_mlp/hex_mat_Baltimore_1940$pop_mlp
+hex_mat_Baltimore_1940$incarc_cs_prop=hex_mat_Baltimore_1940$incarc_cs/hex_mat_Baltimore_1940$pop_cs
+hex_mat_Baltimore_1940$any_mori=ifelse(hex_mat_Baltimore_1940$mori>0, 1, 0)
+hex_mat_Baltimore_1940$any_non_mori_sicilians=ifelse(hex_mat_Baltimore_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Baltimore_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Baltimore_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Baltimore_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Baltimore_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Baltimore_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Baltimore_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Baltimore_1940$any_sicilians=ifelse(hex_mat_Baltimore_1940$all_sicilians>0, 1, 0)
+hex_mat_Baltimore_1940$foreign_prop=hex_mat_Baltimore_1940$foreign/hex_mat_Baltimore_1940$pop
+hex_mat_Baltimore_1940$year=1940
+hex_mat_Baltimore_1940$city="Baltimore"
+
+intersections_Baltimore_1940$working_age_pop=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "wap"]
+intersections_Baltimore_1940$household_count=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "hh"]
+intersections_Baltimore_1940$occ_score=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "occ_score"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$sei=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "duncan"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$owned=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "owned"]*intersections_Baltimore_1940$household_count
+intersections_Baltimore_1940$owned_free=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "owned_free"]*intersections_Baltimore_1940$household_count
+intersections_Baltimore_1940$rent=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "rent"]*intersections_Baltimore_1940$household_count
+intersections_Baltimore_1940$construction=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_cons"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$transportation=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_trans"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$retail_trade=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_rt"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$business_services=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_bs"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$finance=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_fin"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$public_admin=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_pa"]*intersections_Baltimore_1940$working_age_pop
+intersections_Baltimore_1940$professional_services=census_econ[match(intersections_Baltimore_1940$ED, census_econ$ed), "ind_prof"]*intersections_Baltimore_1940$working_age_pop
+
+hex_mat_Baltimore_1940$working_age_pop=0
+hex_mat_Baltimore_1940$household_count=0
+hex_mat_Baltimore_1940$occ_score=0
+hex_mat_Baltimore_1940$sei=0
+hex_mat_Baltimore_1940$owned=0
+hex_mat_Baltimore_1940$owned_free=0
+hex_mat_Baltimore_1940$rent=0
+hex_mat_Baltimore_1940$construction=0
+hex_mat_Baltimore_1940$transportation=0
+hex_mat_Baltimore_1940$retail_trade=0
+hex_mat_Baltimore_1940$business_services=0
+hex_mat_Baltimore_1940$finance=0
+hex_mat_Baltimore_1940$public_admin=0
+hex_mat_Baltimore_1940$professional_services=0
+
+intersections_Baltimore_1940$working_age_pop_weighted=intersections_Baltimore_1940$working_age_pop*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$household_count_weighted=intersections_Baltimore_1940$household_count*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$occ_score_weighted=intersections_Baltimore_1940$occ_score*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$sei_weighted=intersections_Baltimore_1940$sei*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$owned_weighted=intersections_Baltimore_1940$owned*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$owned_free_weighted=intersections_Baltimore_1940$owned_free*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$rent_weighted=intersections_Baltimore_1940$rent*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$construction_weighted=intersections_Baltimore_1940$construction*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$transportation_weighted=intersections_Baltimore_1940$transportation*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$retail_trade_weighted=intersections_Baltimore_1940$retail_trade*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$business_services_weighted=intersections_Baltimore_1940$business_services*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$finance_weighted=intersections_Baltimore_1940$finance*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$public_admin_weighted=intersections_Baltimore_1940$public_admin*intersections_Baltimore_1940$proportion_intersected
+intersections_Baltimore_1940$professional_services_weighted=intersections_Baltimore_1940$professional_services*intersections_Baltimore_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Baltimore_1940)){
+  hex_mat_Baltimore_1940[i,"working_age_pop"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Baltimore_1940[i,"household_count"]=sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Baltimore_1940[i,"occ_score"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"sei"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"owned"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Baltimore_1940[i,"household_count"]
+  hex_mat_Baltimore_1940[i,"owned_free"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Baltimore_1940[i,"household_count"]
+  hex_mat_Baltimore_1940[i,"rent"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Baltimore_1940[i,"household_count"]
+  hex_mat_Baltimore_1940[i,"construction"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"transportation"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"retail_trade"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"business_services"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"finance"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"public_admin"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+  hex_mat_Baltimore_1940[i,"professional_services"]=(sum(intersections_Baltimore_1940[which(intersections_Baltimore_1940$hex_id==hex_mat_Baltimore_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Baltimore_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Baltimore_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Baltimore_1940))
+polygon_sf=st_as_sf(intersections_Baltimore_1940$geometry, crs=st_crs(intersections_Baltimore_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Baltimore_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Baltimore_1940=st_drop_geometry(intersections_Baltimore_1940)
+
+matches_book=intersections_Baltimore_1940[matches_book, "hex_id"]
+matches_pre=intersections_Baltimore_1940[matches_pre, "hex_id"]
+
+hex_mat_Baltimore_1940$mafia_book_geo=ifelse(hex_mat_Baltimore_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Baltimore_1940$mafia_pre_geo=ifelse(hex_mat_Baltimore_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Baltimore_1940$mafia_book_hex=ifelse(hex_mat_Baltimore_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Baltimore_1940$mafia_pre_hex=ifelse(hex_mat_Baltimore_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Baltimore_1940$cutrera_hex= ifelse(hex_mat_Baltimore_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Baltimore_1940$damiani_hex=ifelse(hex_mat_Baltimore_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Baltimore_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Baltimore_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Baltimore_1940=hex_mat_Baltimore_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Baltimore_1940)==54)
+stopifnot(identical(names(hex_mat_Baltimore_1940),hex_mat_columns_1940))
+
+save(hex_mat_Baltimore_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Baltimore_1940.rda")
+
+###########################################
+########## 1940- Boston ################
+###########################################
+intersections_Boston_1940$population=pop_1940_relevant[match(intersections_Boston_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Boston_1940$italian_population=pop_1940_relevant[match(intersections_Boston_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Boston_1940[is.na(intersections_Boston_1940$population),"population"]=0
+intersections_Boston_1940[is.na(intersections_Boston_1940$italian_population),"italian_population"]=0
+
+intersections_Boston_1940$pop_weighted=intersections_Boston_1940$population*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$ital_weighted=intersections_Boston_1940$italian_population*intersections_Boston_1940$proportion_intersected
+
+intersections_Boston_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Boston_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Boston_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Boston_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Boston_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Boston_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Boston_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Boston_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Boston_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Boston_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Boston_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Boston_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Boston_1930$pop_mlp_weighted=intersections_Boston_1930$pop_mlp*intersections_Boston_1930$proportion_intersected
+intersections_Boston_1930$pop_abe_weighted=intersections_Boston_1930$pop_abe*intersections_Boston_1930$proportion_intersected
+intersections_Boston_1930$pop_cs_weighted=intersections_Boston_1930$pop_cs*intersections_Boston_1930$proportion_intersected
+intersections_Boston_1930$incarc_mlp_weighted=intersections_Boston_1930$incarc_mlp*intersections_Boston_1930$proportion_intersected
+intersections_Boston_1930$incarc_abe_weighted=intersections_Boston_1930$incarc_abe*intersections_Boston_1930$proportion_intersected
+intersections_Boston_1930$incarc_cs_weighted=intersections_Boston_1930$incarc_cs*intersections_Boston_1930$proportion_intersected
+
+
+
+
+
+intersections_Boston_1940$mori=0
+
+intersections_Boston_1940$mafia_ed_book=ifelse(intersections_Boston_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Boston_1940$mafia_ed_pre=ifelse(intersections_Boston_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Boston_1940$damiani_ed=ifelse(intersections_Boston_1940$ED %in% damiani_ed, 1, 0)
+intersections_Boston_1940$cutrera_ed=ifelse(intersections_Boston_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Boston_1940$cutrera_or_damiani_ed=ifelse(intersections_Boston_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Boston_1940[which(intersections_Boston_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Boston_1940[which(intersections_Boston_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Boston_1940[which(intersections_Boston_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Boston_1940[which(intersections_Boston_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Boston_1940[which(intersections_Boston_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Boston_mori=matrix(nrow=length(unique(intersections_Boston_1940$ED)), ncol=7)
+colnames(Boston_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Boston_mori[,"ed"]=unique(intersections_Boston_1940$ED)
+
+for (i in 1:nrow(Boston_mori)){
+  Boston_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Boston_mori[i,"ed"]),])
+  Boston_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Boston_mori[i,"ed"]),])
+  Boston_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Boston_mori[i,"ed"]),])
+  Boston_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Boston_mori[i,"ed"]),])
+  Boston_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Boston_mori[i,"ed"]),])
+  Boston_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Boston_mori[i,"ed"]),])
+}
+
+Boston_mori=as.data.frame(Boston_mori)
+
+Boston_mori$all_sicilians=as.numeric(Boston_mori$all_sicilians)
+Boston_mori$mori_sicilians=as.numeric(Boston_mori$mori_sicilians)
+Boston_mori$non_mori_sicilians=as.numeric(Boston_mori$non_mori_sicilians)
+Boston_mori$cutrera_1900_sicilians=as.numeric(Boston_mori$cutrera_1900_sicilians)
+Boston_mori$damiani_1885_sicilians=as.numeric(Boston_mori$damiani_1885_sicilians)
+Boston_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Boston_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Boston_1940$mori=Boston_mori[match(intersections_Boston_1940$ED, Boston_mori$ed),"mori_sicilians"]
+intersections_Boston_1940$non_mori_sicilians=Boston_mori[match(intersections_Boston_1940$ED, Boston_mori$ed),"non_mori_sicilians"]
+intersections_Boston_1940$all_sicilians=Boston_mori[match(intersections_Boston_1940$ED, Boston_mori$ed),"all_sicilians"]
+intersections_Boston_1940$cutrera_1900_sicilians=Boston_mori[match(intersections_Boston_1940$ED, Boston_mori$ed),"cutrera_1900_sicilians"]
+intersections_Boston_1940$damiani_1885_sicilians=Boston_mori[match(intersections_Boston_1940$ED, Boston_mori$ed),"damiani_1885_sicilians"]
+intersections_Boston_1940$cutrera_or_damiani_maps_sicilians=Boston_mori[match(intersections_Boston_1940$ED, Boston_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Boston_1940[is.na(intersections_Boston_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Boston_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Boston_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Boston_1940$mori_weighted=intersections_Boston_1940$mori*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$non_mori_sicilians_weighted=intersections_Boston_1940$non_mori_sicilians*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$cutrera_1900_sicilians_weighted=intersections_Boston_1940$cutrera_1900_sicilians*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$damiani_1885_sicilians_weighted=intersections_Boston_1940$damiani_1885_sicilians*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Boston_1940$cutrera_or_damiani_maps_sicilians*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$all_sicilians_weighted=intersections_Boston_1940$all_sicilians*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$foreign_weighted=intersections_Boston_1940$immpop*intersections_Boston_1940$proportion_intersected
+
+intersections_Boston_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Boston_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Boston_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Boston_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Boston_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Boston_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Boston_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Boston_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Boston_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Boston_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Boston_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Boston_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Boston_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Boston_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Boston_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Boston_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Boston_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Boston_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Boston_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Boston_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Boston_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Boston_1940[,j]=st_drop_geometry(
+    intersections_Boston_1940[,j]*as.numeric(intersections_Boston_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Boston_1940$black_pop=as.numeric(intersections_Boston_1940$bpop*intersections_Boston_1940$proportion_intersected)
+intersections_Boston_1940$black_pop=intersections_Boston_1940$black_pop - intersections_Boston_1940$africa
+intersections_Boston_1940$usa=intersections_Boston_1940$usa - intersections_Boston_1940$black_pop
+
+hex_mat_Boston_1940=matrix(nrow=length(unique(intersections_Boston_1940$hex_id)), ncol=18)
+colnames(hex_mat_Boston_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Boston_1940[,"hex_id"]=unique(intersections_Boston_1940$hex_id)
+hex_mat_Boston_1940=as.data.frame(hex_mat_Boston_1940)
+
+
+hex_mat_Boston_1940$median_home_value=NA_real_
+hex_mat_Boston_1940$median_home_value_coverage=NA_real_
+
+intersections_Boston_1940=st_drop_geometry(intersections_Boston_1940)
+intersections_Boston_1930=st_drop_geometry(intersections_Boston_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Boston_1940)){
+  hex_mat_Boston_1940[i,"pop"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Boston_1940[i,"italian_pop"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Boston_1940[i,"pop_mlp"]=sum(intersections_Boston_1930[which(intersections_Boston_1930$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Boston_1940[i,"pop_abe"]=sum(intersections_Boston_1930[which(intersections_Boston_1930$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Boston_1940[i,"pop_cs"]=sum(intersections_Boston_1930[which(intersections_Boston_1930$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Boston_1940[i,"incarc_mlp"]=sum(intersections_Boston_1930[which(intersections_Boston_1930$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Boston_1940[i,"incarc_abe"]=sum(intersections_Boston_1930[which(intersections_Boston_1930$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Boston_1940[i,"incarc_cs"]=sum(intersections_Boston_1930[which(intersections_Boston_1930$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Boston_1940[i,"mori"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Boston_1940[i,"non_mori_sicilians"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Boston_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Boston_1940[i,"damiani_1885_sicilians"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Boston_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Boston_1940[i,"all_sicilians"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Boston_1940[i,"area"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Boston_1940[i,"foreign"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Boston_1940$median_home_value[home_value_rows]) &
+      intersections_Boston_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Boston_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Boston_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Boston_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Boston_1940$median_home_value[valid_home_value_rows],
+      intersections_Boston_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Boston_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Boston_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Boston_1940[
+        which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Boston_1940[
+        which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Boston_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Boston_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Boston_1940$ital_prop=hex_mat_Boston_1940$italian_pop/hex_mat_Boston_1940$pop
+hex_mat_Boston_1940$incarc_abe_prop=hex_mat_Boston_1940$incarc_abe/hex_mat_Boston_1940$pop_abe
+hex_mat_Boston_1940$incarc_mlp_prop=hex_mat_Boston_1940$incarc_mlp/hex_mat_Boston_1940$pop_mlp
+hex_mat_Boston_1940$incarc_cs_prop=hex_mat_Boston_1940$incarc_cs/hex_mat_Boston_1940$pop_cs
+hex_mat_Boston_1940$any_mori=ifelse(hex_mat_Boston_1940$mori>0, 1, 0)
+hex_mat_Boston_1940$any_non_mori_sicilians=ifelse(hex_mat_Boston_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Boston_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Boston_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Boston_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Boston_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Boston_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Boston_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Boston_1940$any_sicilians=ifelse(hex_mat_Boston_1940$all_sicilians>0, 1, 0)
+hex_mat_Boston_1940$foreign_prop=hex_mat_Boston_1940$foreign/hex_mat_Boston_1940$pop
+hex_mat_Boston_1940$year=1940
+hex_mat_Boston_1940$city="Boston"
+
+intersections_Boston_1940$working_age_pop=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "wap"]
+intersections_Boston_1940$household_count=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "hh"]
+intersections_Boston_1940$occ_score=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "occ_score"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$sei=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "duncan"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$owned=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "owned"]*intersections_Boston_1940$household_count
+intersections_Boston_1940$owned_free=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "owned_free"]*intersections_Boston_1940$household_count
+intersections_Boston_1940$rent=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "rent"]*intersections_Boston_1940$household_count
+intersections_Boston_1940$construction=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_cons"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$transportation=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_trans"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$retail_trade=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_rt"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$business_services=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_bs"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$finance=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_fin"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$public_admin=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_pa"]*intersections_Boston_1940$working_age_pop
+intersections_Boston_1940$professional_services=census_econ[match(intersections_Boston_1940$ED, census_econ$ed), "ind_prof"]*intersections_Boston_1940$working_age_pop
+
+hex_mat_Boston_1940$working_age_pop=0
+hex_mat_Boston_1940$household_count=0
+hex_mat_Boston_1940$occ_score=0
+hex_mat_Boston_1940$sei=0
+hex_mat_Boston_1940$owned=0
+hex_mat_Boston_1940$owned_free=0
+hex_mat_Boston_1940$rent=0
+hex_mat_Boston_1940$construction=0
+hex_mat_Boston_1940$transportation=0
+hex_mat_Boston_1940$retail_trade=0
+hex_mat_Boston_1940$business_services=0
+hex_mat_Boston_1940$finance=0
+hex_mat_Boston_1940$public_admin=0
+hex_mat_Boston_1940$professional_services=0
+
+intersections_Boston_1940$working_age_pop_weighted=intersections_Boston_1940$working_age_pop*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$household_count_weighted=intersections_Boston_1940$household_count*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$occ_score_weighted=intersections_Boston_1940$occ_score*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$sei_weighted=intersections_Boston_1940$sei*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$owned_weighted=intersections_Boston_1940$owned*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$owned_free_weighted=intersections_Boston_1940$owned_free*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$rent_weighted=intersections_Boston_1940$rent*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$construction_weighted=intersections_Boston_1940$construction*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$transportation_weighted=intersections_Boston_1940$transportation*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$retail_trade_weighted=intersections_Boston_1940$retail_trade*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$business_services_weighted=intersections_Boston_1940$business_services*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$finance_weighted=intersections_Boston_1940$finance*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$public_admin_weighted=intersections_Boston_1940$public_admin*intersections_Boston_1940$proportion_intersected
+intersections_Boston_1940$professional_services_weighted=intersections_Boston_1940$professional_services*intersections_Boston_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Boston_1940)){
+  hex_mat_Boston_1940[i,"working_age_pop"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Boston_1940[i,"household_count"]=sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Boston_1940[i,"occ_score"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"sei"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"owned"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Boston_1940[i,"household_count"]
+  hex_mat_Boston_1940[i,"owned_free"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Boston_1940[i,"household_count"]
+  hex_mat_Boston_1940[i,"rent"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Boston_1940[i,"household_count"]
+  hex_mat_Boston_1940[i,"construction"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"transportation"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"retail_trade"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"business_services"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"finance"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"public_admin"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+  hex_mat_Boston_1940[i,"professional_services"]=(sum(intersections_Boston_1940[which(intersections_Boston_1940$hex_id==hex_mat_Boston_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Boston_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Boston_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Boston_1940))
+polygon_sf=st_as_sf(intersections_Boston_1940$geometry, crs=st_crs(intersections_Boston_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Boston_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Boston_1940=st_drop_geometry(intersections_Boston_1940)
+
+matches_book=intersections_Boston_1940[matches_book, "hex_id"]
+matches_pre=intersections_Boston_1940[matches_pre, "hex_id"]
+
+hex_mat_Boston_1940$mafia_book_geo=ifelse(hex_mat_Boston_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Boston_1940$mafia_pre_geo=ifelse(hex_mat_Boston_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Boston_1940$mafia_book_hex=ifelse(hex_mat_Boston_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Boston_1940$mafia_pre_hex=ifelse(hex_mat_Boston_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Boston_1940$cutrera_hex= ifelse(hex_mat_Boston_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Boston_1940$damiani_hex=ifelse(hex_mat_Boston_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Boston_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Boston_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Boston_1940=hex_mat_Boston_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Boston_1940)==54)
+stopifnot(identical(names(hex_mat_Boston_1940),hex_mat_columns_1940))
+
+save(hex_mat_Boston_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Boston_1940.rda")
+
+###########################################
+########## 1940- Chicago ################
+###########################################
+intersections_Chicago_1940$population=pop_1940_relevant[match(intersections_Chicago_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Chicago_1940$italian_population=pop_1940_relevant[match(intersections_Chicago_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Chicago_1940[is.na(intersections_Chicago_1940$population),"population"]=0
+intersections_Chicago_1940[is.na(intersections_Chicago_1940$italian_population),"italian_population"]=0
+
+intersections_Chicago_1940$pop_weighted=intersections_Chicago_1940$population*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$ital_weighted=intersections_Chicago_1940$italian_population*intersections_Chicago_1940$proportion_intersected
+
+intersections_Chicago_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Chicago_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Chicago_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Chicago_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Chicago_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Chicago_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Chicago_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Chicago_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Chicago_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Chicago_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Chicago_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Chicago_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Chicago_1930$pop_mlp_weighted=intersections_Chicago_1930$pop_mlp*intersections_Chicago_1930$proportion_intersected
+intersections_Chicago_1930$pop_abe_weighted=intersections_Chicago_1930$pop_abe*intersections_Chicago_1930$proportion_intersected
+intersections_Chicago_1930$pop_cs_weighted=intersections_Chicago_1930$pop_cs*intersections_Chicago_1930$proportion_intersected
+intersections_Chicago_1930$incarc_mlp_weighted=intersections_Chicago_1930$incarc_mlp*intersections_Chicago_1930$proportion_intersected
+intersections_Chicago_1930$incarc_abe_weighted=intersections_Chicago_1930$incarc_abe*intersections_Chicago_1930$proportion_intersected
+intersections_Chicago_1930$incarc_cs_weighted=intersections_Chicago_1930$incarc_cs*intersections_Chicago_1930$proportion_intersected
+
+
+
+
+
+intersections_Chicago_1940$mori=0
+
+intersections_Chicago_1940$mafia_ed_book=ifelse(intersections_Chicago_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Chicago_1940$mafia_ed_pre=ifelse(intersections_Chicago_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Chicago_1940$damiani_ed=ifelse(intersections_Chicago_1940$ED %in% damiani_ed, 1, 0)
+intersections_Chicago_1940$cutrera_ed=ifelse(intersections_Chicago_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Chicago_1940$cutrera_or_damiani_ed=ifelse(intersections_Chicago_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Chicago_1940[which(intersections_Chicago_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Chicago_1940[which(intersections_Chicago_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Chicago_1940[which(intersections_Chicago_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Chicago_1940[which(intersections_Chicago_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Chicago_1940[which(intersections_Chicago_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Chicago_mori=matrix(nrow=length(unique(intersections_Chicago_1940$ED)), ncol=7)
+colnames(Chicago_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Chicago_mori[,"ed"]=unique(intersections_Chicago_1940$ED)
+
+for (i in 1:nrow(Chicago_mori)){
+  Chicago_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Chicago_mori[i,"ed"]),])
+  Chicago_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Chicago_mori[i,"ed"]),])
+  Chicago_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Chicago_mori[i,"ed"]),])
+  Chicago_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Chicago_mori[i,"ed"]),])
+  Chicago_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Chicago_mori[i,"ed"]),])
+  Chicago_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Chicago_mori[i,"ed"]),])
+}
+
+Chicago_mori=as.data.frame(Chicago_mori)
+
+Chicago_mori$all_sicilians=as.numeric(Chicago_mori$all_sicilians)
+Chicago_mori$mori_sicilians=as.numeric(Chicago_mori$mori_sicilians)
+Chicago_mori$non_mori_sicilians=as.numeric(Chicago_mori$non_mori_sicilians)
+Chicago_mori$cutrera_1900_sicilians=as.numeric(Chicago_mori$cutrera_1900_sicilians)
+Chicago_mori$damiani_1885_sicilians=as.numeric(Chicago_mori$damiani_1885_sicilians)
+Chicago_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Chicago_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Chicago_1940$mori=Chicago_mori[match(intersections_Chicago_1940$ED, Chicago_mori$ed),"mori_sicilians"]
+intersections_Chicago_1940$non_mori_sicilians=Chicago_mori[match(intersections_Chicago_1940$ED, Chicago_mori$ed),"non_mori_sicilians"]
+intersections_Chicago_1940$all_sicilians=Chicago_mori[match(intersections_Chicago_1940$ED, Chicago_mori$ed),"all_sicilians"]
+intersections_Chicago_1940$cutrera_1900_sicilians=Chicago_mori[match(intersections_Chicago_1940$ED, Chicago_mori$ed),"cutrera_1900_sicilians"]
+intersections_Chicago_1940$damiani_1885_sicilians=Chicago_mori[match(intersections_Chicago_1940$ED, Chicago_mori$ed),"damiani_1885_sicilians"]
+intersections_Chicago_1940$cutrera_or_damiani_maps_sicilians=Chicago_mori[match(intersections_Chicago_1940$ED, Chicago_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Chicago_1940[is.na(intersections_Chicago_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Chicago_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Chicago_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Chicago_1940$mori_weighted=intersections_Chicago_1940$mori*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$non_mori_sicilians_weighted=intersections_Chicago_1940$non_mori_sicilians*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$cutrera_1900_sicilians_weighted=intersections_Chicago_1940$cutrera_1900_sicilians*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$damiani_1885_sicilians_weighted=intersections_Chicago_1940$damiani_1885_sicilians*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Chicago_1940$cutrera_or_damiani_maps_sicilians*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$all_sicilians_weighted=intersections_Chicago_1940$all_sicilians*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$foreign_weighted=intersections_Chicago_1940$immpop*intersections_Chicago_1940$proportion_intersected
+
+intersections_Chicago_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Chicago_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Chicago_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Chicago_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Chicago_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Chicago_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Chicago_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Chicago_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Chicago_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Chicago_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Chicago_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Chicago_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Chicago_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Chicago_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Chicago_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Chicago_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Chicago_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Chicago_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Chicago_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Chicago_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Chicago_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Chicago_1940[,j]=st_drop_geometry(
+    intersections_Chicago_1940[,j]*as.numeric(intersections_Chicago_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Chicago_1940$black_pop=as.numeric(intersections_Chicago_1940$bpop*intersections_Chicago_1940$proportion_intersected)
+intersections_Chicago_1940$black_pop=intersections_Chicago_1940$black_pop - intersections_Chicago_1940$africa
+intersections_Chicago_1940$usa=intersections_Chicago_1940$usa - intersections_Chicago_1940$black_pop
+
+hex_mat_Chicago_1940=matrix(nrow=length(unique(intersections_Chicago_1940$hex_id)), ncol=18)
+colnames(hex_mat_Chicago_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Chicago_1940[,"hex_id"]=unique(intersections_Chicago_1940$hex_id)
+hex_mat_Chicago_1940=as.data.frame(hex_mat_Chicago_1940)
+
+
+hex_mat_Chicago_1940$median_home_value=NA_real_
+hex_mat_Chicago_1940$median_home_value_coverage=NA_real_
+
+intersections_Chicago_1940=st_drop_geometry(intersections_Chicago_1940)
+intersections_Chicago_1930=st_drop_geometry(intersections_Chicago_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Chicago_1940)){
+  hex_mat_Chicago_1940[i,"pop"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Chicago_1940[i,"italian_pop"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Chicago_1940[i,"pop_mlp"]=sum(intersections_Chicago_1930[which(intersections_Chicago_1930$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Chicago_1940[i,"pop_abe"]=sum(intersections_Chicago_1930[which(intersections_Chicago_1930$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Chicago_1940[i,"pop_cs"]=sum(intersections_Chicago_1930[which(intersections_Chicago_1930$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Chicago_1940[i,"incarc_mlp"]=sum(intersections_Chicago_1930[which(intersections_Chicago_1930$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Chicago_1940[i,"incarc_abe"]=sum(intersections_Chicago_1930[which(intersections_Chicago_1930$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Chicago_1940[i,"incarc_cs"]=sum(intersections_Chicago_1930[which(intersections_Chicago_1930$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Chicago_1940[i,"mori"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Chicago_1940[i,"non_mori_sicilians"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Chicago_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Chicago_1940[i,"damiani_1885_sicilians"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Chicago_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Chicago_1940[i,"all_sicilians"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Chicago_1940[i,"area"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Chicago_1940[i,"foreign"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Chicago_1940$median_home_value[home_value_rows]) &
+      intersections_Chicago_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Chicago_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Chicago_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Chicago_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Chicago_1940$median_home_value[valid_home_value_rows],
+      intersections_Chicago_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Chicago_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Chicago_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Chicago_1940[
+        which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Chicago_1940[
+        which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Chicago_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Chicago_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Chicago_1940$ital_prop=hex_mat_Chicago_1940$italian_pop/hex_mat_Chicago_1940$pop
+hex_mat_Chicago_1940$incarc_abe_prop=hex_mat_Chicago_1940$incarc_abe/hex_mat_Chicago_1940$pop_abe
+hex_mat_Chicago_1940$incarc_mlp_prop=hex_mat_Chicago_1940$incarc_mlp/hex_mat_Chicago_1940$pop_mlp
+hex_mat_Chicago_1940$incarc_cs_prop=hex_mat_Chicago_1940$incarc_cs/hex_mat_Chicago_1940$pop_cs
+hex_mat_Chicago_1940$any_mori=ifelse(hex_mat_Chicago_1940$mori>0, 1, 0)
+hex_mat_Chicago_1940$any_non_mori_sicilians=ifelse(hex_mat_Chicago_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Chicago_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Chicago_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Chicago_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Chicago_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Chicago_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Chicago_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Chicago_1940$any_sicilians=ifelse(hex_mat_Chicago_1940$all_sicilians>0, 1, 0)
+hex_mat_Chicago_1940$foreign_prop=hex_mat_Chicago_1940$foreign/hex_mat_Chicago_1940$pop
+hex_mat_Chicago_1940$year=1940
+hex_mat_Chicago_1940$city="Chicago"
+
+intersections_Chicago_1940$working_age_pop=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "wap"]
+intersections_Chicago_1940$household_count=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "hh"]
+intersections_Chicago_1940$occ_score=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "occ_score"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$sei=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "duncan"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$owned=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "owned"]*intersections_Chicago_1940$household_count
+intersections_Chicago_1940$owned_free=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "owned_free"]*intersections_Chicago_1940$household_count
+intersections_Chicago_1940$rent=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "rent"]*intersections_Chicago_1940$household_count
+intersections_Chicago_1940$construction=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_cons"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$transportation=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_trans"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$retail_trade=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_rt"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$business_services=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_bs"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$finance=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_fin"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$public_admin=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_pa"]*intersections_Chicago_1940$working_age_pop
+intersections_Chicago_1940$professional_services=census_econ[match(intersections_Chicago_1940$ED, census_econ$ed), "ind_prof"]*intersections_Chicago_1940$working_age_pop
+
+hex_mat_Chicago_1940$working_age_pop=0
+hex_mat_Chicago_1940$household_count=0
+hex_mat_Chicago_1940$occ_score=0
+hex_mat_Chicago_1940$sei=0
+hex_mat_Chicago_1940$owned=0
+hex_mat_Chicago_1940$owned_free=0
+hex_mat_Chicago_1940$rent=0
+hex_mat_Chicago_1940$construction=0
+hex_mat_Chicago_1940$transportation=0
+hex_mat_Chicago_1940$retail_trade=0
+hex_mat_Chicago_1940$business_services=0
+hex_mat_Chicago_1940$finance=0
+hex_mat_Chicago_1940$public_admin=0
+hex_mat_Chicago_1940$professional_services=0
+
+intersections_Chicago_1940$working_age_pop_weighted=intersections_Chicago_1940$working_age_pop*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$household_count_weighted=intersections_Chicago_1940$household_count*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$occ_score_weighted=intersections_Chicago_1940$occ_score*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$sei_weighted=intersections_Chicago_1940$sei*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$owned_weighted=intersections_Chicago_1940$owned*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$owned_free_weighted=intersections_Chicago_1940$owned_free*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$rent_weighted=intersections_Chicago_1940$rent*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$construction_weighted=intersections_Chicago_1940$construction*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$transportation_weighted=intersections_Chicago_1940$transportation*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$retail_trade_weighted=intersections_Chicago_1940$retail_trade*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$business_services_weighted=intersections_Chicago_1940$business_services*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$finance_weighted=intersections_Chicago_1940$finance*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$public_admin_weighted=intersections_Chicago_1940$public_admin*intersections_Chicago_1940$proportion_intersected
+intersections_Chicago_1940$professional_services_weighted=intersections_Chicago_1940$professional_services*intersections_Chicago_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Chicago_1940)){
+  hex_mat_Chicago_1940[i,"working_age_pop"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Chicago_1940[i,"household_count"]=sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Chicago_1940[i,"occ_score"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"sei"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"owned"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Chicago_1940[i,"household_count"]
+  hex_mat_Chicago_1940[i,"owned_free"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Chicago_1940[i,"household_count"]
+  hex_mat_Chicago_1940[i,"rent"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Chicago_1940[i,"household_count"]
+  hex_mat_Chicago_1940[i,"construction"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"transportation"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"retail_trade"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"business_services"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"finance"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"public_admin"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+  hex_mat_Chicago_1940[i,"professional_services"]=(sum(intersections_Chicago_1940[which(intersections_Chicago_1940$hex_id==hex_mat_Chicago_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Chicago_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Chicago_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Chicago_1940))
+polygon_sf=st_as_sf(intersections_Chicago_1940$geometry, crs=st_crs(intersections_Chicago_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Chicago_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Chicago_1940=st_drop_geometry(intersections_Chicago_1940)
+
+matches_book=intersections_Chicago_1940[matches_book, "hex_id"]
+matches_pre=intersections_Chicago_1940[matches_pre, "hex_id"]
+
+hex_mat_Chicago_1940$mafia_book_geo=ifelse(hex_mat_Chicago_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Chicago_1940$mafia_pre_geo=ifelse(hex_mat_Chicago_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Chicago_1940$mafia_book_hex=ifelse(hex_mat_Chicago_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Chicago_1940$mafia_pre_hex=ifelse(hex_mat_Chicago_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Chicago_1940$cutrera_hex= ifelse(hex_mat_Chicago_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Chicago_1940$damiani_hex=ifelse(hex_mat_Chicago_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Chicago_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Chicago_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Chicago_1940=hex_mat_Chicago_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Chicago_1940)==54)
+stopifnot(identical(names(hex_mat_Chicago_1940),hex_mat_columns_1940))
+
+save(hex_mat_Chicago_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Chicago_1940.rda")
+
+###########################################
+########## 1940- Cincinnati ################
+###########################################
+intersections_Cincinnati_1940$population=pop_1940_relevant[match(intersections_Cincinnati_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Cincinnati_1940$italian_population=pop_1940_relevant[match(intersections_Cincinnati_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Cincinnati_1940[is.na(intersections_Cincinnati_1940$population),"population"]=0
+intersections_Cincinnati_1940[is.na(intersections_Cincinnati_1940$italian_population),"italian_population"]=0
+
+intersections_Cincinnati_1940$pop_weighted=intersections_Cincinnati_1940$population*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$ital_weighted=intersections_Cincinnati_1940$italian_population*intersections_Cincinnati_1940$proportion_intersected
+
+intersections_Cincinnati_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Cincinnati_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Cincinnati_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Cincinnati_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Cincinnati_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Cincinnati_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Cincinnati_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Cincinnati_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Cincinnati_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Cincinnati_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Cincinnati_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Cincinnati_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Cincinnati_1930$pop_mlp_weighted=intersections_Cincinnati_1930$pop_mlp*intersections_Cincinnati_1930$proportion_intersected
+intersections_Cincinnati_1930$pop_abe_weighted=intersections_Cincinnati_1930$pop_abe*intersections_Cincinnati_1930$proportion_intersected
+intersections_Cincinnati_1930$pop_cs_weighted=intersections_Cincinnati_1930$pop_cs*intersections_Cincinnati_1930$proportion_intersected
+intersections_Cincinnati_1930$incarc_mlp_weighted=intersections_Cincinnati_1930$incarc_mlp*intersections_Cincinnati_1930$proportion_intersected
+intersections_Cincinnati_1930$incarc_abe_weighted=intersections_Cincinnati_1930$incarc_abe*intersections_Cincinnati_1930$proportion_intersected
+intersections_Cincinnati_1930$incarc_cs_weighted=intersections_Cincinnati_1930$incarc_cs*intersections_Cincinnati_1930$proportion_intersected
+
+
+
+
+
+intersections_Cincinnati_1940$mori=0
+
+intersections_Cincinnati_1940$mafia_ed_book=ifelse(intersections_Cincinnati_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Cincinnati_1940$mafia_ed_pre=ifelse(intersections_Cincinnati_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Cincinnati_1940$damiani_ed=ifelse(intersections_Cincinnati_1940$ED %in% damiani_ed, 1, 0)
+intersections_Cincinnati_1940$cutrera_ed=ifelse(intersections_Cincinnati_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Cincinnati_1940$cutrera_or_damiani_ed=ifelse(intersections_Cincinnati_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Cincinnati_mori=matrix(nrow=length(unique(intersections_Cincinnati_1940$ED)), ncol=7)
+colnames(Cincinnati_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Cincinnati_mori[,"ed"]=unique(intersections_Cincinnati_1940$ED)
+
+for (i in 1:nrow(Cincinnati_mori)){
+  Cincinnati_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Cincinnati_mori[i,"ed"]),])
+  Cincinnati_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Cincinnati_mori[i,"ed"]),])
+  Cincinnati_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Cincinnati_mori[i,"ed"]),])
+  Cincinnati_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Cincinnati_mori[i,"ed"]),])
+  Cincinnati_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Cincinnati_mori[i,"ed"]),])
+  Cincinnati_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Cincinnati_mori[i,"ed"]),])
+}
+
+Cincinnati_mori=as.data.frame(Cincinnati_mori)
+
+Cincinnati_mori$all_sicilians=as.numeric(Cincinnati_mori$all_sicilians)
+Cincinnati_mori$mori_sicilians=as.numeric(Cincinnati_mori$mori_sicilians)
+Cincinnati_mori$non_mori_sicilians=as.numeric(Cincinnati_mori$non_mori_sicilians)
+Cincinnati_mori$cutrera_1900_sicilians=as.numeric(Cincinnati_mori$cutrera_1900_sicilians)
+Cincinnati_mori$damiani_1885_sicilians=as.numeric(Cincinnati_mori$damiani_1885_sicilians)
+Cincinnati_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Cincinnati_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Cincinnati_1940$mori=Cincinnati_mori[match(intersections_Cincinnati_1940$ED, Cincinnati_mori$ed),"mori_sicilians"]
+intersections_Cincinnati_1940$non_mori_sicilians=Cincinnati_mori[match(intersections_Cincinnati_1940$ED, Cincinnati_mori$ed),"non_mori_sicilians"]
+intersections_Cincinnati_1940$all_sicilians=Cincinnati_mori[match(intersections_Cincinnati_1940$ED, Cincinnati_mori$ed),"all_sicilians"]
+intersections_Cincinnati_1940$cutrera_1900_sicilians=Cincinnati_mori[match(intersections_Cincinnati_1940$ED, Cincinnati_mori$ed),"cutrera_1900_sicilians"]
+intersections_Cincinnati_1940$damiani_1885_sicilians=Cincinnati_mori[match(intersections_Cincinnati_1940$ED, Cincinnati_mori$ed),"damiani_1885_sicilians"]
+intersections_Cincinnati_1940$cutrera_or_damiani_maps_sicilians=Cincinnati_mori[match(intersections_Cincinnati_1940$ED, Cincinnati_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Cincinnati_1940[is.na(intersections_Cincinnati_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Cincinnati_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Cincinnati_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Cincinnati_1940$mori_weighted=intersections_Cincinnati_1940$mori*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$non_mori_sicilians_weighted=intersections_Cincinnati_1940$non_mori_sicilians*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$cutrera_1900_sicilians_weighted=intersections_Cincinnati_1940$cutrera_1900_sicilians*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$damiani_1885_sicilians_weighted=intersections_Cincinnati_1940$damiani_1885_sicilians*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Cincinnati_1940$cutrera_or_damiani_maps_sicilians*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$all_sicilians_weighted=intersections_Cincinnati_1940$all_sicilians*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$foreign_weighted=intersections_Cincinnati_1940$immpop*intersections_Cincinnati_1940$proportion_intersected
+
+intersections_Cincinnati_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Cincinnati_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Cincinnati_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Cincinnati_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Cincinnati_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Cincinnati_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Cincinnati_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Cincinnati_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Cincinnati_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Cincinnati_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Cincinnati_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Cincinnati_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Cincinnati_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Cincinnati_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Cincinnati_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Cincinnati_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Cincinnati_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Cincinnati_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Cincinnati_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Cincinnati_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Cincinnati_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Cincinnati_1940[,j]=st_drop_geometry(
+    intersections_Cincinnati_1940[,j]*as.numeric(intersections_Cincinnati_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Cincinnati_1940$black_pop=as.numeric(intersections_Cincinnati_1940$bpop*intersections_Cincinnati_1940$proportion_intersected)
+intersections_Cincinnati_1940$black_pop=intersections_Cincinnati_1940$black_pop - intersections_Cincinnati_1940$africa
+intersections_Cincinnati_1940$usa=intersections_Cincinnati_1940$usa - intersections_Cincinnati_1940$black_pop
+
+hex_mat_Cincinnati_1940=matrix(nrow=length(unique(intersections_Cincinnati_1940$hex_id)), ncol=18)
+colnames(hex_mat_Cincinnati_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Cincinnati_1940[,"hex_id"]=unique(intersections_Cincinnati_1940$hex_id)
+hex_mat_Cincinnati_1940=as.data.frame(hex_mat_Cincinnati_1940)
+
+
+hex_mat_Cincinnati_1940$median_home_value=NA_real_
+hex_mat_Cincinnati_1940$median_home_value_coverage=NA_real_
+
+intersections_Cincinnati_1940=st_drop_geometry(intersections_Cincinnati_1940)
+intersections_Cincinnati_1930=st_drop_geometry(intersections_Cincinnati_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Cincinnati_1940)){
+  hex_mat_Cincinnati_1940[i,"pop"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Cincinnati_1940[i,"italian_pop"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Cincinnati_1940[i,"pop_mlp"]=sum(intersections_Cincinnati_1930[which(intersections_Cincinnati_1930$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Cincinnati_1940[i,"pop_abe"]=sum(intersections_Cincinnati_1930[which(intersections_Cincinnati_1930$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Cincinnati_1940[i,"pop_cs"]=sum(intersections_Cincinnati_1930[which(intersections_Cincinnati_1930$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Cincinnati_1940[i,"incarc_mlp"]=sum(intersections_Cincinnati_1930[which(intersections_Cincinnati_1930$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Cincinnati_1940[i,"incarc_abe"]=sum(intersections_Cincinnati_1930[which(intersections_Cincinnati_1930$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Cincinnati_1940[i,"incarc_cs"]=sum(intersections_Cincinnati_1930[which(intersections_Cincinnati_1930$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Cincinnati_1940[i,"mori"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Cincinnati_1940[i,"non_mori_sicilians"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Cincinnati_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Cincinnati_1940[i,"damiani_1885_sicilians"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Cincinnati_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Cincinnati_1940[i,"all_sicilians"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Cincinnati_1940[i,"area"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Cincinnati_1940[i,"foreign"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Cincinnati_1940$median_home_value[home_value_rows]) &
+      intersections_Cincinnati_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Cincinnati_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Cincinnati_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Cincinnati_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Cincinnati_1940$median_home_value[valid_home_value_rows],
+      intersections_Cincinnati_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Cincinnati_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Cincinnati_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Cincinnati_1940[
+        which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Cincinnati_1940[
+        which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Cincinnati_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Cincinnati_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Cincinnati_1940$ital_prop=hex_mat_Cincinnati_1940$italian_pop/hex_mat_Cincinnati_1940$pop
+hex_mat_Cincinnati_1940$incarc_abe_prop=hex_mat_Cincinnati_1940$incarc_abe/hex_mat_Cincinnati_1940$pop_abe
+hex_mat_Cincinnati_1940$incarc_mlp_prop=hex_mat_Cincinnati_1940$incarc_mlp/hex_mat_Cincinnati_1940$pop_mlp
+hex_mat_Cincinnati_1940$incarc_cs_prop=hex_mat_Cincinnati_1940$incarc_cs/hex_mat_Cincinnati_1940$pop_cs
+hex_mat_Cincinnati_1940$any_mori=ifelse(hex_mat_Cincinnati_1940$mori>0, 1, 0)
+hex_mat_Cincinnati_1940$any_non_mori_sicilians=ifelse(hex_mat_Cincinnati_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Cincinnati_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Cincinnati_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Cincinnati_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Cincinnati_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Cincinnati_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Cincinnati_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Cincinnati_1940$any_sicilians=ifelse(hex_mat_Cincinnati_1940$all_sicilians>0, 1, 0)
+hex_mat_Cincinnati_1940$foreign_prop=hex_mat_Cincinnati_1940$foreign/hex_mat_Cincinnati_1940$pop
+hex_mat_Cincinnati_1940$year=1940
+hex_mat_Cincinnati_1940$city="Cincinnati"
+
+intersections_Cincinnati_1940$working_age_pop=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "wap"]
+intersections_Cincinnati_1940$household_count=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "hh"]
+intersections_Cincinnati_1940$occ_score=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "occ_score"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$sei=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "duncan"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$owned=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "owned"]*intersections_Cincinnati_1940$household_count
+intersections_Cincinnati_1940$owned_free=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "owned_free"]*intersections_Cincinnati_1940$household_count
+intersections_Cincinnati_1940$rent=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "rent"]*intersections_Cincinnati_1940$household_count
+intersections_Cincinnati_1940$construction=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_cons"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$transportation=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_trans"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$retail_trade=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_rt"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$business_services=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_bs"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$finance=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_fin"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$public_admin=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_pa"]*intersections_Cincinnati_1940$working_age_pop
+intersections_Cincinnati_1940$professional_services=census_econ[match(intersections_Cincinnati_1940$ED, census_econ$ed), "ind_prof"]*intersections_Cincinnati_1940$working_age_pop
+
+hex_mat_Cincinnati_1940$working_age_pop=0
+hex_mat_Cincinnati_1940$household_count=0
+hex_mat_Cincinnati_1940$occ_score=0
+hex_mat_Cincinnati_1940$sei=0
+hex_mat_Cincinnati_1940$owned=0
+hex_mat_Cincinnati_1940$owned_free=0
+hex_mat_Cincinnati_1940$rent=0
+hex_mat_Cincinnati_1940$construction=0
+hex_mat_Cincinnati_1940$transportation=0
+hex_mat_Cincinnati_1940$retail_trade=0
+hex_mat_Cincinnati_1940$business_services=0
+hex_mat_Cincinnati_1940$finance=0
+hex_mat_Cincinnati_1940$public_admin=0
+hex_mat_Cincinnati_1940$professional_services=0
+
+intersections_Cincinnati_1940$working_age_pop_weighted=intersections_Cincinnati_1940$working_age_pop*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$household_count_weighted=intersections_Cincinnati_1940$household_count*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$occ_score_weighted=intersections_Cincinnati_1940$occ_score*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$sei_weighted=intersections_Cincinnati_1940$sei*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$owned_weighted=intersections_Cincinnati_1940$owned*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$owned_free_weighted=intersections_Cincinnati_1940$owned_free*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$rent_weighted=intersections_Cincinnati_1940$rent*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$construction_weighted=intersections_Cincinnati_1940$construction*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$transportation_weighted=intersections_Cincinnati_1940$transportation*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$retail_trade_weighted=intersections_Cincinnati_1940$retail_trade*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$business_services_weighted=intersections_Cincinnati_1940$business_services*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$finance_weighted=intersections_Cincinnati_1940$finance*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$public_admin_weighted=intersections_Cincinnati_1940$public_admin*intersections_Cincinnati_1940$proportion_intersected
+intersections_Cincinnati_1940$professional_services_weighted=intersections_Cincinnati_1940$professional_services*intersections_Cincinnati_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Cincinnati_1940)){
+  hex_mat_Cincinnati_1940[i,"working_age_pop"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Cincinnati_1940[i,"household_count"]=sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Cincinnati_1940[i,"occ_score"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"sei"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"owned"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Cincinnati_1940[i,"household_count"]
+  hex_mat_Cincinnati_1940[i,"owned_free"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Cincinnati_1940[i,"household_count"]
+  hex_mat_Cincinnati_1940[i,"rent"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Cincinnati_1940[i,"household_count"]
+  hex_mat_Cincinnati_1940[i,"construction"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"transportation"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"retail_trade"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"business_services"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"finance"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"public_admin"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+  hex_mat_Cincinnati_1940[i,"professional_services"]=(sum(intersections_Cincinnati_1940[which(intersections_Cincinnati_1940$hex_id==hex_mat_Cincinnati_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Cincinnati_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Cincinnati_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Cincinnati_1940))
+polygon_sf=st_as_sf(intersections_Cincinnati_1940$geometry, crs=st_crs(intersections_Cincinnati_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Cincinnati_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Cincinnati_1940=st_drop_geometry(intersections_Cincinnati_1940)
+
+matches_book=intersections_Cincinnati_1940[matches_book, "hex_id"]
+matches_pre=intersections_Cincinnati_1940[matches_pre, "hex_id"]
+
+hex_mat_Cincinnati_1940$mafia_book_geo=ifelse(hex_mat_Cincinnati_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Cincinnati_1940$mafia_pre_geo=ifelse(hex_mat_Cincinnati_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Cincinnati_1940$mafia_book_hex=ifelse(hex_mat_Cincinnati_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Cincinnati_1940$mafia_pre_hex=ifelse(hex_mat_Cincinnati_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Cincinnati_1940$cutrera_hex= ifelse(hex_mat_Cincinnati_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Cincinnati_1940$damiani_hex=ifelse(hex_mat_Cincinnati_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Cincinnati_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Cincinnati_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Cincinnati_1940=hex_mat_Cincinnati_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Cincinnati_1940)==54)
+stopifnot(identical(names(hex_mat_Cincinnati_1940),hex_mat_columns_1940))
+
+save(hex_mat_Cincinnati_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Cincinnati_1940.rda")
+
+###########################################
+########## 1940- Cleveland ################
+###########################################
+intersections_Cleveland_1940$population=pop_1940_relevant[match(intersections_Cleveland_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Cleveland_1940$italian_population=pop_1940_relevant[match(intersections_Cleveland_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Cleveland_1940[is.na(intersections_Cleveland_1940$population),"population"]=0
+intersections_Cleveland_1940[is.na(intersections_Cleveland_1940$italian_population),"italian_population"]=0
+
+intersections_Cleveland_1940$pop_weighted=intersections_Cleveland_1940$population*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$ital_weighted=intersections_Cleveland_1940$italian_population*intersections_Cleveland_1940$proportion_intersected
+
+intersections_Cleveland_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Cleveland_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Cleveland_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Cleveland_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Cleveland_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Cleveland_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Cleveland_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Cleveland_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Cleveland_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Cleveland_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Cleveland_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Cleveland_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Cleveland_1930$pop_mlp_weighted=intersections_Cleveland_1930$pop_mlp*intersections_Cleveland_1930$proportion_intersected
+intersections_Cleveland_1930$pop_abe_weighted=intersections_Cleveland_1930$pop_abe*intersections_Cleveland_1930$proportion_intersected
+intersections_Cleveland_1930$pop_cs_weighted=intersections_Cleveland_1930$pop_cs*intersections_Cleveland_1930$proportion_intersected
+intersections_Cleveland_1930$incarc_mlp_weighted=intersections_Cleveland_1930$incarc_mlp*intersections_Cleveland_1930$proportion_intersected
+intersections_Cleveland_1930$incarc_abe_weighted=intersections_Cleveland_1930$incarc_abe*intersections_Cleveland_1930$proportion_intersected
+intersections_Cleveland_1930$incarc_cs_weighted=intersections_Cleveland_1930$incarc_cs*intersections_Cleveland_1930$proportion_intersected
+
+
+
+
+
+intersections_Cleveland_1940$mori=0
+
+intersections_Cleveland_1940$mafia_ed_book=ifelse(intersections_Cleveland_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Cleveland_1940$mafia_ed_pre=ifelse(intersections_Cleveland_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Cleveland_1940$damiani_ed=ifelse(intersections_Cleveland_1940$ED %in% damiani_ed, 1, 0)
+intersections_Cleveland_1940$cutrera_ed=ifelse(intersections_Cleveland_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Cleveland_1940$cutrera_or_damiani_ed=ifelse(intersections_Cleveland_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Cleveland_1940[which(intersections_Cleveland_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Cleveland_1940[which(intersections_Cleveland_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Cleveland_1940[which(intersections_Cleveland_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Cleveland_1940[which(intersections_Cleveland_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Cleveland_1940[which(intersections_Cleveland_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Cleveland_mori=matrix(nrow=length(unique(intersections_Cleveland_1940$ED)), ncol=7)
+colnames(Cleveland_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Cleveland_mori[,"ed"]=unique(intersections_Cleveland_1940$ED)
+
+for (i in 1:nrow(Cleveland_mori)){
+  Cleveland_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Cleveland_mori[i,"ed"]),])
+  Cleveland_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Cleveland_mori[i,"ed"]),])
+  Cleveland_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Cleveland_mori[i,"ed"]),])
+  Cleveland_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Cleveland_mori[i,"ed"]),])
+  Cleveland_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Cleveland_mori[i,"ed"]),])
+  Cleveland_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Cleveland_mori[i,"ed"]),])
+}
+
+Cleveland_mori=as.data.frame(Cleveland_mori)
+
+Cleveland_mori$all_sicilians=as.numeric(Cleveland_mori$all_sicilians)
+Cleveland_mori$mori_sicilians=as.numeric(Cleveland_mori$mori_sicilians)
+Cleveland_mori$non_mori_sicilians=as.numeric(Cleveland_mori$non_mori_sicilians)
+Cleveland_mori$cutrera_1900_sicilians=as.numeric(Cleveland_mori$cutrera_1900_sicilians)
+Cleveland_mori$damiani_1885_sicilians=as.numeric(Cleveland_mori$damiani_1885_sicilians)
+Cleveland_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Cleveland_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Cleveland_1940$mori=Cleveland_mori[match(intersections_Cleveland_1940$ED, Cleveland_mori$ed),"mori_sicilians"]
+intersections_Cleveland_1940$non_mori_sicilians=Cleveland_mori[match(intersections_Cleveland_1940$ED, Cleveland_mori$ed),"non_mori_sicilians"]
+intersections_Cleveland_1940$all_sicilians=Cleveland_mori[match(intersections_Cleveland_1940$ED, Cleveland_mori$ed),"all_sicilians"]
+intersections_Cleveland_1940$cutrera_1900_sicilians=Cleveland_mori[match(intersections_Cleveland_1940$ED, Cleveland_mori$ed),"cutrera_1900_sicilians"]
+intersections_Cleveland_1940$damiani_1885_sicilians=Cleveland_mori[match(intersections_Cleveland_1940$ED, Cleveland_mori$ed),"damiani_1885_sicilians"]
+intersections_Cleveland_1940$cutrera_or_damiani_maps_sicilians=Cleveland_mori[match(intersections_Cleveland_1940$ED, Cleveland_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Cleveland_1940[is.na(intersections_Cleveland_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Cleveland_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Cleveland_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Cleveland_1940$mori_weighted=intersections_Cleveland_1940$mori*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$non_mori_sicilians_weighted=intersections_Cleveland_1940$non_mori_sicilians*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$cutrera_1900_sicilians_weighted=intersections_Cleveland_1940$cutrera_1900_sicilians*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$damiani_1885_sicilians_weighted=intersections_Cleveland_1940$damiani_1885_sicilians*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Cleveland_1940$cutrera_or_damiani_maps_sicilians*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$all_sicilians_weighted=intersections_Cleveland_1940$all_sicilians*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$foreign_weighted=intersections_Cleveland_1940$immpop*intersections_Cleveland_1940$proportion_intersected
+
+intersections_Cleveland_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Cleveland_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Cleveland_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Cleveland_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Cleveland_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Cleveland_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Cleveland_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Cleveland_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Cleveland_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Cleveland_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Cleveland_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Cleveland_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Cleveland_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Cleveland_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Cleveland_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Cleveland_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Cleveland_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Cleveland_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Cleveland_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Cleveland_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Cleveland_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Cleveland_1940[,j]=st_drop_geometry(
+    intersections_Cleveland_1940[,j]*as.numeric(intersections_Cleveland_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Cleveland_1940$black_pop=as.numeric(intersections_Cleveland_1940$bpop*intersections_Cleveland_1940$proportion_intersected)
+intersections_Cleveland_1940$black_pop=intersections_Cleveland_1940$black_pop - intersections_Cleveland_1940$africa
+intersections_Cleveland_1940$usa=intersections_Cleveland_1940$usa - intersections_Cleveland_1940$black_pop
+
+hex_mat_Cleveland_1940=matrix(nrow=length(unique(intersections_Cleveland_1940$hex_id)), ncol=18)
+colnames(hex_mat_Cleveland_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Cleveland_1940[,"hex_id"]=unique(intersections_Cleveland_1940$hex_id)
+hex_mat_Cleveland_1940=as.data.frame(hex_mat_Cleveland_1940)
+
+
+hex_mat_Cleveland_1940$median_home_value=NA_real_
+hex_mat_Cleveland_1940$median_home_value_coverage=NA_real_
+
+intersections_Cleveland_1940=st_drop_geometry(intersections_Cleveland_1940)
+intersections_Cleveland_1930=st_drop_geometry(intersections_Cleveland_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Cleveland_1940)){
+  hex_mat_Cleveland_1940[i,"pop"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Cleveland_1940[i,"italian_pop"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Cleveland_1940[i,"pop_mlp"]=sum(intersections_Cleveland_1930[which(intersections_Cleveland_1930$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Cleveland_1940[i,"pop_abe"]=sum(intersections_Cleveland_1930[which(intersections_Cleveland_1930$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Cleveland_1940[i,"pop_cs"]=sum(intersections_Cleveland_1930[which(intersections_Cleveland_1930$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Cleveland_1940[i,"incarc_mlp"]=sum(intersections_Cleveland_1930[which(intersections_Cleveland_1930$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Cleveland_1940[i,"incarc_abe"]=sum(intersections_Cleveland_1930[which(intersections_Cleveland_1930$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Cleveland_1940[i,"incarc_cs"]=sum(intersections_Cleveland_1930[which(intersections_Cleveland_1930$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Cleveland_1940[i,"mori"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Cleveland_1940[i,"non_mori_sicilians"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Cleveland_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Cleveland_1940[i,"damiani_1885_sicilians"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Cleveland_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Cleveland_1940[i,"all_sicilians"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Cleveland_1940[i,"area"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Cleveland_1940[i,"foreign"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Cleveland_1940$median_home_value[home_value_rows]) &
+      intersections_Cleveland_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Cleveland_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Cleveland_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Cleveland_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Cleveland_1940$median_home_value[valid_home_value_rows],
+      intersections_Cleveland_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Cleveland_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Cleveland_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Cleveland_1940[
+        which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Cleveland_1940[
+        which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Cleveland_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Cleveland_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Cleveland_1940$ital_prop=hex_mat_Cleveland_1940$italian_pop/hex_mat_Cleveland_1940$pop
+hex_mat_Cleveland_1940$incarc_abe_prop=hex_mat_Cleveland_1940$incarc_abe/hex_mat_Cleveland_1940$pop_abe
+hex_mat_Cleveland_1940$incarc_mlp_prop=hex_mat_Cleveland_1940$incarc_mlp/hex_mat_Cleveland_1940$pop_mlp
+hex_mat_Cleveland_1940$incarc_cs_prop=hex_mat_Cleveland_1940$incarc_cs/hex_mat_Cleveland_1940$pop_cs
+hex_mat_Cleveland_1940$any_mori=ifelse(hex_mat_Cleveland_1940$mori>0, 1, 0)
+hex_mat_Cleveland_1940$any_non_mori_sicilians=ifelse(hex_mat_Cleveland_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Cleveland_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Cleveland_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Cleveland_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Cleveland_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Cleveland_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Cleveland_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Cleveland_1940$any_sicilians=ifelse(hex_mat_Cleveland_1940$all_sicilians>0, 1, 0)
+hex_mat_Cleveland_1940$foreign_prop=hex_mat_Cleveland_1940$foreign/hex_mat_Cleveland_1940$pop
+hex_mat_Cleveland_1940$year=1940
+hex_mat_Cleveland_1940$city="Cleveland"
+
+intersections_Cleveland_1940$working_age_pop=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "wap"]
+intersections_Cleveland_1940$household_count=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "hh"]
+intersections_Cleveland_1940$occ_score=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "occ_score"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$sei=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "duncan"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$owned=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "owned"]*intersections_Cleveland_1940$household_count
+intersections_Cleveland_1940$owned_free=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "owned_free"]*intersections_Cleveland_1940$household_count
+intersections_Cleveland_1940$rent=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "rent"]*intersections_Cleveland_1940$household_count
+intersections_Cleveland_1940$construction=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_cons"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$transportation=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_trans"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$retail_trade=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_rt"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$business_services=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_bs"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$finance=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_fin"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$public_admin=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_pa"]*intersections_Cleveland_1940$working_age_pop
+intersections_Cleveland_1940$professional_services=census_econ[match(intersections_Cleveland_1940$ED, census_econ$ed), "ind_prof"]*intersections_Cleveland_1940$working_age_pop
+
+hex_mat_Cleveland_1940$working_age_pop=0
+hex_mat_Cleveland_1940$household_count=0
+hex_mat_Cleveland_1940$occ_score=0
+hex_mat_Cleveland_1940$sei=0
+hex_mat_Cleveland_1940$owned=0
+hex_mat_Cleveland_1940$owned_free=0
+hex_mat_Cleveland_1940$rent=0
+hex_mat_Cleveland_1940$construction=0
+hex_mat_Cleveland_1940$transportation=0
+hex_mat_Cleveland_1940$retail_trade=0
+hex_mat_Cleveland_1940$business_services=0
+hex_mat_Cleveland_1940$finance=0
+hex_mat_Cleveland_1940$public_admin=0
+hex_mat_Cleveland_1940$professional_services=0
+
+intersections_Cleveland_1940$working_age_pop_weighted=intersections_Cleveland_1940$working_age_pop*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$household_count_weighted=intersections_Cleveland_1940$household_count*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$occ_score_weighted=intersections_Cleveland_1940$occ_score*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$sei_weighted=intersections_Cleveland_1940$sei*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$owned_weighted=intersections_Cleveland_1940$owned*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$owned_free_weighted=intersections_Cleveland_1940$owned_free*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$rent_weighted=intersections_Cleveland_1940$rent*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$construction_weighted=intersections_Cleveland_1940$construction*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$transportation_weighted=intersections_Cleveland_1940$transportation*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$retail_trade_weighted=intersections_Cleveland_1940$retail_trade*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$business_services_weighted=intersections_Cleveland_1940$business_services*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$finance_weighted=intersections_Cleveland_1940$finance*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$public_admin_weighted=intersections_Cleveland_1940$public_admin*intersections_Cleveland_1940$proportion_intersected
+intersections_Cleveland_1940$professional_services_weighted=intersections_Cleveland_1940$professional_services*intersections_Cleveland_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Cleveland_1940)){
+  hex_mat_Cleveland_1940[i,"working_age_pop"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Cleveland_1940[i,"household_count"]=sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Cleveland_1940[i,"occ_score"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"sei"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"owned"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Cleveland_1940[i,"household_count"]
+  hex_mat_Cleveland_1940[i,"owned_free"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Cleveland_1940[i,"household_count"]
+  hex_mat_Cleveland_1940[i,"rent"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Cleveland_1940[i,"household_count"]
+  hex_mat_Cleveland_1940[i,"construction"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"transportation"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"retail_trade"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"business_services"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"finance"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"public_admin"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+  hex_mat_Cleveland_1940[i,"professional_services"]=(sum(intersections_Cleveland_1940[which(intersections_Cleveland_1940$hex_id==hex_mat_Cleveland_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Cleveland_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Cleveland_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Cleveland_1940))
+polygon_sf=st_as_sf(intersections_Cleveland_1940$geometry, crs=st_crs(intersections_Cleveland_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Cleveland_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Cleveland_1940=st_drop_geometry(intersections_Cleveland_1940)
+
+matches_book=intersections_Cleveland_1940[matches_book, "hex_id"]
+matches_pre=intersections_Cleveland_1940[matches_pre, "hex_id"]
+
+hex_mat_Cleveland_1940$mafia_book_geo=ifelse(hex_mat_Cleveland_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Cleveland_1940$mafia_pre_geo=ifelse(hex_mat_Cleveland_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Cleveland_1940$mafia_book_hex=ifelse(hex_mat_Cleveland_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Cleveland_1940$mafia_pre_hex=ifelse(hex_mat_Cleveland_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Cleveland_1940$cutrera_hex= ifelse(hex_mat_Cleveland_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Cleveland_1940$damiani_hex=ifelse(hex_mat_Cleveland_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Cleveland_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Cleveland_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Cleveland_1940=hex_mat_Cleveland_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Cleveland_1940)==54)
+stopifnot(identical(names(hex_mat_Cleveland_1940),hex_mat_columns_1940))
+
+save(hex_mat_Cleveland_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Cleveland_1940.rda")
+
+###########################################
+########## 1940- Philadelphia ################
+###########################################
+intersections_Philadelphia_1940$population=pop_1940_relevant[match(intersections_Philadelphia_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Philadelphia_1940$italian_population=pop_1940_relevant[match(intersections_Philadelphia_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Philadelphia_1940[is.na(intersections_Philadelphia_1940$population),"population"]=0
+intersections_Philadelphia_1940[is.na(intersections_Philadelphia_1940$italian_population),"italian_population"]=0
+
+intersections_Philadelphia_1940$pop_weighted=intersections_Philadelphia_1940$population*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$ital_weighted=intersections_Philadelphia_1940$italian_population*intersections_Philadelphia_1940$proportion_intersected
+
+intersections_Philadelphia_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Philadelphia_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Philadelphia_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Philadelphia_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Philadelphia_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Philadelphia_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Philadelphia_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Philadelphia_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Philadelphia_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Philadelphia_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Philadelphia_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Philadelphia_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Philadelphia_1930$pop_mlp_weighted=intersections_Philadelphia_1930$pop_mlp*intersections_Philadelphia_1930$proportion_intersected
+intersections_Philadelphia_1930$pop_abe_weighted=intersections_Philadelphia_1930$pop_abe*intersections_Philadelphia_1930$proportion_intersected
+intersections_Philadelphia_1930$pop_cs_weighted=intersections_Philadelphia_1930$pop_cs*intersections_Philadelphia_1930$proportion_intersected
+intersections_Philadelphia_1930$incarc_mlp_weighted=intersections_Philadelphia_1930$incarc_mlp*intersections_Philadelphia_1930$proportion_intersected
+intersections_Philadelphia_1930$incarc_abe_weighted=intersections_Philadelphia_1930$incarc_abe*intersections_Philadelphia_1930$proportion_intersected
+intersections_Philadelphia_1930$incarc_cs_weighted=intersections_Philadelphia_1930$incarc_cs*intersections_Philadelphia_1930$proportion_intersected
+
+
+
+
+
+intersections_Philadelphia_1940$mori=0
+
+intersections_Philadelphia_1940$mafia_ed_book=ifelse(intersections_Philadelphia_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Philadelphia_1940$mafia_ed_pre=ifelse(intersections_Philadelphia_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Philadelphia_1940$damiani_ed=ifelse(intersections_Philadelphia_1940$ED %in% damiani_ed, 1, 0)
+intersections_Philadelphia_1940$cutrera_ed=ifelse(intersections_Philadelphia_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Philadelphia_1940$cutrera_or_damiani_ed=ifelse(intersections_Philadelphia_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Philadelphia_mori=matrix(nrow=length(unique(intersections_Philadelphia_1940$ED)), ncol=7)
+colnames(Philadelphia_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Philadelphia_mori[,"ed"]=unique(intersections_Philadelphia_1940$ED)
+
+for (i in 1:nrow(Philadelphia_mori)){
+  Philadelphia_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Philadelphia_mori[i,"ed"]),])
+  Philadelphia_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Philadelphia_mori[i,"ed"]),])
+  Philadelphia_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Philadelphia_mori[i,"ed"]),])
+  Philadelphia_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Philadelphia_mori[i,"ed"]),])
+  Philadelphia_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Philadelphia_mori[i,"ed"]),])
+  Philadelphia_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Philadelphia_mori[i,"ed"]),])
+}
+
+Philadelphia_mori=as.data.frame(Philadelphia_mori)
+
+Philadelphia_mori$all_sicilians=as.numeric(Philadelphia_mori$all_sicilians)
+Philadelphia_mori$mori_sicilians=as.numeric(Philadelphia_mori$mori_sicilians)
+Philadelphia_mori$non_mori_sicilians=as.numeric(Philadelphia_mori$non_mori_sicilians)
+Philadelphia_mori$cutrera_1900_sicilians=as.numeric(Philadelphia_mori$cutrera_1900_sicilians)
+Philadelphia_mori$damiani_1885_sicilians=as.numeric(Philadelphia_mori$damiani_1885_sicilians)
+Philadelphia_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Philadelphia_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Philadelphia_1940$mori=Philadelphia_mori[match(intersections_Philadelphia_1940$ED, Philadelphia_mori$ed),"mori_sicilians"]
+intersections_Philadelphia_1940$non_mori_sicilians=Philadelphia_mori[match(intersections_Philadelphia_1940$ED, Philadelphia_mori$ed),"non_mori_sicilians"]
+intersections_Philadelphia_1940$all_sicilians=Philadelphia_mori[match(intersections_Philadelphia_1940$ED, Philadelphia_mori$ed),"all_sicilians"]
+intersections_Philadelphia_1940$cutrera_1900_sicilians=Philadelphia_mori[match(intersections_Philadelphia_1940$ED, Philadelphia_mori$ed),"cutrera_1900_sicilians"]
+intersections_Philadelphia_1940$damiani_1885_sicilians=Philadelphia_mori[match(intersections_Philadelphia_1940$ED, Philadelphia_mori$ed),"damiani_1885_sicilians"]
+intersections_Philadelphia_1940$cutrera_or_damiani_maps_sicilians=Philadelphia_mori[match(intersections_Philadelphia_1940$ED, Philadelphia_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Philadelphia_1940[is.na(intersections_Philadelphia_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Philadelphia_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Philadelphia_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Philadelphia_1940$mori_weighted=intersections_Philadelphia_1940$mori*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$non_mori_sicilians_weighted=intersections_Philadelphia_1940$non_mori_sicilians*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$cutrera_1900_sicilians_weighted=intersections_Philadelphia_1940$cutrera_1900_sicilians*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$damiani_1885_sicilians_weighted=intersections_Philadelphia_1940$damiani_1885_sicilians*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Philadelphia_1940$cutrera_or_damiani_maps_sicilians*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$all_sicilians_weighted=intersections_Philadelphia_1940$all_sicilians*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$foreign_weighted=intersections_Philadelphia_1940$immpop*intersections_Philadelphia_1940$proportion_intersected
+
+intersections_Philadelphia_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Philadelphia_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Philadelphia_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Philadelphia_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Philadelphia_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Philadelphia_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Philadelphia_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Philadelphia_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Philadelphia_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Philadelphia_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Philadelphia_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Philadelphia_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Philadelphia_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Philadelphia_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Philadelphia_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Philadelphia_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Philadelphia_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Philadelphia_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Philadelphia_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Philadelphia_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Philadelphia_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Philadelphia_1940[,j]=st_drop_geometry(
+    intersections_Philadelphia_1940[,j]*as.numeric(intersections_Philadelphia_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Philadelphia_1940$black_pop=as.numeric(intersections_Philadelphia_1940$bpop*intersections_Philadelphia_1940$proportion_intersected)
+intersections_Philadelphia_1940$black_pop=intersections_Philadelphia_1940$black_pop - intersections_Philadelphia_1940$africa
+intersections_Philadelphia_1940$usa=intersections_Philadelphia_1940$usa - intersections_Philadelphia_1940$black_pop
+
+hex_mat_Philadelphia_1940=matrix(nrow=length(unique(intersections_Philadelphia_1940$hex_id)), ncol=18)
+colnames(hex_mat_Philadelphia_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Philadelphia_1940[,"hex_id"]=unique(intersections_Philadelphia_1940$hex_id)
+hex_mat_Philadelphia_1940=as.data.frame(hex_mat_Philadelphia_1940)
+
+
+hex_mat_Philadelphia_1940$median_home_value=NA_real_
+hex_mat_Philadelphia_1940$median_home_value_coverage=NA_real_
+
+intersections_Philadelphia_1940=st_drop_geometry(intersections_Philadelphia_1940)
+intersections_Philadelphia_1930=st_drop_geometry(intersections_Philadelphia_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Philadelphia_1940)){
+  hex_mat_Philadelphia_1940[i,"pop"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Philadelphia_1940[i,"italian_pop"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Philadelphia_1940[i,"pop_mlp"]=sum(intersections_Philadelphia_1930[which(intersections_Philadelphia_1930$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Philadelphia_1940[i,"pop_abe"]=sum(intersections_Philadelphia_1930[which(intersections_Philadelphia_1930$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Philadelphia_1940[i,"pop_cs"]=sum(intersections_Philadelphia_1930[which(intersections_Philadelphia_1930$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Philadelphia_1940[i,"incarc_mlp"]=sum(intersections_Philadelphia_1930[which(intersections_Philadelphia_1930$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Philadelphia_1940[i,"incarc_abe"]=sum(intersections_Philadelphia_1930[which(intersections_Philadelphia_1930$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Philadelphia_1940[i,"incarc_cs"]=sum(intersections_Philadelphia_1930[which(intersections_Philadelphia_1930$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Philadelphia_1940[i,"mori"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Philadelphia_1940[i,"non_mori_sicilians"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Philadelphia_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Philadelphia_1940[i,"damiani_1885_sicilians"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Philadelphia_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Philadelphia_1940[i,"all_sicilians"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Philadelphia_1940[i,"area"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Philadelphia_1940[i,"foreign"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Philadelphia_1940$median_home_value[home_value_rows]) &
+      intersections_Philadelphia_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Philadelphia_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Philadelphia_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Philadelphia_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Philadelphia_1940$median_home_value[valid_home_value_rows],
+      intersections_Philadelphia_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Philadelphia_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Philadelphia_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Philadelphia_1940[
+        which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Philadelphia_1940[
+        which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Philadelphia_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Philadelphia_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Philadelphia_1940$ital_prop=hex_mat_Philadelphia_1940$italian_pop/hex_mat_Philadelphia_1940$pop
+hex_mat_Philadelphia_1940$incarc_abe_prop=hex_mat_Philadelphia_1940$incarc_abe/hex_mat_Philadelphia_1940$pop_abe
+hex_mat_Philadelphia_1940$incarc_mlp_prop=hex_mat_Philadelphia_1940$incarc_mlp/hex_mat_Philadelphia_1940$pop_mlp
+hex_mat_Philadelphia_1940$incarc_cs_prop=hex_mat_Philadelphia_1940$incarc_cs/hex_mat_Philadelphia_1940$pop_cs
+hex_mat_Philadelphia_1940$any_mori=ifelse(hex_mat_Philadelphia_1940$mori>0, 1, 0)
+hex_mat_Philadelphia_1940$any_non_mori_sicilians=ifelse(hex_mat_Philadelphia_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Philadelphia_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Philadelphia_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Philadelphia_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Philadelphia_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Philadelphia_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Philadelphia_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Philadelphia_1940$any_sicilians=ifelse(hex_mat_Philadelphia_1940$all_sicilians>0, 1, 0)
+hex_mat_Philadelphia_1940$foreign_prop=hex_mat_Philadelphia_1940$foreign/hex_mat_Philadelphia_1940$pop
+hex_mat_Philadelphia_1940$year=1940
+hex_mat_Philadelphia_1940$city="Philadelphia"
+
+intersections_Philadelphia_1940$working_age_pop=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "wap"]
+intersections_Philadelphia_1940$household_count=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "hh"]
+intersections_Philadelphia_1940$occ_score=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "occ_score"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$sei=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "duncan"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$owned=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "owned"]*intersections_Philadelphia_1940$household_count
+intersections_Philadelphia_1940$owned_free=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "owned_free"]*intersections_Philadelphia_1940$household_count
+intersections_Philadelphia_1940$rent=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "rent"]*intersections_Philadelphia_1940$household_count
+intersections_Philadelphia_1940$construction=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_cons"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$transportation=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_trans"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$retail_trade=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_rt"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$business_services=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_bs"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$finance=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_fin"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$public_admin=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_pa"]*intersections_Philadelphia_1940$working_age_pop
+intersections_Philadelphia_1940$professional_services=census_econ[match(intersections_Philadelphia_1940$ED, census_econ$ed), "ind_prof"]*intersections_Philadelphia_1940$working_age_pop
+
+hex_mat_Philadelphia_1940$working_age_pop=0
+hex_mat_Philadelphia_1940$household_count=0
+hex_mat_Philadelphia_1940$occ_score=0
+hex_mat_Philadelphia_1940$sei=0
+hex_mat_Philadelphia_1940$owned=0
+hex_mat_Philadelphia_1940$owned_free=0
+hex_mat_Philadelphia_1940$rent=0
+hex_mat_Philadelphia_1940$construction=0
+hex_mat_Philadelphia_1940$transportation=0
+hex_mat_Philadelphia_1940$retail_trade=0
+hex_mat_Philadelphia_1940$business_services=0
+hex_mat_Philadelphia_1940$finance=0
+hex_mat_Philadelphia_1940$public_admin=0
+hex_mat_Philadelphia_1940$professional_services=0
+
+intersections_Philadelphia_1940$working_age_pop_weighted=intersections_Philadelphia_1940$working_age_pop*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$household_count_weighted=intersections_Philadelphia_1940$household_count*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$occ_score_weighted=intersections_Philadelphia_1940$occ_score*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$sei_weighted=intersections_Philadelphia_1940$sei*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$owned_weighted=intersections_Philadelphia_1940$owned*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$owned_free_weighted=intersections_Philadelphia_1940$owned_free*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$rent_weighted=intersections_Philadelphia_1940$rent*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$construction_weighted=intersections_Philadelphia_1940$construction*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$transportation_weighted=intersections_Philadelphia_1940$transportation*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$retail_trade_weighted=intersections_Philadelphia_1940$retail_trade*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$business_services_weighted=intersections_Philadelphia_1940$business_services*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$finance_weighted=intersections_Philadelphia_1940$finance*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$public_admin_weighted=intersections_Philadelphia_1940$public_admin*intersections_Philadelphia_1940$proportion_intersected
+intersections_Philadelphia_1940$professional_services_weighted=intersections_Philadelphia_1940$professional_services*intersections_Philadelphia_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Philadelphia_1940)){
+  hex_mat_Philadelphia_1940[i,"working_age_pop"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Philadelphia_1940[i,"household_count"]=sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Philadelphia_1940[i,"occ_score"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"sei"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"owned"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Philadelphia_1940[i,"household_count"]
+  hex_mat_Philadelphia_1940[i,"owned_free"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Philadelphia_1940[i,"household_count"]
+  hex_mat_Philadelphia_1940[i,"rent"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Philadelphia_1940[i,"household_count"]
+  hex_mat_Philadelphia_1940[i,"construction"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"transportation"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"retail_trade"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"business_services"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"finance"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"public_admin"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+  hex_mat_Philadelphia_1940[i,"professional_services"]=(sum(intersections_Philadelphia_1940[which(intersections_Philadelphia_1940$hex_id==hex_mat_Philadelphia_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Philadelphia_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Philadelphia_1940))
+polygon_sf=st_as_sf(intersections_Philadelphia_1940$geometry, crs=st_crs(intersections_Philadelphia_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Philadelphia_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Philadelphia_1940=st_drop_geometry(intersections_Philadelphia_1940)
+
+matches_book=intersections_Philadelphia_1940[matches_book, "hex_id"]
+matches_pre=intersections_Philadelphia_1940[matches_pre, "hex_id"]
+
+hex_mat_Philadelphia_1940$mafia_book_geo=ifelse(hex_mat_Philadelphia_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Philadelphia_1940$mafia_pre_geo=ifelse(hex_mat_Philadelphia_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Philadelphia_1940$mafia_book_hex=ifelse(hex_mat_Philadelphia_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Philadelphia_1940$mafia_pre_hex=ifelse(hex_mat_Philadelphia_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Philadelphia_1940$cutrera_hex= ifelse(hex_mat_Philadelphia_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Philadelphia_1940$damiani_hex=ifelse(hex_mat_Philadelphia_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Philadelphia_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Philadelphia_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Philadelphia_1940=hex_mat_Philadelphia_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Philadelphia_1940)==54)
+stopifnot(identical(names(hex_mat_Philadelphia_1940),hex_mat_columns_1940))
+
+save(hex_mat_Philadelphia_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Philadelphia_1940.rda")
+
+###########################################
+########## 1940- Pittsburgh ################
+###########################################
+intersections_Pittsburgh_1940$population=pop_1940_relevant[match(intersections_Pittsburgh_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_Pittsburgh_1940$italian_population=pop_1940_relevant[match(intersections_Pittsburgh_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_Pittsburgh_1940[is.na(intersections_Pittsburgh_1940$population),"population"]=0
+intersections_Pittsburgh_1940[is.na(intersections_Pittsburgh_1940$italian_population),"italian_population"]=0
+
+intersections_Pittsburgh_1940$pop_weighted=intersections_Pittsburgh_1940$population*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$ital_weighted=intersections_Pittsburgh_1940$italian_population*intersections_Pittsburgh_1940$proportion_intersected
+
+intersections_Pittsburgh_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Pittsburgh_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Pittsburgh_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Pittsburgh_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Pittsburgh_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Pittsburgh_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Pittsburgh_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Pittsburgh_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Pittsburgh_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Pittsburgh_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Pittsburgh_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Pittsburgh_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Pittsburgh_1930$pop_mlp_weighted=intersections_Pittsburgh_1930$pop_mlp*intersections_Pittsburgh_1930$proportion_intersected
+intersections_Pittsburgh_1930$pop_abe_weighted=intersections_Pittsburgh_1930$pop_abe*intersections_Pittsburgh_1930$proportion_intersected
+intersections_Pittsburgh_1930$pop_cs_weighted=intersections_Pittsburgh_1930$pop_cs*intersections_Pittsburgh_1930$proportion_intersected
+intersections_Pittsburgh_1930$incarc_mlp_weighted=intersections_Pittsburgh_1930$incarc_mlp*intersections_Pittsburgh_1930$proportion_intersected
+intersections_Pittsburgh_1930$incarc_abe_weighted=intersections_Pittsburgh_1930$incarc_abe*intersections_Pittsburgh_1930$proportion_intersected
+intersections_Pittsburgh_1930$incarc_cs_weighted=intersections_Pittsburgh_1930$incarc_cs*intersections_Pittsburgh_1930$proportion_intersected
+
+
+
+
+
+intersections_Pittsburgh_1940$mori=0
+
+intersections_Pittsburgh_1940$mafia_ed_book=ifelse(intersections_Pittsburgh_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Pittsburgh_1940$mafia_ed_pre=ifelse(intersections_Pittsburgh_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Pittsburgh_1940$damiani_ed=ifelse(intersections_Pittsburgh_1940$ED %in% damiani_ed, 1, 0)
+intersections_Pittsburgh_1940$cutrera_ed=ifelse(intersections_Pittsburgh_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Pittsburgh_1940$cutrera_or_damiani_ed=ifelse(intersections_Pittsburgh_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Pittsburgh_mori=matrix(nrow=length(unique(intersections_Pittsburgh_1940$ED)), ncol=7)
+colnames(Pittsburgh_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Pittsburgh_mori[,"ed"]=unique(intersections_Pittsburgh_1940$ED)
+
+for (i in 1:nrow(Pittsburgh_mori)){
+  Pittsburgh_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Pittsburgh_mori[i,"ed"]),])
+  Pittsburgh_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Pittsburgh_mori[i,"ed"]),])
+  Pittsburgh_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Pittsburgh_mori[i,"ed"]),])
+  Pittsburgh_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Pittsburgh_mori[i,"ed"]),])
+  Pittsburgh_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Pittsburgh_mori[i,"ed"]),])
+  Pittsburgh_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Pittsburgh_mori[i,"ed"]),])
+}
+
+Pittsburgh_mori=as.data.frame(Pittsburgh_mori)
+
+Pittsburgh_mori$all_sicilians=as.numeric(Pittsburgh_mori$all_sicilians)
+Pittsburgh_mori$mori_sicilians=as.numeric(Pittsburgh_mori$mori_sicilians)
+Pittsburgh_mori$non_mori_sicilians=as.numeric(Pittsburgh_mori$non_mori_sicilians)
+Pittsburgh_mori$cutrera_1900_sicilians=as.numeric(Pittsburgh_mori$cutrera_1900_sicilians)
+Pittsburgh_mori$damiani_1885_sicilians=as.numeric(Pittsburgh_mori$damiani_1885_sicilians)
+Pittsburgh_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Pittsburgh_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Pittsburgh_1940$mori=Pittsburgh_mori[match(intersections_Pittsburgh_1940$ED, Pittsburgh_mori$ed),"mori_sicilians"]
+intersections_Pittsburgh_1940$non_mori_sicilians=Pittsburgh_mori[match(intersections_Pittsburgh_1940$ED, Pittsburgh_mori$ed),"non_mori_sicilians"]
+intersections_Pittsburgh_1940$all_sicilians=Pittsburgh_mori[match(intersections_Pittsburgh_1940$ED, Pittsburgh_mori$ed),"all_sicilians"]
+intersections_Pittsburgh_1940$cutrera_1900_sicilians=Pittsburgh_mori[match(intersections_Pittsburgh_1940$ED, Pittsburgh_mori$ed),"cutrera_1900_sicilians"]
+intersections_Pittsburgh_1940$damiani_1885_sicilians=Pittsburgh_mori[match(intersections_Pittsburgh_1940$ED, Pittsburgh_mori$ed),"damiani_1885_sicilians"]
+intersections_Pittsburgh_1940$cutrera_or_damiani_maps_sicilians=Pittsburgh_mori[match(intersections_Pittsburgh_1940$ED, Pittsburgh_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Pittsburgh_1940[is.na(intersections_Pittsburgh_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_Pittsburgh_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_Pittsburgh_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_Pittsburgh_1940$mori_weighted=intersections_Pittsburgh_1940$mori*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$non_mori_sicilians_weighted=intersections_Pittsburgh_1940$non_mori_sicilians*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$cutrera_1900_sicilians_weighted=intersections_Pittsburgh_1940$cutrera_1900_sicilians*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$damiani_1885_sicilians_weighted=intersections_Pittsburgh_1940$damiani_1885_sicilians*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Pittsburgh_1940$cutrera_or_damiani_maps_sicilians*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$all_sicilians_weighted=intersections_Pittsburgh_1940$all_sicilians*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$foreign_weighted=intersections_Pittsburgh_1940$immpop*intersections_Pittsburgh_1940$proportion_intersected
+
+intersections_Pittsburgh_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Pittsburgh_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Pittsburgh_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Pittsburgh_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Pittsburgh_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Pittsburgh_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Pittsburgh_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Pittsburgh_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Pittsburgh_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Pittsburgh_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Pittsburgh_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Pittsburgh_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Pittsburgh_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Pittsburgh_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Pittsburgh_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Pittsburgh_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Pittsburgh_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Pittsburgh_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Pittsburgh_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Pittsburgh_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Pittsburgh_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Pittsburgh_1940[,j]=st_drop_geometry(
+    intersections_Pittsburgh_1940[,j]*as.numeric(intersections_Pittsburgh_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Pittsburgh_1940$black_pop=as.numeric(intersections_Pittsburgh_1940$bpop*intersections_Pittsburgh_1940$proportion_intersected)
+intersections_Pittsburgh_1940$black_pop=intersections_Pittsburgh_1940$black_pop - intersections_Pittsburgh_1940$africa
+intersections_Pittsburgh_1940$usa=intersections_Pittsburgh_1940$usa - intersections_Pittsburgh_1940$black_pop
+
+hex_mat_Pittsburgh_1940=matrix(nrow=length(unique(intersections_Pittsburgh_1940$hex_id)), ncol=18)
+colnames(hex_mat_Pittsburgh_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Pittsburgh_1940[,"hex_id"]=unique(intersections_Pittsburgh_1940$hex_id)
+hex_mat_Pittsburgh_1940=as.data.frame(hex_mat_Pittsburgh_1940)
+
+
+hex_mat_Pittsburgh_1940$median_home_value=NA_real_
+hex_mat_Pittsburgh_1940$median_home_value_coverage=NA_real_
+
+intersections_Pittsburgh_1940=st_drop_geometry(intersections_Pittsburgh_1940)
+intersections_Pittsburgh_1930=st_drop_geometry(intersections_Pittsburgh_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Pittsburgh_1940)){
+  hex_mat_Pittsburgh_1940[i,"pop"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Pittsburgh_1940[i,"italian_pop"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Pittsburgh_1940[i,"pop_mlp"]=sum(intersections_Pittsburgh_1930[which(intersections_Pittsburgh_1930$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Pittsburgh_1940[i,"pop_abe"]=sum(intersections_Pittsburgh_1930[which(intersections_Pittsburgh_1930$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Pittsburgh_1940[i,"pop_cs"]=sum(intersections_Pittsburgh_1930[which(intersections_Pittsburgh_1930$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Pittsburgh_1940[i,"incarc_mlp"]=sum(intersections_Pittsburgh_1930[which(intersections_Pittsburgh_1930$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Pittsburgh_1940[i,"incarc_abe"]=sum(intersections_Pittsburgh_1930[which(intersections_Pittsburgh_1930$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Pittsburgh_1940[i,"incarc_cs"]=sum(intersections_Pittsburgh_1930[which(intersections_Pittsburgh_1930$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Pittsburgh_1940[i,"mori"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Pittsburgh_1940[i,"non_mori_sicilians"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Pittsburgh_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Pittsburgh_1940[i,"damiani_1885_sicilians"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Pittsburgh_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Pittsburgh_1940[i,"all_sicilians"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Pittsburgh_1940[i,"area"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Pittsburgh_1940[i,"foreign"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Pittsburgh_1940$median_home_value[home_value_rows]) &
+      intersections_Pittsburgh_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Pittsburgh_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Pittsburgh_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Pittsburgh_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Pittsburgh_1940$median_home_value[valid_home_value_rows],
+      intersections_Pittsburgh_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Pittsburgh_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Pittsburgh_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Pittsburgh_1940[
+        which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Pittsburgh_1940[
+        which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Pittsburgh_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Pittsburgh_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Pittsburgh_1940$ital_prop=hex_mat_Pittsburgh_1940$italian_pop/hex_mat_Pittsburgh_1940$pop
+hex_mat_Pittsburgh_1940$incarc_abe_prop=hex_mat_Pittsburgh_1940$incarc_abe/hex_mat_Pittsburgh_1940$pop_abe
+hex_mat_Pittsburgh_1940$incarc_mlp_prop=hex_mat_Pittsburgh_1940$incarc_mlp/hex_mat_Pittsburgh_1940$pop_mlp
+hex_mat_Pittsburgh_1940$incarc_cs_prop=hex_mat_Pittsburgh_1940$incarc_cs/hex_mat_Pittsburgh_1940$pop_cs
+hex_mat_Pittsburgh_1940$any_mori=ifelse(hex_mat_Pittsburgh_1940$mori>0, 1, 0)
+hex_mat_Pittsburgh_1940$any_non_mori_sicilians=ifelse(hex_mat_Pittsburgh_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Pittsburgh_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Pittsburgh_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Pittsburgh_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Pittsburgh_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Pittsburgh_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Pittsburgh_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Pittsburgh_1940$any_sicilians=ifelse(hex_mat_Pittsburgh_1940$all_sicilians>0, 1, 0)
+hex_mat_Pittsburgh_1940$foreign_prop=hex_mat_Pittsburgh_1940$foreign/hex_mat_Pittsburgh_1940$pop
+hex_mat_Pittsburgh_1940$year=1940
+hex_mat_Pittsburgh_1940$city="Pittsburgh"
+
+intersections_Pittsburgh_1940$working_age_pop=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "wap"]
+intersections_Pittsburgh_1940$household_count=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "hh"]
+intersections_Pittsburgh_1940$occ_score=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "occ_score"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$sei=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "duncan"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$owned=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "owned"]*intersections_Pittsburgh_1940$household_count
+intersections_Pittsburgh_1940$owned_free=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "owned_free"]*intersections_Pittsburgh_1940$household_count
+intersections_Pittsburgh_1940$rent=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "rent"]*intersections_Pittsburgh_1940$household_count
+intersections_Pittsburgh_1940$construction=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_cons"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$transportation=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_trans"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$retail_trade=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_rt"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$business_services=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_bs"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$finance=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_fin"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$public_admin=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_pa"]*intersections_Pittsburgh_1940$working_age_pop
+intersections_Pittsburgh_1940$professional_services=census_econ[match(intersections_Pittsburgh_1940$ED, census_econ$ed), "ind_prof"]*intersections_Pittsburgh_1940$working_age_pop
+
+hex_mat_Pittsburgh_1940$working_age_pop=0
+hex_mat_Pittsburgh_1940$household_count=0
+hex_mat_Pittsburgh_1940$occ_score=0
+hex_mat_Pittsburgh_1940$sei=0
+hex_mat_Pittsburgh_1940$owned=0
+hex_mat_Pittsburgh_1940$owned_free=0
+hex_mat_Pittsburgh_1940$rent=0
+hex_mat_Pittsburgh_1940$construction=0
+hex_mat_Pittsburgh_1940$transportation=0
+hex_mat_Pittsburgh_1940$retail_trade=0
+hex_mat_Pittsburgh_1940$business_services=0
+hex_mat_Pittsburgh_1940$finance=0
+hex_mat_Pittsburgh_1940$public_admin=0
+hex_mat_Pittsburgh_1940$professional_services=0
+
+intersections_Pittsburgh_1940$working_age_pop_weighted=intersections_Pittsburgh_1940$working_age_pop*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$household_count_weighted=intersections_Pittsburgh_1940$household_count*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$occ_score_weighted=intersections_Pittsburgh_1940$occ_score*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$sei_weighted=intersections_Pittsburgh_1940$sei*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$owned_weighted=intersections_Pittsburgh_1940$owned*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$owned_free_weighted=intersections_Pittsburgh_1940$owned_free*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$rent_weighted=intersections_Pittsburgh_1940$rent*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$construction_weighted=intersections_Pittsburgh_1940$construction*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$transportation_weighted=intersections_Pittsburgh_1940$transportation*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$retail_trade_weighted=intersections_Pittsburgh_1940$retail_trade*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$business_services_weighted=intersections_Pittsburgh_1940$business_services*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$finance_weighted=intersections_Pittsburgh_1940$finance*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$public_admin_weighted=intersections_Pittsburgh_1940$public_admin*intersections_Pittsburgh_1940$proportion_intersected
+intersections_Pittsburgh_1940$professional_services_weighted=intersections_Pittsburgh_1940$professional_services*intersections_Pittsburgh_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Pittsburgh_1940)){
+  hex_mat_Pittsburgh_1940[i,"working_age_pop"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Pittsburgh_1940[i,"household_count"]=sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Pittsburgh_1940[i,"occ_score"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"sei"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"owned"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Pittsburgh_1940[i,"household_count"]
+  hex_mat_Pittsburgh_1940[i,"owned_free"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Pittsburgh_1940[i,"household_count"]
+  hex_mat_Pittsburgh_1940[i,"rent"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Pittsburgh_1940[i,"household_count"]
+  hex_mat_Pittsburgh_1940[i,"construction"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"transportation"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"retail_trade"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"business_services"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"finance"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"public_admin"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+  hex_mat_Pittsburgh_1940[i,"professional_services"]=(sum(intersections_Pittsburgh_1940[which(intersections_Pittsburgh_1940$hex_id==hex_mat_Pittsburgh_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Pittsburgh_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Pittsburgh_1940))
+polygon_sf=st_as_sf(intersections_Pittsburgh_1940$geometry, crs=st_crs(intersections_Pittsburgh_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Pittsburgh_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Pittsburgh_1940=st_drop_geometry(intersections_Pittsburgh_1940)
+
+matches_book=intersections_Pittsburgh_1940[matches_book, "hex_id"]
+matches_pre=intersections_Pittsburgh_1940[matches_pre, "hex_id"]
+
+hex_mat_Pittsburgh_1940$mafia_book_geo=ifelse(hex_mat_Pittsburgh_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Pittsburgh_1940$mafia_pre_geo=ifelse(hex_mat_Pittsburgh_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Pittsburgh_1940$mafia_book_hex=ifelse(hex_mat_Pittsburgh_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Pittsburgh_1940$mafia_pre_hex=ifelse(hex_mat_Pittsburgh_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Pittsburgh_1940$cutrera_hex= ifelse(hex_mat_Pittsburgh_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Pittsburgh_1940$damiani_hex=ifelse(hex_mat_Pittsburgh_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Pittsburgh_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Pittsburgh_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Pittsburgh_1940=hex_mat_Pittsburgh_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Pittsburgh_1940)==54)
+stopifnot(identical(names(hex_mat_Pittsburgh_1940),hex_mat_columns_1940))
+
+save(hex_mat_Pittsburgh_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_Pittsburgh_1940.rda")
+
+###########################################
+########## 1940- StLouis ################
+###########################################
+intersections_StLouis_1940$population=pop_1940_relevant[match(intersections_StLouis_1940$ED, pop_1940_relevant$enum_dist_id),"population"]
+intersections_StLouis_1940$italian_population=pop_1940_relevant[match(intersections_StLouis_1940$ED, pop_1940_relevant$enum_dist_id),"italian_population"]
+
+intersections_StLouis_1940[is.na(intersections_StLouis_1940$population),"population"]=0
+intersections_StLouis_1940[is.na(intersections_StLouis_1940$italian_population),"italian_population"]=0
+
+intersections_StLouis_1940$pop_weighted=intersections_StLouis_1940$population*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$ital_weighted=intersections_StLouis_1940$italian_population*intersections_StLouis_1940$proportion_intersected
+
+intersections_StLouis_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_StLouis_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_StLouis_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_StLouis_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_StLouis_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_StLouis_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_StLouis_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_StLouis_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_StLouis_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_StLouis_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_StLouis_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_StLouis_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_StLouis_1930$pop_mlp_weighted=intersections_StLouis_1930$pop_mlp*intersections_StLouis_1930$proportion_intersected
+intersections_StLouis_1930$pop_abe_weighted=intersections_StLouis_1930$pop_abe*intersections_StLouis_1930$proportion_intersected
+intersections_StLouis_1930$pop_cs_weighted=intersections_StLouis_1930$pop_cs*intersections_StLouis_1930$proportion_intersected
+intersections_StLouis_1930$incarc_mlp_weighted=intersections_StLouis_1930$incarc_mlp*intersections_StLouis_1930$proportion_intersected
+intersections_StLouis_1930$incarc_abe_weighted=intersections_StLouis_1930$incarc_abe*intersections_StLouis_1930$proportion_intersected
+intersections_StLouis_1930$incarc_cs_weighted=intersections_StLouis_1930$incarc_cs*intersections_StLouis_1930$proportion_intersected
+
+
+
+
+
+intersections_StLouis_1940$mori=0
+
+intersections_StLouis_1940$mafia_ed_book=ifelse(intersections_StLouis_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_StLouis_1940$mafia_ed_pre=ifelse(intersections_StLouis_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_StLouis_1940$damiani_ed=ifelse(intersections_StLouis_1940$ED %in% damiani_ed, 1, 0)
+intersections_StLouis_1940$cutrera_ed=ifelse(intersections_StLouis_1940$ED %in% cutrera_ed, 1, 0)
+intersections_StLouis_1940$cutrera_or_damiani_ed=ifelse(intersections_StLouis_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_StLouis_1940[which(intersections_StLouis_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_StLouis_1940[which(intersections_StLouis_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_StLouis_1940[which(intersections_StLouis_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_StLouis_1940[which(intersections_StLouis_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_StLouis_1940[which(intersections_StLouis_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+StLouis_mori=matrix(nrow=length(unique(intersections_StLouis_1940$ED)), ncol=7)
+colnames(StLouis_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+StLouis_mori[,"ed"]=unique(intersections_StLouis_1940$ED)
+
+for (i in 1:nrow(StLouis_mori)){
+  StLouis_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==StLouis_mori[i,"ed"]),])
+  StLouis_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==StLouis_mori[i,"ed"]),])
+  StLouis_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==StLouis_mori[i,"ed"]),])
+  StLouis_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==StLouis_mori[i,"ed"]),])
+  StLouis_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==StLouis_mori[i,"ed"]),])
+  StLouis_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==StLouis_mori[i,"ed"]),])
+}
+
+StLouis_mori=as.data.frame(StLouis_mori)
+
+StLouis_mori$all_sicilians=as.numeric(StLouis_mori$all_sicilians)
+StLouis_mori$mori_sicilians=as.numeric(StLouis_mori$mori_sicilians)
+StLouis_mori$non_mori_sicilians=as.numeric(StLouis_mori$non_mori_sicilians)
+StLouis_mori$cutrera_1900_sicilians=as.numeric(StLouis_mori$cutrera_1900_sicilians)
+StLouis_mori$damiani_1885_sicilians=as.numeric(StLouis_mori$damiani_1885_sicilians)
+StLouis_mori$cutrera_or_damiani_maps_sicilians=as.numeric(StLouis_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_StLouis_1940$mori=StLouis_mori[match(intersections_StLouis_1940$ED, StLouis_mori$ed),"mori_sicilians"]
+intersections_StLouis_1940$non_mori_sicilians=StLouis_mori[match(intersections_StLouis_1940$ED, StLouis_mori$ed),"non_mori_sicilians"]
+intersections_StLouis_1940$all_sicilians=StLouis_mori[match(intersections_StLouis_1940$ED, StLouis_mori$ed),"all_sicilians"]
+intersections_StLouis_1940$cutrera_1900_sicilians=StLouis_mori[match(intersections_StLouis_1940$ED, StLouis_mori$ed),"cutrera_1900_sicilians"]
+intersections_StLouis_1940$damiani_1885_sicilians=StLouis_mori[match(intersections_StLouis_1940$ED, StLouis_mori$ed),"damiani_1885_sicilians"]
+intersections_StLouis_1940$cutrera_or_damiani_maps_sicilians=StLouis_mori[match(intersections_StLouis_1940$ED, StLouis_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_StLouis_1940[is.na(intersections_StLouis_1940)]=0
+
+# Add median home value after the blanket NA-to-zero step so missing
+# home values remain missing rather than being converted to zero.
+intersections_StLouis_1940$median_home_value=as.numeric(
+  pop_1940_relevant[
+    match(intersections_StLouis_1940$ED, pop_1940_relevant$enum_dist_id),
+    "median_home_value"
+  ]
+)
+intersections_StLouis_1940$mori_weighted=intersections_StLouis_1940$mori*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$non_mori_sicilians_weighted=intersections_StLouis_1940$non_mori_sicilians*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$cutrera_1900_sicilians_weighted=intersections_StLouis_1940$cutrera_1900_sicilians*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$damiani_1885_sicilians_weighted=intersections_StLouis_1940$damiani_1885_sicilians*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_StLouis_1940$cutrera_or_damiani_maps_sicilians*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$all_sicilians_weighted=intersections_StLouis_1940$all_sicilians*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$foreign_weighted=intersections_StLouis_1940$immpop*intersections_StLouis_1940$proportion_intersected
+
+intersections_StLouis_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_StLouis_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_StLouis_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_StLouis_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_StLouis_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_StLouis_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_StLouis_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_StLouis_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_StLouis_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_StLouis_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_StLouis_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_StLouis_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_StLouis_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_StLouis_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_StLouis_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_StLouis_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_StLouis_1940$other=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_StLouis_1940$india=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_StLouis_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_StLouis_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_StLouis_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_StLouis_1940[,j]=st_drop_geometry(
+    intersections_StLouis_1940[,j]*as.numeric(intersections_StLouis_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_StLouis_1940$black_pop=as.numeric(intersections_StLouis_1940$bpop*intersections_StLouis_1940$proportion_intersected)
+intersections_StLouis_1940$black_pop=intersections_StLouis_1940$black_pop - intersections_StLouis_1940$africa
+intersections_StLouis_1940$usa=intersections_StLouis_1940$usa - intersections_StLouis_1940$black_pop
+
+hex_mat_StLouis_1940=matrix(nrow=length(unique(intersections_StLouis_1940$hex_id)), ncol=18)
+colnames(hex_mat_StLouis_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_StLouis_1940[,"hex_id"]=unique(intersections_StLouis_1940$hex_id)
+hex_mat_StLouis_1940=as.data.frame(hex_mat_StLouis_1940)
+
+
+hex_mat_StLouis_1940$median_home_value=NA_real_
+hex_mat_StLouis_1940$median_home_value_coverage=NA_real_
+
+intersections_StLouis_1940=st_drop_geometry(intersections_StLouis_1940)
+intersections_StLouis_1930=st_drop_geometry(intersections_StLouis_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_StLouis_1940)){
+  hex_mat_StLouis_1940[i,"pop"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_StLouis_1940[i,"italian_pop"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_StLouis_1940[i,"pop_mlp"]=sum(intersections_StLouis_1930[which(intersections_StLouis_1930$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_StLouis_1940[i,"pop_abe"]=sum(intersections_StLouis_1930[which(intersections_StLouis_1930$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_StLouis_1940[i,"pop_cs"]=sum(intersections_StLouis_1930[which(intersections_StLouis_1930$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_StLouis_1940[i,"incarc_mlp"]=sum(intersections_StLouis_1930[which(intersections_StLouis_1930$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_StLouis_1940[i,"incarc_abe"]=sum(intersections_StLouis_1930[which(intersections_StLouis_1930$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_StLouis_1940[i,"incarc_cs"]=sum(intersections_StLouis_1930[which(intersections_StLouis_1930$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_StLouis_1940[i,"mori"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_StLouis_1940[i,"non_mori_sicilians"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_StLouis_1940[i,"cutrera_1900_sicilians"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_StLouis_1940[i,"damiani_1885_sicilians"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_StLouis_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_StLouis_1940[i,"all_sicilians"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_StLouis_1940[i,"area"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_StLouis_1940[i,"foreign"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_StLouis_1940$median_home_value[home_value_rows]) &
+      intersections_StLouis_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_StLouis_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_StLouis_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_StLouis_1940[i,"median_home_value"]=weighted.mean(
+      intersections_StLouis_1940$median_home_value[valid_home_value_rows],
+      intersections_StLouis_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_StLouis_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_StLouis_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_StLouis_1940[
+        which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_StLouis_1940[
+        which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_StLouis_1940[i,"pop"])^2
+  }
+  
+  hex_mat_StLouis_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_StLouis_1940$ital_prop=hex_mat_StLouis_1940$italian_pop/hex_mat_StLouis_1940$pop
+hex_mat_StLouis_1940$incarc_abe_prop=hex_mat_StLouis_1940$incarc_abe/hex_mat_StLouis_1940$pop_abe
+hex_mat_StLouis_1940$incarc_mlp_prop=hex_mat_StLouis_1940$incarc_mlp/hex_mat_StLouis_1940$pop_mlp
+hex_mat_StLouis_1940$incarc_cs_prop=hex_mat_StLouis_1940$incarc_cs/hex_mat_StLouis_1940$pop_cs
+hex_mat_StLouis_1940$any_mori=ifelse(hex_mat_StLouis_1940$mori>0, 1, 0)
+hex_mat_StLouis_1940$any_non_mori_sicilians=ifelse(hex_mat_StLouis_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_StLouis_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_StLouis_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_StLouis_1940$any_damiani_1885_sicilians=ifelse(hex_mat_StLouis_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_StLouis_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_StLouis_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_StLouis_1940$any_sicilians=ifelse(hex_mat_StLouis_1940$all_sicilians>0, 1, 0)
+hex_mat_StLouis_1940$foreign_prop=hex_mat_StLouis_1940$foreign/hex_mat_StLouis_1940$pop
+hex_mat_StLouis_1940$year=1940
+hex_mat_StLouis_1940$city="StLouis"
+
+intersections_StLouis_1940$working_age_pop=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "wap"]
+intersections_StLouis_1940$household_count=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "hh"]
+intersections_StLouis_1940$occ_score=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "occ_score"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$sei=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "duncan"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$owned=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "owned"]*intersections_StLouis_1940$household_count
+intersections_StLouis_1940$owned_free=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "owned_free"]*intersections_StLouis_1940$household_count
+intersections_StLouis_1940$rent=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "rent"]*intersections_StLouis_1940$household_count
+intersections_StLouis_1940$construction=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_cons"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$transportation=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_trans"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$retail_trade=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_rt"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$business_services=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_bs"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$finance=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_fin"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$public_admin=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_pa"]*intersections_StLouis_1940$working_age_pop
+intersections_StLouis_1940$professional_services=census_econ[match(intersections_StLouis_1940$ED, census_econ$ed), "ind_prof"]*intersections_StLouis_1940$working_age_pop
+
+hex_mat_StLouis_1940$working_age_pop=0
+hex_mat_StLouis_1940$household_count=0
+hex_mat_StLouis_1940$occ_score=0
+hex_mat_StLouis_1940$sei=0
+hex_mat_StLouis_1940$owned=0
+hex_mat_StLouis_1940$owned_free=0
+hex_mat_StLouis_1940$rent=0
+hex_mat_StLouis_1940$construction=0
+hex_mat_StLouis_1940$transportation=0
+hex_mat_StLouis_1940$retail_trade=0
+hex_mat_StLouis_1940$business_services=0
+hex_mat_StLouis_1940$finance=0
+hex_mat_StLouis_1940$public_admin=0
+hex_mat_StLouis_1940$professional_services=0
+
+intersections_StLouis_1940$working_age_pop_weighted=intersections_StLouis_1940$working_age_pop*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$household_count_weighted=intersections_StLouis_1940$household_count*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$occ_score_weighted=intersections_StLouis_1940$occ_score*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$sei_weighted=intersections_StLouis_1940$sei*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$owned_weighted=intersections_StLouis_1940$owned*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$owned_free_weighted=intersections_StLouis_1940$owned_free*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$rent_weighted=intersections_StLouis_1940$rent*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$construction_weighted=intersections_StLouis_1940$construction*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$transportation_weighted=intersections_StLouis_1940$transportation*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$retail_trade_weighted=intersections_StLouis_1940$retail_trade*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$business_services_weighted=intersections_StLouis_1940$business_services*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$finance_weighted=intersections_StLouis_1940$finance*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$public_admin_weighted=intersections_StLouis_1940$public_admin*intersections_StLouis_1940$proportion_intersected
+intersections_StLouis_1940$professional_services_weighted=intersections_StLouis_1940$professional_services*intersections_StLouis_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_StLouis_1940)){
+  hex_mat_StLouis_1940[i,"working_age_pop"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_StLouis_1940[i,"household_count"]=sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_StLouis_1940[i,"occ_score"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"sei"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"owned"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_StLouis_1940[i,"household_count"]
+  hex_mat_StLouis_1940[i,"owned_free"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_StLouis_1940[i,"household_count"]
+  hex_mat_StLouis_1940[i,"rent"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_StLouis_1940[i,"household_count"]
+  hex_mat_StLouis_1940[i,"construction"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"transportation"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"retail_trade"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"business_services"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"finance"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"public_admin"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+  hex_mat_StLouis_1940[i,"professional_services"]=(sum(intersections_StLouis_1940[which(intersections_StLouis_1940$hex_id==hex_mat_StLouis_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_StLouis_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_StLouis_1940.rda")
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_StLouis_1940))
+polygon_sf=st_as_sf(intersections_StLouis_1940$geometry, crs=st_crs(intersections_StLouis_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_StLouis_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_StLouis_1940=st_drop_geometry(intersections_StLouis_1940)
+
+matches_book=intersections_StLouis_1940[matches_book, "hex_id"]
+matches_pre=intersections_StLouis_1940[matches_pre, "hex_id"]
+
+hex_mat_StLouis_1940$mafia_book_geo=ifelse(hex_mat_StLouis_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_StLouis_1940$mafia_pre_geo=ifelse(hex_mat_StLouis_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_StLouis_1940$mafia_book_hex=ifelse(hex_mat_StLouis_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_StLouis_1940$mafia_pre_hex=ifelse(hex_mat_StLouis_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_StLouis_1940$cutrera_hex= ifelse(hex_mat_StLouis_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_StLouis_1940$damiani_hex=ifelse(hex_mat_StLouis_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_StLouis_1940$cutrera_or_damiani_hex=ifelse(hex_mat_StLouis_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_StLouis_1940=hex_mat_StLouis_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_StLouis_1940)==54)
+stopifnot(identical(names(hex_mat_StLouis_1940),hex_mat_columns_1940))
+
+save(hex_mat_StLouis_1940, file="intermediate_outputs/step_3_hex_mats/hex_mat_StLouis_1940.rda")
+
+
+
+########################################################
+######## 1940 BALANCED-PANEL EXTENSION ################
+########################################################
+# Brooklyn, Detroit, and Manhattan do not have 1940 intersection files.
+# As in the original code, their 1930 intersection geometry is carried forward
+# so the 1940 incarceration outcomes can be placed on the common hex grid.
+
+################################
+########## 1940- BALANCED PANEL EXTENSION ##########
+################################
+
+########################################################
+######## DATA LOADING AND PRELIMINARY PREP #############
+########################################################
+
+load("intermediate_outputs/matched_census_1940_book.rda") #this is 1959 mafia book guys
+load("intermediate_outputs/matched_census_1940_pre.rda") #this is pre-1926 mafia book guys
+
+load("intermediate_outputs//ethnic_frag_1940.rda")
+load("intermediate_outputs/population_1940_relevant.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Baltimore_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Boston_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Chicago_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cincinnati_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cleveland_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1940.rda")
+load("intermediate_outputs/step_2_intersections/intersections_StLouis_1940.rda")
+load("intermediate_outputs/incarceration_rates/ed_incarceration_rates_1940.rda")
+ed_incarceration_rates_1940[is.na(ed_incarceration_rates_1940)]=0
+load("intermediate_outputs/outputs_for_hexagons/household_sample_1940.rda") #this is matched from numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_mori_1940.rda") #mori subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_non_mori_1940.rda") #non-mori sicilian subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_cutrera_1900_1940.rda") #cutrera map subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_damiani_1885_1940.rda") #damiani map subset of numident
+load("intermediate_outputs/outputs_for_hexagons/household_sample_cutrera_or_damiani_maps_1940.rda") #cutrera or damiani maps subset of numident
+
+intersections_Baltimore_1940$ED=paste0("52_5100_", intersections_Baltimore_1940$ED)
+intersections_Boston_1940$ED=paste0("3_250_", intersections_Boston_1940$ED)
+intersections_Chicago_1940$ED=paste0("21_310_", intersections_Chicago_1940$ED)
+intersections_Cincinnati_1940$ED=paste0("24_610_", intersections_Cincinnati_1940$ED)
+intersections_Cleveland_1940$ED=paste0("24_350_", intersections_Cleveland_1940$ED)
+intersections_Philadelphia_1940$ED=paste0("14_1010_", intersections_Philadelphia_1940$ED)
+intersections_Pittsburgh_1940$ED=paste0("14_30_", intersections_Pittsburgh_1940$ED)
+intersections_StLouis_1940$ED=paste0("34_5100_", intersections_StLouis_1940$ED)
+
+# 1930 intersections are used to allocate the 1940 incarceration outcomes to the common hex grid.
+load("intermediate_outputs/step_2_intersections/intersections_Baltimore_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Boston_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Brooklyn_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Chicago_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cincinnati_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Cleveland_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Detroit_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Manhattan_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Philadelphia_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_Pittsburgh_1930.rda")
+load("intermediate_outputs/step_2_intersections/intersections_StLouis_1930.rda")
+intersections_Baltimore_1930$ED=paste0("52_5100_", intersections_Baltimore_1930$ED)
+intersections_Boston_1930$ED=paste0("3_250_", intersections_Boston_1930$ED)
+intersections_Brooklyn_1930$ED=paste0("13_470_", intersections_Brooklyn_1930$ED)
+intersections_Chicago_1930$ED=paste0("21_310_", intersections_Chicago_1930$ED)
+intersections_Cincinnati_1930$ED=paste0("24_610_", intersections_Cincinnati_1930$ED)
+intersections_Cleveland_1930$ED=paste0("24_350_", intersections_Cleveland_1930$ED)
+intersections_Detroit_1930$ED=paste0("23_1630_", intersections_Detroit_1930$ED)
+intersections_Manhattan_1930$ED=paste0("13_610_", intersections_Manhattan_1930$ED)
+intersections_Philadelphia_1930$ED=paste0("14_1010_", intersections_Philadelphia_1930$ED)
+intersections_Pittsburgh_1930$ED=paste0("14_30_", intersections_Pittsburgh_1930$ED)
+intersections_StLouis_1930$ED=paste0("34_5100_", intersections_StLouis_1930$ED)
+
+household_sample_1940=as.data.frame(household_sample_1940)
+household_sample_1940$enumdist=as.character(household_sample_1940$enumdist)
+household_sample_1940$ed=substr(household_sample_1940$enumdist, 4, nchar(household_sample_1940$enumdist))
+household_sample_1940$ed=gsub("^0+", "", household_sample_1940$ed)
+household_sample_1940$ed=gsub("0$", "", household_sample_1940$ed)
+household_sample_1940$ed=paste0(household_sample_1940$stateicp,"_",household_sample_1940$countyicp,"_",household_sample_1940$ed)
+
+household_sample_mori_1940=as.data.frame(household_sample_mori_1940)
+household_sample_mori_1940$enumdist=as.character(household_sample_mori_1940$enumdist)
+household_sample_mori_1940$ed=substr(household_sample_mori_1940$enumdist, 4, nchar(household_sample_mori_1940$enumdist))
+household_sample_mori_1940$ed=gsub("^0+", "", household_sample_mori_1940$ed)
+household_sample_mori_1940$ed=gsub("0$", "", household_sample_mori_1940$ed)
+household_sample_mori_1940$ed=paste0(household_sample_mori_1940$stateicp,"_",household_sample_mori_1940$countyicp,"_",household_sample_mori_1940$ed)
+
+household_sample_non_mori_1940=as.data.frame(household_sample_non_mori_1940)
+household_sample_non_mori_1940$enumdist=as.character(household_sample_non_mori_1940$enumdist)
+household_sample_non_mori_1940$ed=substr(household_sample_non_mori_1940$enumdist, 4, nchar(household_sample_non_mori_1940$enumdist))
+household_sample_non_mori_1940$ed=gsub("^0+", "", household_sample_non_mori_1940$ed)
+household_sample_non_mori_1940$ed=gsub("0$", "", household_sample_non_mori_1940$ed)
+household_sample_non_mori_1940$ed=paste0(household_sample_non_mori_1940$stateicp,"_",household_sample_non_mori_1940$countyicp,"_",household_sample_non_mori_1940$ed)
+
+household_sample_cutrera_1900_1940=as.data.frame(household_sample_cutrera_1900_1940)
+household_sample_cutrera_1900_1940$enumdist=as.character(household_sample_cutrera_1900_1940$enumdist)
+household_sample_cutrera_1900_1940$ed=substr(household_sample_cutrera_1900_1940$enumdist, 4, nchar(household_sample_cutrera_1900_1940$enumdist))
+household_sample_cutrera_1900_1940$ed=gsub("^0+", "", household_sample_cutrera_1900_1940$ed)
+household_sample_cutrera_1900_1940$ed=gsub("0$", "", household_sample_cutrera_1900_1940$ed)
+household_sample_cutrera_1900_1940$ed=paste0(household_sample_cutrera_1900_1940$stateicp,"_",household_sample_cutrera_1900_1940$countyicp,"_",household_sample_cutrera_1900_1940$ed)
+
+household_sample_damiani_1885_1940=as.data.frame(household_sample_damiani_1885_1940)
+household_sample_damiani_1885_1940$enumdist=as.character(household_sample_damiani_1885_1940$enumdist)
+household_sample_damiani_1885_1940$ed=substr(household_sample_damiani_1885_1940$enumdist, 4, nchar(household_sample_damiani_1885_1940$enumdist))
+household_sample_damiani_1885_1940$ed=gsub("^0+", "", household_sample_damiani_1885_1940$ed)
+household_sample_damiani_1885_1940$ed=gsub("0$", "", household_sample_damiani_1885_1940$ed)
+household_sample_damiani_1885_1940$ed=paste0(household_sample_damiani_1885_1940$stateicp,"_",household_sample_damiani_1885_1940$countyicp,"_",household_sample_damiani_1885_1940$ed)
+
+household_sample_cutrera_or_damiani_maps_1940=as.data.frame(household_sample_cutrera_or_damiani_maps_1940)
+household_sample_cutrera_or_damiani_maps_1940$enumdist=as.character(household_sample_cutrera_or_damiani_maps_1940$enumdist)
+household_sample_cutrera_or_damiani_maps_1940$ed=substr(household_sample_cutrera_or_damiani_maps_1940$enumdist, 4, nchar(household_sample_cutrera_or_damiani_maps_1940$enumdist))
+household_sample_cutrera_or_damiani_maps_1940$ed=gsub("^0+", "", household_sample_cutrera_or_damiani_maps_1940$ed)
+household_sample_cutrera_or_damiani_maps_1940$ed=gsub("0$", "", household_sample_cutrera_or_damiani_maps_1940$ed)
+household_sample_cutrera_or_damiani_maps_1940$ed=paste0(household_sample_cutrera_or_damiani_maps_1940$stateicp,"_",household_sample_cutrera_or_damiani_maps_1940$countyicp,"_",household_sample_cutrera_or_damiani_maps_1940$ed)
+
+matched_census_1940_book=as.data.frame(matched_census_1940_book)
+matched_census_1940_book$enumdist=as.character(matched_census_1940_book$enumdist)
+matched_census_1940_book$ed=substr(matched_census_1940_book$enumdist, 4, nchar(matched_census_1940_book$enumdist))
+matched_census_1940_book$ed=gsub("^0+", "", matched_census_1940_book$ed)
+matched_census_1940_book$ed=gsub("0$", "", matched_census_1940_book$ed)
+matched_census_1940_book$ed=paste0(matched_census_1940_book$stateicp,"_",matched_census_1940_book$countyicp,"_",matched_census_1940_book$ed)
+
+mafia_book_ed=unique(matched_census_1940_book$ed)
+matched_census_1940_pre=as.data.frame(matched_census_1940_pre)
+matched_census_1940_pre$enumdist=as.character(matched_census_1940_pre$enumdist)
+matched_census_1940_pre$ed=substr(matched_census_1940_pre$enumdist, 4, nchar(matched_census_1940_pre$enumdist))
+matched_census_1940_pre$ed=gsub("^0+", "", matched_census_1940_pre$ed)
+matched_census_1940_pre$ed=gsub("0$", "", matched_census_1940_pre$ed)
+matched_census_1940_pre$ed=paste0(matched_census_1940_pre$stateicp,"_",matched_census_1940_pre$countyicp,"_",matched_census_1940_pre$ed)
+
+mafia_pre_ed=unique(matched_census_1940_pre$ed)
+mori_ed=unique(household_sample_1940[which(household_sample_1940$mori==1),"ed"])
+cutrera_ed=unique(household_sample_1940[which(household_sample_1940$cutrera_1900==1),"ed"])
+damiani_ed=unique(household_sample_1940[which(household_sample_1940$damiani_1885==1),"ed"])
+cutrera_or_damiani_ed=unique(household_sample_1940[which(household_sample_1940$cutrera_or_damiani_maps==1),"ed"])
+
+ethnic_frag_1940$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", ethnic_frag_1940$enum_dist)
+ethnic_frag_1940$ed=gsub("^.*?_.*?_(.*)$", "\\1", ethnic_frag_1940$enum_dist)
+ethnic_frag_1940$ed=as.numeric(substr(ethnic_frag_1940$ed, 4, nchar(ethnic_frag_1940$ed)))
+ethnic_frag_1940$ed=paste0(ethnic_frag_1940$state_county,ethnic_frag_1940$ed)
+
+ed_incarceration_rates_1940$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", ed_incarceration_rates_1940$ed_state_county_id)
+ed_incarceration_rates_1940$ed=as.numeric(substr(ed_incarceration_rates_1940$enum_dist, 4, nchar(ed_incarceration_rates_1940$enum_dist)))
+ed_incarceration_rates_1940$ed=as.character(ed_incarceration_rates_1940$ed)
+ed_incarceration_rates_1940$ed=paste0(ed_incarceration_rates_1940$state_county,ed_incarceration_rates_1940$ed)
+
+ED_1940=c(unique(intersections_Baltimore_1940$ED), unique(intersections_Boston_1940$ED),
+          unique(intersections_Chicago_1940$ED), unique(intersections_Cincinnati_1940$ED), unique(intersections_Cleveland_1940$ED),
+          unique(intersections_Philadelphia_1940$ED), unique(intersections_Pittsburgh_1940$ED), unique(intersections_StLouis_1940$ED))
+
+substr(pop_1940_relevant$enum_dist_id, nchar(pop_1940_relevant$enum_dist_id), nchar(pop_1940_relevant$enum_dist_id))=
+  ifelse(substr(pop_1940_relevant$enum_dist_id, nchar(pop_1940_relevant$enum_dist_id), nchar(pop_1940_relevant$enum_dist_id))=="1", "a", ifelse(
+    substr(pop_1940_relevant$enum_dist_id, nchar(pop_1940_relevant$enum_dist_id), nchar(pop_1940_relevant$enum_dist_id))=="2", "b", "0"
+  ))
+pop_1940_relevant$enum_dist_id=gsub("^0+", "", pop_1940_relevant$enum_dist_id)
+pop_1940_relevant$enum_dist_id=gsub("0$", "", pop_1940_relevant$enum_dist_id)
+pop_1940_relevant=pop_1940_relevant[which(pop_1940_relevant$enum_dist_id %in% ED_1940),]
+
+# Clean median home value before city-level aggregation.
+# Values <= 0 are treated as unavailable; values >= 5,000,000 capture
+# documented sentinel codes and medians contaminated by those codes.
+pop_1940_relevant$median_home_value=as.numeric(pop_1940_relevant$median_home_value)
+pop_1940_relevant$median_home_value[which(
+  pop_1940_relevant$median_home_value <= 0 |
+    pop_1940_relevant$median_home_value >= 5000000
+)]=NA_real_
+
+census_econ=read.csv("intermediate_outputs/census_with_labor/fullclean_1940.csv")
+census_econ$state_county=gsub("^([^_]*_[^_]*_).*$", "\\1", census_econ$unique_id)
+census_econ$ed=gsub("^.*?_.*?_(.*)$", "\\1", census_econ$unique_id)
+census_econ$ed=substr(census_econ$ed, 4, nchar(census_econ$ed))
+census_econ$ed=gsub("^0+", "", census_econ$ed)
+census_econ$ed=gsub("0$", "", census_econ$ed)
+census_econ$ed=paste0(census_econ$state_county,census_econ$ed)
+census_econ=census_econ[which(census_econ$ed %in% ED_1940),]
+colnames(census_econ)=gsub("_1940", "",colnames(census_econ))
+colnames(census_econ)=gsub("1940", "",colnames(census_econ))
+census_econ$owned_free=0 #for balance. variable not available in later censuses. Not used in analysis
+
+hex_mat_columns_1940=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag",
+  "median_home_value","median_home_value_coverage",
+  "ital_prop","incarc_abe_prop","incarc_mlp_prop","incarc_cs_prop",
+  "any_mori","any_non_mori_sicilians","any_cutrera_1900_sicilians",
+  "any_damiani_1885_sicilians","any_cutrera_or_damiani_maps_sicilians","any_sicilians",
+  "foreign_prop","year","city",
+  "working_age_pop","household_count","occ_score","sei","owned","owned_free","rent",
+  "construction","transportation","retail_trade","business_services","finance",
+  "public_admin","professional_services",
+  "mafia_book_geo","mafia_pre_geo","mafia_book_hex","mafia_pre_hex",
+  "cutrera_hex","damiani_hex","cutrera_or_damiani_hex"
+)
+
+###########################################
+########## 1940- Brooklyn ################
+###########################################
+intersections_Brooklyn_1940=intersections_Brooklyn_1930
+intersections_Brooklyn_1940$population=0
+intersections_Brooklyn_1940$italian_population=0
+intersections_Brooklyn_1940$pop_weighted=0
+intersections_Brooklyn_1940$ital_weighted=0
+
+intersections_Brooklyn_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Brooklyn_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Brooklyn_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Brooklyn_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Brooklyn_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Brooklyn_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Brooklyn_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Brooklyn_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Brooklyn_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Brooklyn_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Brooklyn_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Brooklyn_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Brooklyn_1930$pop_mlp_weighted=intersections_Brooklyn_1930$pop_mlp*intersections_Brooklyn_1930$proportion_intersected
+intersections_Brooklyn_1930$pop_abe_weighted=intersections_Brooklyn_1930$pop_abe*intersections_Brooklyn_1930$proportion_intersected
+intersections_Brooklyn_1930$pop_cs_weighted=intersections_Brooklyn_1930$pop_cs*intersections_Brooklyn_1930$proportion_intersected
+intersections_Brooklyn_1930$incarc_mlp_weighted=intersections_Brooklyn_1930$incarc_mlp*intersections_Brooklyn_1930$proportion_intersected
+intersections_Brooklyn_1930$incarc_abe_weighted=intersections_Brooklyn_1930$incarc_abe*intersections_Brooklyn_1930$proportion_intersected
+intersections_Brooklyn_1930$incarc_cs_weighted=intersections_Brooklyn_1930$incarc_cs*intersections_Brooklyn_1930$proportion_intersected
+
+
+
+
+
+intersections_Brooklyn_1940$mori=0
+
+intersections_Brooklyn_1940$mafia_ed_book=ifelse(intersections_Brooklyn_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Brooklyn_1940$mafia_ed_pre=ifelse(intersections_Brooklyn_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Brooklyn_1940$damiani_ed=ifelse(intersections_Brooklyn_1940$ED %in% damiani_ed, 1, 0)
+intersections_Brooklyn_1940$cutrera_ed=ifelse(intersections_Brooklyn_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Brooklyn_1940$cutrera_or_damiani_ed=ifelse(intersections_Brooklyn_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Brooklyn_mori=matrix(nrow=length(unique(intersections_Brooklyn_1940$ED)), ncol=7)
+colnames(Brooklyn_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Brooklyn_mori[,"ed"]=unique(intersections_Brooklyn_1940$ED)
+
+for (i in 1:nrow(Brooklyn_mori)){
+  Brooklyn_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Brooklyn_mori[i,"ed"]),])
+  Brooklyn_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Brooklyn_mori[i,"ed"]),])
+  Brooklyn_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Brooklyn_mori[i,"ed"]),])
+  Brooklyn_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Brooklyn_mori[i,"ed"]),])
+  Brooklyn_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Brooklyn_mori[i,"ed"]),])
+  Brooklyn_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Brooklyn_mori[i,"ed"]),])
+}
+
+Brooklyn_mori=as.data.frame(Brooklyn_mori)
+
+Brooklyn_mori$all_sicilians=as.numeric(Brooklyn_mori$all_sicilians)
+Brooklyn_mori$mori_sicilians=as.numeric(Brooklyn_mori$mori_sicilians)
+Brooklyn_mori$non_mori_sicilians=as.numeric(Brooklyn_mori$non_mori_sicilians)
+Brooklyn_mori$cutrera_1900_sicilians=as.numeric(Brooklyn_mori$cutrera_1900_sicilians)
+Brooklyn_mori$damiani_1885_sicilians=as.numeric(Brooklyn_mori$damiani_1885_sicilians)
+Brooklyn_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Brooklyn_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Brooklyn_1940$mori=Brooklyn_mori[match(intersections_Brooklyn_1940$ED, Brooklyn_mori$ed),"mori_sicilians"]
+intersections_Brooklyn_1940$non_mori_sicilians=Brooklyn_mori[match(intersections_Brooklyn_1940$ED, Brooklyn_mori$ed),"non_mori_sicilians"]
+intersections_Brooklyn_1940$all_sicilians=Brooklyn_mori[match(intersections_Brooklyn_1940$ED, Brooklyn_mori$ed),"all_sicilians"]
+intersections_Brooklyn_1940$cutrera_1900_sicilians=Brooklyn_mori[match(intersections_Brooklyn_1940$ED, Brooklyn_mori$ed),"cutrera_1900_sicilians"]
+intersections_Brooklyn_1940$damiani_1885_sicilians=Brooklyn_mori[match(intersections_Brooklyn_1940$ED, Brooklyn_mori$ed),"damiani_1885_sicilians"]
+intersections_Brooklyn_1940$cutrera_or_damiani_maps_sicilians=Brooklyn_mori[match(intersections_Brooklyn_1940$ED, Brooklyn_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Brooklyn_1940[is.na(intersections_Brooklyn_1940)]=0
+
+# No 1940 population/home-value source exists for this balanced-only city.
+intersections_Brooklyn_1940$median_home_value=NA_real_
+intersections_Brooklyn_1940$mori_weighted=intersections_Brooklyn_1940$mori*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$non_mori_sicilians_weighted=intersections_Brooklyn_1940$non_mori_sicilians*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$cutrera_1900_sicilians_weighted=intersections_Brooklyn_1940$cutrera_1900_sicilians*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$damiani_1885_sicilians_weighted=intersections_Brooklyn_1940$damiani_1885_sicilians*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Brooklyn_1940$cutrera_or_damiani_maps_sicilians*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$all_sicilians_weighted=intersections_Brooklyn_1940$all_sicilians*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$foreign_weighted=intersections_Brooklyn_1940$immpop*intersections_Brooklyn_1940$proportion_intersected
+
+intersections_Brooklyn_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Brooklyn_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Brooklyn_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Brooklyn_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Brooklyn_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Brooklyn_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Brooklyn_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Brooklyn_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Brooklyn_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Brooklyn_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Brooklyn_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Brooklyn_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Brooklyn_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Brooklyn_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Brooklyn_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Brooklyn_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Brooklyn_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Brooklyn_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Brooklyn_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Brooklyn_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Brooklyn_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Brooklyn_1940[,j]=st_drop_geometry(
+    intersections_Brooklyn_1940[,j]*as.numeric(intersections_Brooklyn_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Brooklyn_1940$black_pop=as.numeric(intersections_Brooklyn_1940$bpop*intersections_Brooklyn_1940$proportion_intersected)
+intersections_Brooklyn_1940$black_pop=intersections_Brooklyn_1940$black_pop - intersections_Brooklyn_1940$africa
+intersections_Brooklyn_1940$usa=intersections_Brooklyn_1940$usa - intersections_Brooklyn_1940$black_pop
+
+hex_mat_Brooklyn_1940=matrix(nrow=length(unique(intersections_Brooklyn_1940$hex_id)), ncol=18)
+colnames(hex_mat_Brooklyn_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Brooklyn_1940[,"hex_id"]=unique(intersections_Brooklyn_1940$hex_id)
+hex_mat_Brooklyn_1940=as.data.frame(hex_mat_Brooklyn_1940)
+
+
+hex_mat_Brooklyn_1940$median_home_value=NA_real_
+hex_mat_Brooklyn_1940$median_home_value_coverage=NA_real_
+
+intersections_Brooklyn_1940=st_drop_geometry(intersections_Brooklyn_1940)
+intersections_Brooklyn_1930=st_drop_geometry(intersections_Brooklyn_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Brooklyn_1940)){
+  hex_mat_Brooklyn_1940[i,"pop"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Brooklyn_1940[i,"italian_pop"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Brooklyn_1940[i,"pop_mlp"]=sum(intersections_Brooklyn_1930[which(intersections_Brooklyn_1930$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Brooklyn_1940[i,"pop_abe"]=sum(intersections_Brooklyn_1930[which(intersections_Brooklyn_1930$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Brooklyn_1940[i,"pop_cs"]=sum(intersections_Brooklyn_1930[which(intersections_Brooklyn_1930$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Brooklyn_1940[i,"incarc_mlp"]=sum(intersections_Brooklyn_1930[which(intersections_Brooklyn_1930$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Brooklyn_1940[i,"incarc_abe"]=sum(intersections_Brooklyn_1930[which(intersections_Brooklyn_1930$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Brooklyn_1940[i,"incarc_cs"]=sum(intersections_Brooklyn_1930[which(intersections_Brooklyn_1930$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Brooklyn_1940[i,"mori"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Brooklyn_1940[i,"non_mori_sicilians"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Brooklyn_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Brooklyn_1940[i,"damiani_1885_sicilians"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Brooklyn_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Brooklyn_1940[i,"all_sicilians"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Brooklyn_1940[i,"area"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Brooklyn_1940[i,"foreign"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Brooklyn_1940$median_home_value[home_value_rows]) &
+      intersections_Brooklyn_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Brooklyn_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Brooklyn_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Brooklyn_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Brooklyn_1940$median_home_value[valid_home_value_rows],
+      intersections_Brooklyn_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Brooklyn_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Brooklyn_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Brooklyn_1940[
+        which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Brooklyn_1940[
+        which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Brooklyn_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Brooklyn_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Brooklyn_1940$ital_prop=hex_mat_Brooklyn_1940$italian_pop/hex_mat_Brooklyn_1940$pop
+hex_mat_Brooklyn_1940$incarc_abe_prop=hex_mat_Brooklyn_1940$incarc_abe/hex_mat_Brooklyn_1940$pop_abe
+hex_mat_Brooklyn_1940$incarc_mlp_prop=hex_mat_Brooklyn_1940$incarc_mlp/hex_mat_Brooklyn_1940$pop_mlp
+hex_mat_Brooklyn_1940$incarc_cs_prop=hex_mat_Brooklyn_1940$incarc_cs/hex_mat_Brooklyn_1940$pop_cs
+hex_mat_Brooklyn_1940$any_mori=ifelse(hex_mat_Brooklyn_1940$mori>0, 1, 0)
+hex_mat_Brooklyn_1940$any_non_mori_sicilians=ifelse(hex_mat_Brooklyn_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Brooklyn_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Brooklyn_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Brooklyn_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Brooklyn_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Brooklyn_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Brooklyn_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Brooklyn_1940$any_sicilians=ifelse(hex_mat_Brooklyn_1940$all_sicilians>0, 1, 0)
+hex_mat_Brooklyn_1940$foreign_prop=hex_mat_Brooklyn_1940$foreign/hex_mat_Brooklyn_1940$pop
+hex_mat_Brooklyn_1940$year=1940
+hex_mat_Brooklyn_1940$city="Brooklyn"
+
+intersections_Brooklyn_1940$working_age_pop=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "wap"]
+intersections_Brooklyn_1940$household_count=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "hh"]
+intersections_Brooklyn_1940$occ_score=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "occ_score"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$sei=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "duncan"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$owned=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "owned"]*intersections_Brooklyn_1940$household_count
+intersections_Brooklyn_1940$owned_free=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "owned_free"]*intersections_Brooklyn_1940$household_count
+intersections_Brooklyn_1940$rent=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "rent"]*intersections_Brooklyn_1940$household_count
+intersections_Brooklyn_1940$construction=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_cons"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$transportation=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_trans"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$retail_trade=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_rt"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$business_services=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_bs"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$finance=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_fin"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$public_admin=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_pa"]*intersections_Brooklyn_1940$working_age_pop
+intersections_Brooklyn_1940$professional_services=census_econ[match(intersections_Brooklyn_1940$ED, census_econ$ed), "ind_prof"]*intersections_Brooklyn_1940$working_age_pop
+
+hex_mat_Brooklyn_1940$working_age_pop=0
+hex_mat_Brooklyn_1940$household_count=0
+hex_mat_Brooklyn_1940$occ_score=0
+hex_mat_Brooklyn_1940$sei=0
+hex_mat_Brooklyn_1940$owned=0
+hex_mat_Brooklyn_1940$owned_free=0
+hex_mat_Brooklyn_1940$rent=0
+hex_mat_Brooklyn_1940$construction=0
+hex_mat_Brooklyn_1940$transportation=0
+hex_mat_Brooklyn_1940$retail_trade=0
+hex_mat_Brooklyn_1940$business_services=0
+hex_mat_Brooklyn_1940$finance=0
+hex_mat_Brooklyn_1940$public_admin=0
+hex_mat_Brooklyn_1940$professional_services=0
+
+intersections_Brooklyn_1940$working_age_pop_weighted=intersections_Brooklyn_1940$working_age_pop*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$household_count_weighted=intersections_Brooklyn_1940$household_count*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$occ_score_weighted=intersections_Brooklyn_1940$occ_score*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$sei_weighted=intersections_Brooklyn_1940$sei*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$owned_weighted=intersections_Brooklyn_1940$owned*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$owned_free_weighted=intersections_Brooklyn_1940$owned_free*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$rent_weighted=intersections_Brooklyn_1940$rent*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$construction_weighted=intersections_Brooklyn_1940$construction*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$transportation_weighted=intersections_Brooklyn_1940$transportation*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$retail_trade_weighted=intersections_Brooklyn_1940$retail_trade*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$business_services_weighted=intersections_Brooklyn_1940$business_services*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$finance_weighted=intersections_Brooklyn_1940$finance*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$public_admin_weighted=intersections_Brooklyn_1940$public_admin*intersections_Brooklyn_1940$proportion_intersected
+intersections_Brooklyn_1940$professional_services_weighted=intersections_Brooklyn_1940$professional_services*intersections_Brooklyn_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Brooklyn_1940)){
+  hex_mat_Brooklyn_1940[i,"working_age_pop"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Brooklyn_1940[i,"household_count"]=sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Brooklyn_1940[i,"occ_score"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"sei"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"owned"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Brooklyn_1940[i,"household_count"]
+  hex_mat_Brooklyn_1940[i,"owned_free"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Brooklyn_1940[i,"household_count"]
+  hex_mat_Brooklyn_1940[i,"rent"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Brooklyn_1940[i,"household_count"]
+  hex_mat_Brooklyn_1940[i,"construction"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"transportation"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"retail_trade"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"business_services"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"finance"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"public_admin"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+  hex_mat_Brooklyn_1940[i,"professional_services"]=(sum(intersections_Brooklyn_1940[which(intersections_Brooklyn_1940$hex_id==hex_mat_Brooklyn_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Brooklyn_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Brooklyn_1930.rda")
+intersections_Brooklyn_1940=intersections_Brooklyn_1930
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Brooklyn_1940))
+polygon_sf=st_as_sf(intersections_Brooklyn_1940$geometry, crs=st_crs(intersections_Brooklyn_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Brooklyn_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Brooklyn_1940=st_drop_geometry(intersections_Brooklyn_1940)
+
+matches_book=intersections_Brooklyn_1940[matches_book, "hex_id"]
+matches_pre=intersections_Brooklyn_1940[matches_pre, "hex_id"]
+
+hex_mat_Brooklyn_1940$mafia_book_geo=ifelse(hex_mat_Brooklyn_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Brooklyn_1940$mafia_pre_geo=ifelse(hex_mat_Brooklyn_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Brooklyn_1940$mafia_book_hex=ifelse(hex_mat_Brooklyn_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Brooklyn_1940$mafia_pre_hex=ifelse(hex_mat_Brooklyn_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Brooklyn_1940$cutrera_hex= ifelse(hex_mat_Brooklyn_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Brooklyn_1940$damiani_hex=ifelse(hex_mat_Brooklyn_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Brooklyn_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Brooklyn_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Brooklyn_1940=hex_mat_Brooklyn_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Brooklyn_1940)==54)
+stopifnot(identical(names(hex_mat_Brooklyn_1940),hex_mat_columns_1940))
+
+save(hex_mat_Brooklyn_1940, file="intermediate_outputs/step_3_hex_mats_balanced/hex_mat_Brooklyn_1940.rda")
+
+###########################################
+########## 1940- Detroit ################
+###########################################
+intersections_Detroit_1940=intersections_Detroit_1930
+intersections_Detroit_1940$population=0
+intersections_Detroit_1940$italian_population=0
+intersections_Detroit_1940$pop_weighted=0
+intersections_Detroit_1940$ital_weighted=0
+
+intersections_Detroit_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Detroit_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Detroit_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Detroit_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Detroit_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Detroit_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Detroit_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Detroit_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Detroit_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Detroit_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Detroit_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Detroit_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Detroit_1930$pop_mlp_weighted=intersections_Detroit_1930$pop_mlp*intersections_Detroit_1930$proportion_intersected
+intersections_Detroit_1930$pop_abe_weighted=intersections_Detroit_1930$pop_abe*intersections_Detroit_1930$proportion_intersected
+intersections_Detroit_1930$pop_cs_weighted=intersections_Detroit_1930$pop_cs*intersections_Detroit_1930$proportion_intersected
+intersections_Detroit_1930$incarc_mlp_weighted=intersections_Detroit_1930$incarc_mlp*intersections_Detroit_1930$proportion_intersected
+intersections_Detroit_1930$incarc_abe_weighted=intersections_Detroit_1930$incarc_abe*intersections_Detroit_1930$proportion_intersected
+intersections_Detroit_1930$incarc_cs_weighted=intersections_Detroit_1930$incarc_cs*intersections_Detroit_1930$proportion_intersected
+
+
+
+
+
+intersections_Detroit_1940$mori=0
+
+intersections_Detroit_1940$mafia_ed_book=ifelse(intersections_Detroit_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Detroit_1940$mafia_ed_pre=ifelse(intersections_Detroit_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Detroit_1940$damiani_ed=ifelse(intersections_Detroit_1940$ED %in% damiani_ed, 1, 0)
+intersections_Detroit_1940$cutrera_ed=ifelse(intersections_Detroit_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Detroit_1940$cutrera_or_damiani_ed=ifelse(intersections_Detroit_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Detroit_1940[which(intersections_Detroit_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Detroit_1940[which(intersections_Detroit_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Detroit_1940[which(intersections_Detroit_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Detroit_1940[which(intersections_Detroit_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Detroit_1940[which(intersections_Detroit_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Detroit_mori=matrix(nrow=length(unique(intersections_Detroit_1940$ED)), ncol=7)
+colnames(Detroit_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Detroit_mori[,"ed"]=unique(intersections_Detroit_1940$ED)
+
+for (i in 1:nrow(Detroit_mori)){
+  Detroit_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Detroit_mori[i,"ed"]),])
+  Detroit_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Detroit_mori[i,"ed"]),])
+  Detroit_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Detroit_mori[i,"ed"]),])
+  Detroit_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Detroit_mori[i,"ed"]),])
+  Detroit_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Detroit_mori[i,"ed"]),])
+  Detroit_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Detroit_mori[i,"ed"]),])
+}
+
+Detroit_mori=as.data.frame(Detroit_mori)
+
+Detroit_mori$all_sicilians=as.numeric(Detroit_mori$all_sicilians)
+Detroit_mori$mori_sicilians=as.numeric(Detroit_mori$mori_sicilians)
+Detroit_mori$non_mori_sicilians=as.numeric(Detroit_mori$non_mori_sicilians)
+Detroit_mori$cutrera_1900_sicilians=as.numeric(Detroit_mori$cutrera_1900_sicilians)
+Detroit_mori$damiani_1885_sicilians=as.numeric(Detroit_mori$damiani_1885_sicilians)
+Detroit_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Detroit_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Detroit_1940$mori=Detroit_mori[match(intersections_Detroit_1940$ED, Detroit_mori$ed),"mori_sicilians"]
+intersections_Detroit_1940$non_mori_sicilians=Detroit_mori[match(intersections_Detroit_1940$ED, Detroit_mori$ed),"non_mori_sicilians"]
+intersections_Detroit_1940$all_sicilians=Detroit_mori[match(intersections_Detroit_1940$ED, Detroit_mori$ed),"all_sicilians"]
+intersections_Detroit_1940$cutrera_1900_sicilians=Detroit_mori[match(intersections_Detroit_1940$ED, Detroit_mori$ed),"cutrera_1900_sicilians"]
+intersections_Detroit_1940$damiani_1885_sicilians=Detroit_mori[match(intersections_Detroit_1940$ED, Detroit_mori$ed),"damiani_1885_sicilians"]
+intersections_Detroit_1940$cutrera_or_damiani_maps_sicilians=Detroit_mori[match(intersections_Detroit_1940$ED, Detroit_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Detroit_1940[is.na(intersections_Detroit_1940)]=0
+
+# No 1940 population/home-value source exists for this balanced-only city.
+intersections_Detroit_1940$median_home_value=NA_real_
+intersections_Detroit_1940$mori_weighted=intersections_Detroit_1940$mori*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$non_mori_sicilians_weighted=intersections_Detroit_1940$non_mori_sicilians*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$cutrera_1900_sicilians_weighted=intersections_Detroit_1940$cutrera_1900_sicilians*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$damiani_1885_sicilians_weighted=intersections_Detroit_1940$damiani_1885_sicilians*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Detroit_1940$cutrera_or_damiani_maps_sicilians*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$all_sicilians_weighted=intersections_Detroit_1940$all_sicilians*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$foreign_weighted=intersections_Detroit_1940$immpop*intersections_Detroit_1940$proportion_intersected
+
+intersections_Detroit_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Detroit_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Detroit_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Detroit_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Detroit_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Detroit_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Detroit_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Detroit_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Detroit_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Detroit_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Detroit_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Detroit_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Detroit_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Detroit_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Detroit_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Detroit_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Detroit_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Detroit_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Detroit_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Detroit_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Detroit_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Detroit_1940[,j]=st_drop_geometry(
+    intersections_Detroit_1940[,j]*as.numeric(intersections_Detroit_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Detroit_1940$black_pop=as.numeric(intersections_Detroit_1940$bpop*intersections_Detroit_1940$proportion_intersected)
+intersections_Detroit_1940$black_pop=intersections_Detroit_1940$black_pop - intersections_Detroit_1940$africa
+intersections_Detroit_1940$usa=intersections_Detroit_1940$usa - intersections_Detroit_1940$black_pop
+
+hex_mat_Detroit_1940=matrix(nrow=length(unique(intersections_Detroit_1940$hex_id)), ncol=18)
+colnames(hex_mat_Detroit_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Detroit_1940[,"hex_id"]=unique(intersections_Detroit_1940$hex_id)
+hex_mat_Detroit_1940=as.data.frame(hex_mat_Detroit_1940)
+
+
+hex_mat_Detroit_1940$median_home_value=NA_real_
+hex_mat_Detroit_1940$median_home_value_coverage=NA_real_
+
+intersections_Detroit_1940=st_drop_geometry(intersections_Detroit_1940)
+intersections_Detroit_1930=st_drop_geometry(intersections_Detroit_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Detroit_1940)){
+  hex_mat_Detroit_1940[i,"pop"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Detroit_1940[i,"italian_pop"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Detroit_1940[i,"pop_mlp"]=sum(intersections_Detroit_1930[which(intersections_Detroit_1930$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Detroit_1940[i,"pop_abe"]=sum(intersections_Detroit_1930[which(intersections_Detroit_1930$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Detroit_1940[i,"pop_cs"]=sum(intersections_Detroit_1930[which(intersections_Detroit_1930$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Detroit_1940[i,"incarc_mlp"]=sum(intersections_Detroit_1930[which(intersections_Detroit_1930$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Detroit_1940[i,"incarc_abe"]=sum(intersections_Detroit_1930[which(intersections_Detroit_1930$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Detroit_1940[i,"incarc_cs"]=sum(intersections_Detroit_1930[which(intersections_Detroit_1930$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Detroit_1940[i,"mori"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Detroit_1940[i,"non_mori_sicilians"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Detroit_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Detroit_1940[i,"damiani_1885_sicilians"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Detroit_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Detroit_1940[i,"all_sicilians"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Detroit_1940[i,"area"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Detroit_1940[i,"foreign"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Detroit_1940$median_home_value[home_value_rows]) &
+      intersections_Detroit_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Detroit_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Detroit_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Detroit_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Detroit_1940$median_home_value[valid_home_value_rows],
+      intersections_Detroit_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Detroit_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Detroit_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Detroit_1940[
+        which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Detroit_1940[
+        which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Detroit_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Detroit_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Detroit_1940$ital_prop=hex_mat_Detroit_1940$italian_pop/hex_mat_Detroit_1940$pop
+hex_mat_Detroit_1940$incarc_abe_prop=hex_mat_Detroit_1940$incarc_abe/hex_mat_Detroit_1940$pop_abe
+hex_mat_Detroit_1940$incarc_mlp_prop=hex_mat_Detroit_1940$incarc_mlp/hex_mat_Detroit_1940$pop_mlp
+hex_mat_Detroit_1940$incarc_cs_prop=hex_mat_Detroit_1940$incarc_cs/hex_mat_Detroit_1940$pop_cs
+hex_mat_Detroit_1940$any_mori=ifelse(hex_mat_Detroit_1940$mori>0, 1, 0)
+hex_mat_Detroit_1940$any_non_mori_sicilians=ifelse(hex_mat_Detroit_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Detroit_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Detroit_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Detroit_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Detroit_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Detroit_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Detroit_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Detroit_1940$any_sicilians=ifelse(hex_mat_Detroit_1940$all_sicilians>0, 1, 0)
+hex_mat_Detroit_1940$foreign_prop=hex_mat_Detroit_1940$foreign/hex_mat_Detroit_1940$pop
+hex_mat_Detroit_1940$year=1940
+hex_mat_Detroit_1940$city="Detroit"
+
+intersections_Detroit_1940$working_age_pop=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "wap"]
+intersections_Detroit_1940$household_count=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "hh"]
+intersections_Detroit_1940$occ_score=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "occ_score"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$sei=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "duncan"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$owned=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "owned"]*intersections_Detroit_1940$household_count
+intersections_Detroit_1940$owned_free=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "owned_free"]*intersections_Detroit_1940$household_count
+intersections_Detroit_1940$rent=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "rent"]*intersections_Detroit_1940$household_count
+intersections_Detroit_1940$construction=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_cons"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$transportation=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_trans"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$retail_trade=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_rt"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$business_services=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_bs"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$finance=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_fin"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$public_admin=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_pa"]*intersections_Detroit_1940$working_age_pop
+intersections_Detroit_1940$professional_services=census_econ[match(intersections_Detroit_1940$ED, census_econ$ed), "ind_prof"]*intersections_Detroit_1940$working_age_pop
+
+hex_mat_Detroit_1940$working_age_pop=0
+hex_mat_Detroit_1940$household_count=0
+hex_mat_Detroit_1940$occ_score=0
+hex_mat_Detroit_1940$sei=0
+hex_mat_Detroit_1940$owned=0
+hex_mat_Detroit_1940$owned_free=0
+hex_mat_Detroit_1940$rent=0
+hex_mat_Detroit_1940$construction=0
+hex_mat_Detroit_1940$transportation=0
+hex_mat_Detroit_1940$retail_trade=0
+hex_mat_Detroit_1940$business_services=0
+hex_mat_Detroit_1940$finance=0
+hex_mat_Detroit_1940$public_admin=0
+hex_mat_Detroit_1940$professional_services=0
+
+intersections_Detroit_1940$working_age_pop_weighted=intersections_Detroit_1940$working_age_pop*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$household_count_weighted=intersections_Detroit_1940$household_count*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$occ_score_weighted=intersections_Detroit_1940$occ_score*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$sei_weighted=intersections_Detroit_1940$sei*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$owned_weighted=intersections_Detroit_1940$owned*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$owned_free_weighted=intersections_Detroit_1940$owned_free*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$rent_weighted=intersections_Detroit_1940$rent*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$construction_weighted=intersections_Detroit_1940$construction*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$transportation_weighted=intersections_Detroit_1940$transportation*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$retail_trade_weighted=intersections_Detroit_1940$retail_trade*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$business_services_weighted=intersections_Detroit_1940$business_services*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$finance_weighted=intersections_Detroit_1940$finance*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$public_admin_weighted=intersections_Detroit_1940$public_admin*intersections_Detroit_1940$proportion_intersected
+intersections_Detroit_1940$professional_services_weighted=intersections_Detroit_1940$professional_services*intersections_Detroit_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Detroit_1940)){
+  hex_mat_Detroit_1940[i,"working_age_pop"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Detroit_1940[i,"household_count"]=sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Detroit_1940[i,"occ_score"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"sei"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"owned"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Detroit_1940[i,"household_count"]
+  hex_mat_Detroit_1940[i,"owned_free"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Detroit_1940[i,"household_count"]
+  hex_mat_Detroit_1940[i,"rent"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Detroit_1940[i,"household_count"]
+  hex_mat_Detroit_1940[i,"construction"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"transportation"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"retail_trade"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"business_services"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"finance"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"public_admin"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+  hex_mat_Detroit_1940[i,"professional_services"]=(sum(intersections_Detroit_1940[which(intersections_Detroit_1940$hex_id==hex_mat_Detroit_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Detroit_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Detroit_1930.rda")
+intersections_Detroit_1940=intersections_Detroit_1930
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Detroit_1940))
+polygon_sf=st_as_sf(intersections_Detroit_1940$geometry, crs=st_crs(intersections_Detroit_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Detroit_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Detroit_1940=st_drop_geometry(intersections_Detroit_1940)
+
+matches_book=intersections_Detroit_1940[matches_book, "hex_id"]
+matches_pre=intersections_Detroit_1940[matches_pre, "hex_id"]
+
+hex_mat_Detroit_1940$mafia_book_geo=ifelse(hex_mat_Detroit_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Detroit_1940$mafia_pre_geo=ifelse(hex_mat_Detroit_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Detroit_1940$mafia_book_hex=ifelse(hex_mat_Detroit_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Detroit_1940$mafia_pre_hex=ifelse(hex_mat_Detroit_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Detroit_1940$cutrera_hex= ifelse(hex_mat_Detroit_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Detroit_1940$damiani_hex=ifelse(hex_mat_Detroit_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Detroit_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Detroit_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Detroit_1940=hex_mat_Detroit_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Detroit_1940)==54)
+stopifnot(identical(names(hex_mat_Detroit_1940),hex_mat_columns_1940))
+
+save(hex_mat_Detroit_1940, file="intermediate_outputs/step_3_hex_mats_balanced/hex_mat_Detroit_1940.rda")
+
+###########################################
+########## 1940- Manhattan ################
+###########################################
+intersections_Manhattan_1940=intersections_Manhattan_1930
+intersections_Manhattan_1940$population=0
+intersections_Manhattan_1940$italian_population=0
+intersections_Manhattan_1940$pop_weighted=0
+intersections_Manhattan_1940$ital_weighted=0
+
+intersections_Manhattan_1930$pop_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Manhattan_1930$ED, ed_incarceration_rates_1940$ed),"pop_ipums"])
+intersections_Manhattan_1930$pop_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Manhattan_1930$ED, ed_incarceration_rates_1940$ed),"pop_abe"])
+intersections_Manhattan_1930$pop_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Manhattan_1930$ED, ed_incarceration_rates_1940$ed),"pop_tree"])
+intersections_Manhattan_1930$incarc_mlp=as.numeric(ed_incarceration_rates_1940[match(intersections_Manhattan_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_ipums"])
+intersections_Manhattan_1930$incarc_abe=as.numeric(ed_incarceration_rates_1940[match(intersections_Manhattan_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_abe"])
+intersections_Manhattan_1930$incarc_cs=as.numeric(ed_incarceration_rates_1940[match(intersections_Manhattan_1930$ED, ed_incarceration_rates_1940$ed),"num_incarc_tree"])
+intersections_Manhattan_1930$pop_mlp_weighted=intersections_Manhattan_1930$pop_mlp*intersections_Manhattan_1930$proportion_intersected
+intersections_Manhattan_1930$pop_abe_weighted=intersections_Manhattan_1930$pop_abe*intersections_Manhattan_1930$proportion_intersected
+intersections_Manhattan_1930$pop_cs_weighted=intersections_Manhattan_1930$pop_cs*intersections_Manhattan_1930$proportion_intersected
+intersections_Manhattan_1930$incarc_mlp_weighted=intersections_Manhattan_1930$incarc_mlp*intersections_Manhattan_1930$proportion_intersected
+intersections_Manhattan_1930$incarc_abe_weighted=intersections_Manhattan_1930$incarc_abe*intersections_Manhattan_1930$proportion_intersected
+intersections_Manhattan_1930$incarc_cs_weighted=intersections_Manhattan_1930$incarc_cs*intersections_Manhattan_1930$proportion_intersected
+
+
+
+
+
+intersections_Manhattan_1940$mori=0
+
+intersections_Manhattan_1940$mafia_ed_book=ifelse(intersections_Manhattan_1940$ED %in% mafia_book_ed, 1, 0)
+intersections_Manhattan_1940$mafia_ed_pre=ifelse(intersections_Manhattan_1940$ED %in% mafia_pre_ed, 1, 0)
+intersections_Manhattan_1940$damiani_ed=ifelse(intersections_Manhattan_1940$ED %in% damiani_ed, 1, 0)
+intersections_Manhattan_1940$cutrera_ed=ifelse(intersections_Manhattan_1940$ED %in% cutrera_ed, 1, 0)
+intersections_Manhattan_1940$cutrera_or_damiani_ed=ifelse(intersections_Manhattan_1940$ED %in% cutrera_or_damiani_ed, 1, 0)
+
+mafia_book_hex=intersections_Manhattan_1940[which(intersections_Manhattan_1940$mafia_ed_book==1),]
+mafia_book_hex=st_drop_geometry(mafia_book_hex)
+mafia_book_hex=unique(mafia_book_hex$hex_id)
+
+cutrera_hex=intersections_Manhattan_1940[which(intersections_Manhattan_1940$cutrera_ed==1),]
+cutrera_hex=st_drop_geometry(cutrera_hex)
+cutrera_hex=unique(cutrera_hex$hex_id)
+
+damiani_hex=intersections_Manhattan_1940[which(intersections_Manhattan_1940$damiani_ed==1),]
+damiani_hex=st_drop_geometry(damiani_hex)
+damiani_hex=unique(damiani_hex$hex_id)
+
+cutrera_or_damiani_hex=intersections_Manhattan_1940[which(intersections_Manhattan_1940$cutrera_or_damiani_ed==1),]
+cutrera_or_damiani_hex=st_drop_geometry(cutrera_or_damiani_hex)
+cutrera_or_damiani_hex=unique(cutrera_or_damiani_hex$hex_id)
+
+mafia_pre_hex=intersections_Manhattan_1940[which(intersections_Manhattan_1940$mafia_ed_pre==1),]
+mafia_pre_hex=st_drop_geometry(mafia_pre_hex)
+mafia_pre_hex=unique(mafia_pre_hex$hex_id)
+
+Manhattan_mori=matrix(nrow=length(unique(intersections_Manhattan_1940$ED)), ncol=7)
+colnames(Manhattan_mori)=c(
+  "ed",
+  "all_sicilians",
+  "mori_sicilians",
+  "non_mori_sicilians",
+  "cutrera_1900_sicilians",
+  "damiani_1885_sicilians",
+  "cutrera_or_damiani_maps_sicilians"
+)
+
+Manhattan_mori[,"ed"]=unique(intersections_Manhattan_1940$ED)
+
+for (i in 1:nrow(Manhattan_mori)){
+  Manhattan_mori[i,"all_sicilians"]=nrow(household_sample_1940[which(household_sample_1940$ed==Manhattan_mori[i,"ed"]),])
+  Manhattan_mori[i,"mori_sicilians"]=nrow(household_sample_mori_1940[which(household_sample_mori_1940$ed==Manhattan_mori[i,"ed"]),])
+  Manhattan_mori[i,"non_mori_sicilians"]=nrow(household_sample_non_mori_1940[which(household_sample_non_mori_1940$ed==Manhattan_mori[i,"ed"]),])
+  Manhattan_mori[i,"cutrera_1900_sicilians"]=nrow(household_sample_cutrera_1900_1940[which(household_sample_cutrera_1900_1940$ed==Manhattan_mori[i,"ed"]),])
+  Manhattan_mori[i,"damiani_1885_sicilians"]=nrow(household_sample_damiani_1885_1940[which(household_sample_damiani_1885_1940$ed==Manhattan_mori[i,"ed"]),])
+  Manhattan_mori[i,"cutrera_or_damiani_maps_sicilians"]=nrow(household_sample_cutrera_or_damiani_maps_1940[which(household_sample_cutrera_or_damiani_maps_1940$ed==Manhattan_mori[i,"ed"]),])
+}
+
+Manhattan_mori=as.data.frame(Manhattan_mori)
+
+Manhattan_mori$all_sicilians=as.numeric(Manhattan_mori$all_sicilians)
+Manhattan_mori$mori_sicilians=as.numeric(Manhattan_mori$mori_sicilians)
+Manhattan_mori$non_mori_sicilians=as.numeric(Manhattan_mori$non_mori_sicilians)
+Manhattan_mori$cutrera_1900_sicilians=as.numeric(Manhattan_mori$cutrera_1900_sicilians)
+Manhattan_mori$damiani_1885_sicilians=as.numeric(Manhattan_mori$damiani_1885_sicilians)
+Manhattan_mori$cutrera_or_damiani_maps_sicilians=as.numeric(Manhattan_mori$cutrera_or_damiani_maps_sicilians)
+
+intersections_Manhattan_1940$mori=Manhattan_mori[match(intersections_Manhattan_1940$ED, Manhattan_mori$ed),"mori_sicilians"]
+intersections_Manhattan_1940$non_mori_sicilians=Manhattan_mori[match(intersections_Manhattan_1940$ED, Manhattan_mori$ed),"non_mori_sicilians"]
+intersections_Manhattan_1940$all_sicilians=Manhattan_mori[match(intersections_Manhattan_1940$ED, Manhattan_mori$ed),"all_sicilians"]
+intersections_Manhattan_1940$cutrera_1900_sicilians=Manhattan_mori[match(intersections_Manhattan_1940$ED, Manhattan_mori$ed),"cutrera_1900_sicilians"]
+intersections_Manhattan_1940$damiani_1885_sicilians=Manhattan_mori[match(intersections_Manhattan_1940$ED, Manhattan_mori$ed),"damiani_1885_sicilians"]
+intersections_Manhattan_1940$cutrera_or_damiani_maps_sicilians=Manhattan_mori[match(intersections_Manhattan_1940$ED, Manhattan_mori$ed),"cutrera_or_damiani_maps_sicilians"]
+
+intersections_Manhattan_1940[is.na(intersections_Manhattan_1940)]=0
+
+# No 1940 population/home-value source exists for this balanced-only city.
+intersections_Manhattan_1940$median_home_value=NA_real_
+intersections_Manhattan_1940$mori_weighted=intersections_Manhattan_1940$mori*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$non_mori_sicilians_weighted=intersections_Manhattan_1940$non_mori_sicilians*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$cutrera_1900_sicilians_weighted=intersections_Manhattan_1940$cutrera_1900_sicilians*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$damiani_1885_sicilians_weighted=intersections_Manhattan_1940$damiani_1885_sicilians*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$cutrera_or_damiani_maps_sicilians_weighted=intersections_Manhattan_1940$cutrera_or_damiani_maps_sicilians*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$all_sicilians_weighted=intersections_Manhattan_1940$all_sicilians*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$foreign_weighted=intersections_Manhattan_1940$immpop*intersections_Manhattan_1940$proportion_intersected
+
+intersections_Manhattan_1940$uk=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"United Kingdom"])
+intersections_Manhattan_1940$usa=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"USA"])
+intersections_Manhattan_1940$east_euro=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Central/Eastern Europe"])
+intersections_Manhattan_1940$ireland=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Ireland"])
+intersections_Manhattan_1940$canada=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Canada"])
+intersections_Manhattan_1940$russia=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Russia/Empire"])
+intersections_Manhattan_1940$west_euro=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Other Western Europe"])
+intersections_Manhattan_1940$east_asia=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"East Asia"])
+intersections_Manhattan_1940$latin_america=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Latin America/ Caribbean"])
+intersections_Manhattan_1940$south_euro=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Other Southern Europe"])
+intersections_Manhattan_1940$africa=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Africa"])
+intersections_Manhattan_1940$scandanavia=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Scandinavia"])
+intersections_Manhattan_1940$italy=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Italy"])
+intersections_Manhattan_1940$southeast_asia=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Southeast Asia"])
+intersections_Manhattan_1940$other_euro=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Other Europe"])
+intersections_Manhattan_1940$middle_east=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Middle East"])
+intersections_Manhattan_1940$other=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Other"])
+intersections_Manhattan_1940$india=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"India and Southern Asia"])
+intersections_Manhattan_1940$pacific=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Australia and Pacific Islands"])
+intersections_Manhattan_1940$other_asia=as.numeric(ethnic_frag_1940[match(intersections_Manhattan_1940$ED, ethnic_frag_1940$ed),"Other Asia"])
+
+ethnic_weight_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia"
+)
+
+for (j in ethnic_weight_cols){
+  intersections_Manhattan_1940[,j]=st_drop_geometry(
+    intersections_Manhattan_1940[,j]*as.numeric(intersections_Manhattan_1940$proportion_intersected)
+  )[,j]
+}
+
+intersections_Manhattan_1940$black_pop=as.numeric(intersections_Manhattan_1940$bpop*intersections_Manhattan_1940$proportion_intersected)
+intersections_Manhattan_1940$black_pop=intersections_Manhattan_1940$black_pop - intersections_Manhattan_1940$africa
+intersections_Manhattan_1940$usa=intersections_Manhattan_1940$usa - intersections_Manhattan_1940$black_pop
+
+hex_mat_Manhattan_1940=matrix(nrow=length(unique(intersections_Manhattan_1940$hex_id)), ncol=18)
+colnames(hex_mat_Manhattan_1940)=c(
+  "hex_id","pop","italian_pop","pop_mlp","pop_abe","pop_cs",
+  "incarc_mlp","incarc_abe","incarc_cs","mori","non_mori_sicilians",
+  "cutrera_1900_sicilians","damiani_1885_sicilians","cutrera_or_damiani_maps_sicilians",
+  "all_sicilians","area","foreign","ethnic_frag"
+)
+
+hex_mat_Manhattan_1940[,"hex_id"]=unique(intersections_Manhattan_1940$hex_id)
+hex_mat_Manhattan_1940=as.data.frame(hex_mat_Manhattan_1940)
+
+
+hex_mat_Manhattan_1940$median_home_value=NA_real_
+hex_mat_Manhattan_1940$median_home_value_coverage=NA_real_
+
+intersections_Manhattan_1940=st_drop_geometry(intersections_Manhattan_1940)
+intersections_Manhattan_1930=st_drop_geometry(intersections_Manhattan_1930)
+
+ethnic_frag_cols=c(
+  "uk",
+  "usa",
+  "east_euro",
+  "ireland",
+  "canada",
+  "russia",
+  "west_euro",
+  "east_asia",
+  "latin_america",
+  "south_euro",
+  "africa",
+  "scandanavia",
+  "italy",
+  "southeast_asia",
+  "other_euro",
+  "middle_east",
+  "other",
+  "india",
+  "pacific",
+  "other_asia",
+  "black_pop"
+)
+
+for (i in 1:nrow(hex_mat_Manhattan_1940)){
+  hex_mat_Manhattan_1940[i,"pop"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"pop_weighted"])
+  hex_mat_Manhattan_1940[i,"italian_pop"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"ital_weighted"])
+  hex_mat_Manhattan_1940[i,"pop_mlp"]=sum(intersections_Manhattan_1930[which(intersections_Manhattan_1930$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"pop_mlp_weighted"])
+  hex_mat_Manhattan_1940[i,"pop_abe"]=sum(intersections_Manhattan_1930[which(intersections_Manhattan_1930$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"pop_abe_weighted"])
+  hex_mat_Manhattan_1940[i,"pop_cs"]=sum(intersections_Manhattan_1930[which(intersections_Manhattan_1930$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"pop_cs_weighted"])
+  hex_mat_Manhattan_1940[i,"incarc_mlp"]=sum(intersections_Manhattan_1930[which(intersections_Manhattan_1930$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"incarc_mlp_weighted"])
+  hex_mat_Manhattan_1940[i,"incarc_abe"]=sum(intersections_Manhattan_1930[which(intersections_Manhattan_1930$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"incarc_abe_weighted"])
+  hex_mat_Manhattan_1940[i,"incarc_cs"]=sum(intersections_Manhattan_1930[which(intersections_Manhattan_1930$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"incarc_cs_weighted"])
+  hex_mat_Manhattan_1940[i,"mori"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"mori_weighted"])
+  hex_mat_Manhattan_1940[i,"non_mori_sicilians"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"non_mori_sicilians_weighted"])
+  hex_mat_Manhattan_1940[i,"cutrera_1900_sicilians"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"cutrera_1900_sicilians_weighted"])
+  hex_mat_Manhattan_1940[i,"damiani_1885_sicilians"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"damiani_1885_sicilians_weighted"])
+  hex_mat_Manhattan_1940[i,"cutrera_or_damiani_maps_sicilians"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"cutrera_or_damiani_maps_sicilians_weighted"])
+  hex_mat_Manhattan_1940[i,"all_sicilians"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"all_sicilians_weighted"])
+  hex_mat_Manhattan_1940[i,"area"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"area_intersect"])
+  hex_mat_Manhattan_1940[i,"foreign"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"foreign_weighted"])
+  
+  home_value_rows=which(
+    intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]
+  )
+  
+  valid_home_value_rows=home_value_rows[
+    !is.na(intersections_Manhattan_1940$median_home_value[home_value_rows]) &
+      intersections_Manhattan_1940$pop_weighted[home_value_rows] > 0
+  ]
+  
+  home_value_total_pop=sum(
+    intersections_Manhattan_1940$pop_weighted[home_value_rows],
+    na.rm=TRUE
+  )
+  
+  home_value_observed_pop=sum(
+    intersections_Manhattan_1940$pop_weighted[valid_home_value_rows],
+    na.rm=TRUE
+  )
+  
+  if (length(valid_home_value_rows)>0 && home_value_observed_pop>0){
+    hex_mat_Manhattan_1940[i,"median_home_value"]=weighted.mean(
+      intersections_Manhattan_1940$median_home_value[valid_home_value_rows],
+      intersections_Manhattan_1940$pop_weighted[valid_home_value_rows],
+      na.rm=TRUE
+    )
+  } else {
+    hex_mat_Manhattan_1940[i,"median_home_value"]=NA_real_
+  }
+  
+  hex_mat_Manhattan_1940[i,"median_home_value_coverage"]=ifelse(
+    home_value_total_pop>0,
+    home_value_observed_pop/home_value_total_pop,
+    NA_real_
+  )
+  
+  tmp=vector(mode="numeric", length=length(ethnic_frag_cols))
+  
+  for (j in seq_along(ethnic_frag_cols)){
+    tmp[j]=(sum(ifelse(
+      is.na(intersections_Manhattan_1940[
+        which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]),
+      0,
+      intersections_Manhattan_1940[
+        which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),
+        ethnic_frag_cols[j]
+      ]
+    ))/hex_mat_Manhattan_1940[i,"pop"])^2
+  }
+  
+  hex_mat_Manhattan_1940[i,"ethnic_frag"]=1-sum(tmp)
+}
+
+hex_mat_Manhattan_1940$ital_prop=hex_mat_Manhattan_1940$italian_pop/hex_mat_Manhattan_1940$pop
+hex_mat_Manhattan_1940$incarc_abe_prop=hex_mat_Manhattan_1940$incarc_abe/hex_mat_Manhattan_1940$pop_abe
+hex_mat_Manhattan_1940$incarc_mlp_prop=hex_mat_Manhattan_1940$incarc_mlp/hex_mat_Manhattan_1940$pop_mlp
+hex_mat_Manhattan_1940$incarc_cs_prop=hex_mat_Manhattan_1940$incarc_cs/hex_mat_Manhattan_1940$pop_cs
+hex_mat_Manhattan_1940$any_mori=ifelse(hex_mat_Manhattan_1940$mori>0, 1, 0)
+hex_mat_Manhattan_1940$any_non_mori_sicilians=ifelse(hex_mat_Manhattan_1940$non_mori_sicilians>0, 1, 0)
+hex_mat_Manhattan_1940$any_cutrera_1900_sicilians=ifelse(hex_mat_Manhattan_1940$cutrera_1900_sicilians>0, 1, 0)
+hex_mat_Manhattan_1940$any_damiani_1885_sicilians=ifelse(hex_mat_Manhattan_1940$damiani_1885_sicilians>0, 1, 0)
+hex_mat_Manhattan_1940$any_cutrera_or_damiani_maps_sicilians=ifelse(hex_mat_Manhattan_1940$cutrera_or_damiani_maps_sicilians>0, 1, 0)
+hex_mat_Manhattan_1940$any_sicilians=ifelse(hex_mat_Manhattan_1940$all_sicilians>0, 1, 0)
+hex_mat_Manhattan_1940$foreign_prop=hex_mat_Manhattan_1940$foreign/hex_mat_Manhattan_1940$pop
+hex_mat_Manhattan_1940$year=1940
+hex_mat_Manhattan_1940$city="Manhattan"
+
+intersections_Manhattan_1940$working_age_pop=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "wap"]
+intersections_Manhattan_1940$household_count=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "hh"]
+intersections_Manhattan_1940$occ_score=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "occ_score"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$sei=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "duncan"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$owned=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "owned"]*intersections_Manhattan_1940$household_count
+intersections_Manhattan_1940$owned_free=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "owned_free"]*intersections_Manhattan_1940$household_count
+intersections_Manhattan_1940$rent=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "rent"]*intersections_Manhattan_1940$household_count
+intersections_Manhattan_1940$construction=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_cons"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$transportation=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_trans"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$retail_trade=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_rt"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$business_services=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_bs"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$finance=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_fin"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$public_admin=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_pa"]*intersections_Manhattan_1940$working_age_pop
+intersections_Manhattan_1940$professional_services=census_econ[match(intersections_Manhattan_1940$ED, census_econ$ed), "ind_prof"]*intersections_Manhattan_1940$working_age_pop
+
+hex_mat_Manhattan_1940$working_age_pop=0
+hex_mat_Manhattan_1940$household_count=0
+hex_mat_Manhattan_1940$occ_score=0
+hex_mat_Manhattan_1940$sei=0
+hex_mat_Manhattan_1940$owned=0
+hex_mat_Manhattan_1940$owned_free=0
+hex_mat_Manhattan_1940$rent=0
+hex_mat_Manhattan_1940$construction=0
+hex_mat_Manhattan_1940$transportation=0
+hex_mat_Manhattan_1940$retail_trade=0
+hex_mat_Manhattan_1940$business_services=0
+hex_mat_Manhattan_1940$finance=0
+hex_mat_Manhattan_1940$public_admin=0
+hex_mat_Manhattan_1940$professional_services=0
+
+intersections_Manhattan_1940$working_age_pop_weighted=intersections_Manhattan_1940$working_age_pop*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$household_count_weighted=intersections_Manhattan_1940$household_count*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$occ_score_weighted=intersections_Manhattan_1940$occ_score*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$sei_weighted=intersections_Manhattan_1940$sei*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$owned_weighted=intersections_Manhattan_1940$owned*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$owned_free_weighted=intersections_Manhattan_1940$owned_free*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$rent_weighted=intersections_Manhattan_1940$rent*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$construction_weighted=intersections_Manhattan_1940$construction*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$transportation_weighted=intersections_Manhattan_1940$transportation*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$retail_trade_weighted=intersections_Manhattan_1940$retail_trade*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$business_services_weighted=intersections_Manhattan_1940$business_services*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$finance_weighted=intersections_Manhattan_1940$finance*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$public_admin_weighted=intersections_Manhattan_1940$public_admin*intersections_Manhattan_1940$proportion_intersected
+intersections_Manhattan_1940$professional_services_weighted=intersections_Manhattan_1940$professional_services*intersections_Manhattan_1940$proportion_intersected
+
+for (i in 1:nrow(hex_mat_Manhattan_1940)){
+  hex_mat_Manhattan_1940[i,"working_age_pop"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"working_age_pop_weighted"])
+  hex_mat_Manhattan_1940[i,"household_count"]=sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"household_count_weighted"])
+  hex_mat_Manhattan_1940[i,"occ_score"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"occ_score_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"sei"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"sei_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"owned"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"owned_weighted"]))/hex_mat_Manhattan_1940[i,"household_count"]
+  hex_mat_Manhattan_1940[i,"owned_free"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"owned_free_weighted"]))/hex_mat_Manhattan_1940[i,"household_count"]
+  hex_mat_Manhattan_1940[i,"rent"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"rent_weighted"]))/hex_mat_Manhattan_1940[i,"household_count"]
+  hex_mat_Manhattan_1940[i,"construction"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"construction_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"transportation"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"transportation_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"retail_trade"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"retail_trade_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"business_services"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"business_services_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"finance"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"finance_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"public_admin"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"public_admin_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+  hex_mat_Manhattan_1940[i,"professional_services"]=(sum(intersections_Manhattan_1940[which(intersections_Manhattan_1940$hex_id==hex_mat_Manhattan_1940[i,"hex_id"]),"professional_services_weighted"]))/hex_mat_Manhattan_1940[i,"working_age_pop"]
+}
+
+load("intermediate_outputs/step_2_intersections/intersections_Manhattan_1930.rda")
+intersections_Manhattan_1940=intersections_Manhattan_1930
+
+# Book addresses
+points_df=data.frame(longitude = addresses$lon, latitude = addresses$lat)
+points_sf=st_as_sf(points_df, coords = c("longitude","latitude"), crs = 4326)
+points_sf=st_transform(points_sf, crs=st_crs(intersections_Manhattan_1940))
+polygon_sf=st_as_sf(intersections_Manhattan_1940$geometry, crs=st_crs(intersections_Manhattan_1940))
+matches_book=st_intersects(points_sf, polygon_sf)
+matches_book=unique(as.vector(unlist(matches_book)))
+
+# Pre-1926 addresses
+points_df_pre=data.frame(longitude = addresses_pre_1926$lon, latitude = addresses_pre_1926$lat)
+points_sf_pre=st_as_sf(points_df_pre, coords = c("longitude","latitude"), crs = 4326)
+points_sf_pre=st_transform(points_sf_pre, crs=st_crs(intersections_Manhattan_1940))
+matches_pre=st_intersects(points_sf_pre, polygon_sf)
+matches_pre=unique(as.vector(unlist(matches_pre)))
+
+intersections_Manhattan_1940=st_drop_geometry(intersections_Manhattan_1940)
+
+matches_book=intersections_Manhattan_1940[matches_book, "hex_id"]
+matches_pre=intersections_Manhattan_1940[matches_pre, "hex_id"]
+
+hex_mat_Manhattan_1940$mafia_book_geo=ifelse(hex_mat_Manhattan_1940$hex_id %in% matches_book, 1, 0)
+hex_mat_Manhattan_1940$mafia_pre_geo=ifelse(hex_mat_Manhattan_1940$hex_id %in% matches_pre, 1, 0)
+
+hex_mat_Manhattan_1940$mafia_book_hex=ifelse(hex_mat_Manhattan_1940$hex_id %in% mafia_book_hex, 1, 0)
+hex_mat_Manhattan_1940$mafia_pre_hex=ifelse(hex_mat_Manhattan_1940$hex_id %in% mafia_pre_hex, 1, 0)
+
+hex_mat_Manhattan_1940$cutrera_hex= ifelse(hex_mat_Manhattan_1940$hex_id %in% cutrera_hex, 1, 0)
+hex_mat_Manhattan_1940$damiani_hex=ifelse(hex_mat_Manhattan_1940$hex_id %in% damiani_hex, 1, 0)
+hex_mat_Manhattan_1940$cutrera_or_damiani_hex=ifelse(hex_mat_Manhattan_1940$hex_id %in% cutrera_or_damiani_hex, 1, 0)
+
+hex_mat_Manhattan_1940=hex_mat_Manhattan_1940[,hex_mat_columns_1940]
+stopifnot(ncol(hex_mat_Manhattan_1940)==54)
+stopifnot(identical(names(hex_mat_Manhattan_1940),hex_mat_columns_1940))
+
+save(hex_mat_Manhattan_1940, file="intermediate_outputs/step_3_hex_mats_balanced/hex_mat_Manhattan_1940.rda")

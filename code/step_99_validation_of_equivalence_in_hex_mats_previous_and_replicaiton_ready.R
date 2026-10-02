@@ -1701,3 +1701,1859 @@ for (city in cities){
   )
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+new_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats"
+
+files_1900=list.files(
+  new_dir,
+  pattern="hex_mat_.*_1900\\.rda$",
+  full.names=FALSE
+)
+
+incarceration_vars=c(
+  "pop_mlp",
+  "pop_abe",
+  "pop_cs",
+  "incarc_mlp",
+  "incarc_abe",
+  "incarc_cs",
+  "incarc_mlp_prop",
+  "incarc_abe_prop",
+  "incarc_cs_prop"
+)
+
+validation=data.frame(
+  city=character(),
+  cols_1900=integer(),
+  cols_1910=integer(),
+  same_columns=logical(),
+  same_column_order=logical(),
+  compatible_classes=logical(),
+  incarceration_all_na=logical(),
+  duplicate_hex_ids=integer(),
+  year_correct=logical(),
+  stringsAsFactors=FALSE
+)
+
+for (f1900 in files_1900){
+  
+  city=sub(
+    "^hex_mat_(.*)_1900\\.rda$",
+    "\\1",
+    f1900
+  )
+  
+  f1910=paste0(
+    "hex_mat_",
+    city,
+    "_1910.rda"
+  )
+  
+  obj1900_name=load(
+    file.path(new_dir,f1900)
+  )
+  x1900=get(obj1900_name[1])
+  rm(list=obj1900_name)
+  
+  obj1910_name=load(
+    file.path(new_dir,f1910)
+  )
+  x1910=get(obj1910_name[1])
+  rm(list=obj1910_name)
+  
+  same_columns=setequal(
+    names(x1900),
+    names(x1910)
+  )
+  
+  same_column_order=identical(
+    names(x1900),
+    names(x1910)
+  )
+  
+  compatible_classes=FALSE
+  
+  if (same_column_order){
+    
+    compatible_classes=TRUE
+    
+    for (var in names(x1900)){
+      
+      class1900=class(x1900[[var]])[1]
+      class1910=class(x1910[[var]])[1]
+      
+      numeric1900=class1900 %in% c(
+        "numeric",
+        "integer"
+      )
+      
+      numeric1910=class1910 %in% c(
+        "numeric",
+        "integer"
+      )
+      
+      character1900=class1900 %in% c(
+        "character",
+        "factor"
+      )
+      
+      character1910=class1910 %in% c(
+        "character",
+        "factor"
+      )
+      
+      compatible=
+        class1900==class1910 |
+        (numeric1900 & numeric1910) |
+        (character1900 & character1910)
+      
+      if (!compatible){
+        compatible_classes=FALSE
+      }
+      
+    }
+    
+  }
+  
+  incarceration_all_na=all(
+    sapply(
+      incarceration_vars,
+      function(var){
+        var %in% names(x1900) &
+          all(is.na(x1900[[var]]))
+      }
+    )
+  )
+  
+  duplicate_hex_ids=sum(
+    duplicated(x1900$hex_id)
+  )
+  
+  year_correct=
+    "year" %in% names(x1900) &
+    all(x1900$year==1900)
+  
+  validation=rbind(
+    validation,
+    data.frame(
+      city=city,
+      cols_1900=ncol(x1900),
+      cols_1910=ncol(x1910),
+      same_columns=same_columns,
+      same_column_order=same_column_order,
+      compatible_classes=compatible_classes,
+      incarceration_all_na=incarceration_all_na,
+      duplicate_hex_ids=duplicate_hex_ids,
+      year_correct=year_correct,
+      stringsAsFactors=FALSE
+    )
+  )
+  
+}
+
+cat("\n====================================================\n")
+cat("1900 VS 1910 PANEL CONFORMABILITY\n")
+cat("====================================================\n")
+
+print(
+  validation,
+  row.names=FALSE
+)
+
+problems=validation[
+  validation$cols_1900!=validation$cols_1910 |
+    !validation$same_columns |
+    !validation$same_column_order |
+    !validation$compatible_classes |
+    !validation$incarceration_all_na |
+    validation$duplicate_hex_ids>0 |
+    !validation$year_correct,
+]
+
+if (nrow(problems)==0){
+  
+  cat("\nALL 1900 MATRICES ARE PANEL-CONFORMABLE WITH 1910.\n")
+  
+} else {
+  
+  cat("\nCITIES REQUIRING ATTENTION:\n")
+  
+  print(
+    problems,
+    row.names=FALSE
+  )
+  
+}
+
+
+
+
+
+
+
+
+
+
+############################################################
+######## 1940 OLD VS NEW VALIDATION #########################
+############################################################
+
+new_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats"
+new_balanced_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats_balanced"
+
+old_dir="/home/zach/Dropbox/corrected_intersections/hex_mats"
+old_balanced_dir="/home/zach/Dropbox/corrected_intersections/hex_mats_balanced_1940_change"
+
+
+regular_cities=c(
+  "Baltimore",
+  "Boston",
+  "Chicago",
+  "Cincinnati",
+  "Cleveland",
+  "Philadelphia",
+  "Pittsburgh",
+  "StLouis"
+)
+
+balanced_cities=c(
+  "Brooklyn",
+  "Detroit",
+  "Manhattan"
+)
+
+
+ignore_vars=c(
+  "foreign",
+  "foreign_prop",
+  "pop_mlp",
+  "incarc_mlp",
+  "incarc_mlp_prop",
+  "household_count",
+  "occ_score",
+  "sei",
+  "owned",
+  "rent"
+)
+
+tolerance=1e-10
+
+
+validation_summary=data.frame(
+  city=character(),
+  version=character(),
+  new_rows=integer(),
+  old_rows=integer(),
+  same_rows=logical(),
+  same_hex_ids=logical(),
+  same_hex_order=logical(),
+  n_common_cols=integer(),
+  n_checked_cols=integer(),
+  n_changed_checked_cols=integer(),
+  changed_checked_cols=character(),
+  stringsAsFactors=FALSE
+)
+
+
+############################################################
+######## FUNCTION ###########################################
+############################################################
+
+validate_city=function(city,version,new_folder,old_folder){
+  
+  f=paste0("hex_mat_",city,"_1940.rda")
+  
+  new_object_name=load(
+    file.path(new_folder,f)
+  )
+  
+  new=get(new_object_name[1])
+  
+  rm(list=new_object_name)
+  
+  
+  old_object_name=load(
+    file.path(old_folder,f)
+  )
+  
+  old=get(old_object_name[1])
+  
+  rm(list=old_object_name)
+  
+  
+  new_hex=as.character(new$hex_id)
+  old_hex=as.character(old$hex_id)
+  
+  common_hex=intersect(
+    new_hex,
+    old_hex
+  )
+  
+  new_compare=new[
+    match(common_hex,new_hex),
+  ]
+  
+  old_compare=old[
+    match(common_hex,old_hex),
+  ]
+  
+  common_cols=intersect(
+    names(new_compare),
+    names(old_compare)
+  )
+  
+  check_cols=setdiff(
+    common_cols,
+    ignore_vars
+  )
+  
+  changed_cols=c()
+  
+  
+  for (var in check_cols){
+    
+    x=new_compare[[var]]
+    y=old_compare[[var]]
+    
+    x_num=suppressWarnings(
+      as.numeric(as.character(x))
+    )
+    
+    y_num=suppressWarnings(
+      as.numeric(as.character(y))
+    )
+    
+    numeric_like=
+      (
+        is.numeric(x) |
+          all(is.na(x) | !is.na(x_num))
+      ) &
+      (
+        is.numeric(y) |
+          all(is.na(y) | !is.na(y_num))
+      )
+    
+    if (numeric_like){
+      
+      missing_difference=xor(
+        is.na(x_num),
+        is.na(y_num)
+      )
+      
+      value_difference=
+        !is.na(x_num) &
+        !is.na(y_num) &
+        abs(x_num-y_num)>tolerance
+      
+      if (
+        any(missing_difference) |
+        any(value_difference)
+      ){
+        
+        changed_cols=c(
+          changed_cols,
+          var
+        )
+        
+      }
+      
+    } else {
+      
+      x_char=as.character(x)
+      y_char=as.character(y)
+      
+      same=
+        (is.na(x_char) & is.na(y_char)) |
+        (
+          !is.na(x_char) &
+            !is.na(y_char) &
+            x_char==y_char
+        )
+      
+      if (any(!same)){
+        
+        changed_cols=c(
+          changed_cols,
+          var
+        )
+        
+      }
+      
+    }
+    
+  }
+  
+  
+  cat("\n====================================================\n")
+  cat("VALIDATING:",f,"\n")
+  cat("VERSION:",version,"\n")
+  cat("====================================================\n")
+  
+  cat(
+    "Rows identical:",
+    nrow(new)==nrow(old),
+    "\n"
+  )
+  
+  cat(
+    "Hex IDs identical:",
+    setequal(new_hex,old_hex),
+    "\n"
+  )
+  
+  cat(
+    "Hex order identical:",
+    identical(new_hex,old_hex),
+    "\n"
+  )
+  
+  cat(
+    "Checked common columns:",
+    length(check_cols),
+    "\n"
+  )
+  
+  cat(
+    "Changed checked columns:",
+    length(changed_cols),
+    "\n"
+  )
+  
+  if (length(changed_cols)>0){
+    
+    cat(
+      "Unexpected changed columns:",
+      paste(changed_cols,collapse=", "),
+      "\n"
+    )
+    
+  }
+  
+  
+  return(
+    data.frame(
+      city=city,
+      version=version,
+      new_rows=nrow(new),
+      old_rows=nrow(old),
+      same_rows=nrow(new)==nrow(old),
+      same_hex_ids=setequal(new_hex,old_hex),
+      same_hex_order=identical(new_hex,old_hex),
+      n_common_cols=length(common_cols),
+      n_checked_cols=length(check_cols),
+      n_changed_checked_cols=length(changed_cols),
+      changed_checked_cols=
+        ifelse(
+          length(changed_cols)==0,
+          "",
+          paste(changed_cols,collapse=", ")
+        ),
+      stringsAsFactors=FALSE
+    )
+  )
+  
+}
+
+
+############################################################
+######## REGULAR 1940 CITIES ###############################
+############################################################
+
+for (city in regular_cities){
+  
+  validation_summary=rbind(
+    validation_summary,
+    validate_city(
+      city=city,
+      version="regular",
+      new_folder=new_dir,
+      old_folder=old_dir
+    )
+  )
+  
+}
+
+
+############################################################
+######## BALANCED-ONLY 1940 CITIES #########################
+############################################################
+
+for (city in balanced_cities){
+  
+  validation_summary=rbind(
+    validation_summary,
+    validate_city(
+      city=city,
+      version="balanced",
+      new_folder=new_balanced_dir,
+      old_folder=old_balanced_dir
+    )
+  )
+  
+}
+
+
+############################################################
+######## FINAL SUMMARY ######################################
+############################################################
+
+cat("\n\n")
+cat("====================================================\n")
+cat("1940 VALIDATION SUMMARY\n")
+cat("====================================================\n")
+
+print(
+  validation_summary,
+  row.names=FALSE
+)
+
+
+problems=validation_summary[
+  !validation_summary$same_rows |
+    !validation_summary$same_hex_ids |
+    validation_summary$n_changed_checked_cols>0,
+]
+
+
+cat("\n====================================================\n")
+cat("CITIES REQUIRING ATTENTION\n")
+cat("====================================================\n")
+
+if (nrow(problems)==0){
+  
+  cat("\nALL 1940 CITIES PASS.\n")
+  
+} else {
+  
+  print(
+    problems,
+    row.names=FALSE
+  )
+  
+}
+
+
+
+
+new_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats"
+new_balanced_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats_balanced"
+
+old_dir="/home/zach/Dropbox/corrected_intersections/hex_mats"
+old_balanced_dir="/home/zach/Dropbox/corrected_intersections/hex_mats_balanced_1940_change"
+
+checks=list(
+  Chicago=c("pop","pop_abe","incarc_abe_prop","ital_prop","any_mori"),
+  Philadelphia=c("any_mori"),
+  Pittsburgh=c("any_mori"),
+  StLouis=c("any_mori")
+)
+
+balanced_checks=list(
+  Brooklyn=c("pop_cs","incarc_cs","incarc_cs_prop","any_mori","mafia_book_hex"),
+  Detroit=c("pop_cs","incarc_cs","incarc_cs_prop","mafia_book_hex"),
+  Manhattan=c("pop_cs","incarc_cs","incarc_cs_prop","any_mori","mafia_book_hex")
+)
+
+check_city=function(city,vars,new_folder,old_folder){
+  
+  f=paste0("hex_mat_",city,"_1940.rda")
+  
+  xname=load(file.path(new_folder,f))
+  new=get(xname[1])
+  rm(list=xname)
+  
+  xname=load(file.path(old_folder,f))
+  old=get(xname[1])
+  rm(list=xname)
+  
+  old=old[
+    match(new$hex_id,old$hex_id),
+  ]
+  
+  cat("\n============================\n")
+  cat(city,"\n")
+  cat("============================\n")
+  
+  for (var in vars){
+    
+    x=as.numeric(new[[var]])
+    y=as.numeric(old[[var]])
+    
+    changed=which(
+      xor(is.na(x),is.na(y)) |
+        (
+          !is.na(x) &
+            !is.na(y) &
+            abs(x-y)>1e-10
+        )
+    )
+    
+    cat("\n",var,"\n",sep="")
+    cat("N different:",length(changed),"\n")
+    cat("Old sum:",sum(y,na.rm=TRUE),"\n")
+    cat("New sum:",sum(x,na.rm=TRUE),"\n")
+    
+    if (length(changed)>0){
+      
+      print(
+        data.frame(
+          hex_id=new$hex_id[changed],
+          old=y[changed],
+          new=x[changed]
+        ),
+        row.names=FALSE
+      )
+      
+    }
+    
+  }
+  
+}
+
+for (city in names(checks)){
+  check_city(
+    city,
+    checks[[city]],
+    new_dir,
+    old_dir
+  )
+}
+
+for (city in names(balanced_checks)){
+  check_city(
+    city,
+    balanced_checks[[city]],
+    new_balanced_dir,
+    old_balanced_dir
+  )
+}
+
+
+new_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats"
+new_balanced_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats_balanced"
+
+old_dir="/home/zach/Dropbox/corrected_intersections/hex_mats"
+old_balanced_dir="/home/zach/Dropbox/corrected_intersections/hex_mats_balanced_1940_change"
+
+cities=c(
+  "Chicago",
+  "Philadelphia",
+  "Pittsburgh",
+  "StLouis"
+)
+
+for (city in cities){
+  
+  f=paste0("hex_mat_",city,"_1940.rda")
+  
+  xname=load(file.path(new_dir,f))
+  new=get(xname[1])
+  rm(list=xname)
+  
+  xname=load(file.path(old_dir,f))
+  old=get(xname[1])
+  rm(list=xname)
+  
+  old=old[
+    match(new$hex_id,old$hex_id),
+  ]
+  
+  changed=which(
+    old$any_mori!=new$any_mori
+  )
+  
+  cat("\n============================\n")
+  cat(city,"\n")
+  cat("============================\n")
+  
+  print(
+    data.frame(
+      hex_id=new$hex_id[changed],
+      old_any_mori=old$any_mori[changed],
+      new_any_mori=new$any_mori[changed],
+      old_mori=old$mori[changed],
+      new_mori=new$mori[changed],
+      old_non_mori=old$non_mori_sicilians[changed],
+      new_non_mori=new$non_mori_sicilians[changed],
+      old_all=old$all_sicilians[changed],
+      new_all=new$all_sicilians[changed]
+    ),
+    row.names=FALSE
+  )
+  
+}
+############################################################
+######## OLD VS NEW 1940 INCARCERATION SOURCE ##############
+############################################################
+
+load(
+  "/home/zach/Dropbox/transfer/inc_rates/ed_incarceration_rates_1940.rda"
+)
+
+inc_old=ed_incarceration_rates_1940
+rm(ed_incarceration_rates_1940)
+
+load(
+  "intermediate_outputs/incarceration_rates/ed_incarceration_rates_1940.rda"
+)
+
+inc_new=ed_incarceration_rates_1940
+rm(ed_incarceration_rates_1940)
+
+
+inc_old$state_county=gsub(
+  "^([^_]*_[^_]*_).*$",
+  "\\1",
+  inc_old$ed_state_county_id
+)
+
+inc_old$ed=as.numeric(
+  substr(
+    inc_old$enum_dist,
+    4,
+    nchar(inc_old$enum_dist)
+  )
+)
+
+inc_old$ed=as.character(inc_old$ed)
+inc_old$ed=paste0(
+  inc_old$state_county,
+  inc_old$ed
+)
+
+
+inc_new$state_county=gsub(
+  "^([^_]*_[^_]*_).*$",
+  "\\1",
+  inc_new$ed_state_county_id
+)
+
+inc_new$ed=as.numeric(
+  substr(
+    inc_new$enum_dist,
+    4,
+    nchar(inc_new$enum_dist)
+  )
+)
+
+inc_new$ed=as.character(inc_new$ed)
+inc_new$ed=paste0(
+  inc_new$state_county,
+  inc_new$ed
+)
+
+
+cities=c(
+  "Brooklyn",
+  "Detroit",
+  "Manhattan"
+)
+
+prefixes=c(
+  Brooklyn="13_470_",
+  Detroit="23_1630_",
+  Manhattan="13_610_"
+)
+
+
+for (city in cities){
+  
+  f=paste0(
+    "intermediate_outputs/step_2_intersections/intersections_",
+    city,
+    "_1930.rda"
+  )
+  
+  xname=load(f)
+  x=get(xname[1])
+  rm(list=xname)
+  
+  eds=paste0(
+    prefixes[city],
+    x$ED
+  )
+  
+  eds=unique(eds)
+  
+  tmp=data.frame(
+    ed=eds,
+    old_pop_cs=as.numeric(
+      inc_old[
+        match(eds,inc_old$ed),
+        10
+      ]
+    ),
+    new_pop_cs=as.numeric(
+      inc_new[
+        match(eds,inc_new$ed),
+        "pop_tree"
+      ]
+    ),
+    old_incarc_cs=as.numeric(
+      inc_old[
+        match(eds,inc_old$ed),
+        9
+      ]
+    ),
+    new_incarc_cs=as.numeric(
+      inc_new[
+        match(eds,inc_new$ed),
+        "num_incarc_tree"
+      ]
+    )
+  )
+  
+  changed=which(
+    xor(
+      is.na(tmp$old_pop_cs),
+      is.na(tmp$new_pop_cs)
+    ) |
+      xor(
+        is.na(tmp$old_incarc_cs),
+        is.na(tmp$new_incarc_cs)
+      ) |
+      (
+        !is.na(tmp$old_pop_cs) &
+          !is.na(tmp$new_pop_cs) &
+          abs(tmp$old_pop_cs-tmp$new_pop_cs)>1e-10
+      ) |
+      (
+        !is.na(tmp$old_incarc_cs) &
+          !is.na(tmp$new_incarc_cs) &
+          abs(tmp$old_incarc_cs-tmp$new_incarc_cs)>1e-10
+      )
+  )
+  
+  cat("\n============================\n")
+  cat(city,"\n")
+  cat("============================\n")
+  
+  cat(
+    "EDs compared:",
+    nrow(tmp),
+    "\n"
+  )
+  
+  cat(
+    "EDs different:",
+    length(changed),
+    "\n"
+  )
+  
+  cat(
+    "Old pop_cs sum:",
+    sum(tmp$old_pop_cs,na.rm=TRUE),
+    "\n"
+  )
+  
+  cat(
+    "New pop_cs sum:",
+    sum(tmp$new_pop_cs,na.rm=TRUE),
+    "\n"
+  )
+  
+  cat(
+    "Old incarc_cs sum:",
+    sum(tmp$old_incarc_cs,na.rm=TRUE),
+    "\n"
+  )
+  
+  cat(
+    "New incarc_cs sum:",
+    sum(tmp$new_incarc_cs,na.rm=TRUE),
+    "\n"
+  )
+  
+}
+
+
+
+
+
+cities=c(
+  "Brooklyn",
+  "Detroit",
+  "Manhattan"
+)
+
+old_base="/home/zach/Dropbox/corrected_intersections/intersections_800"
+new_base="intermediate_outputs/step_2_intersections"
+
+for (city in cities){
+  
+  old_file=file.path(
+    old_base,
+    city,
+    paste0("intersections_",city,"_1930.rda")
+  )
+  
+  new_file=file.path(
+    new_base,
+    paste0("intersections_",city,"_1930.rda")
+  )
+  
+  xname=load(old_file)
+  old=get(xname[1])
+  rm(list=xname)
+  
+  xname=load(new_file)
+  new=get(xname[1])
+  rm(list=xname)
+  
+  old=st_drop_geometry(old)
+  new=st_drop_geometry(new)
+  
+  old$key=paste0(
+    old$ED,
+    "_",
+    old$hex_id
+  )
+  
+  new$key=paste0(
+    new$ED,
+    "_",
+    new$hex_id
+  )
+  
+  common=intersect(
+    old$key,
+    new$key
+  )
+  
+  old_compare=old[
+    match(common,old$key),
+  ]
+  
+  new_compare=new[
+    match(common,new$key),
+  ]
+  
+  prop_diff=which(
+    abs(
+      old_compare$proportion_intersected -
+        new_compare$proportion_intersected
+    )>1e-10
+  )
+  
+  area_diff=which(
+    abs(
+      old_compare$area_intersect -
+        new_compare$area_intersect
+    )>1e-10
+  )
+  
+  cat("\n============================\n")
+  cat(city,"\n")
+  cat("============================\n")
+  
+  cat("Old rows:",nrow(old),"\n")
+  cat("New rows:",nrow(new),"\n")
+  
+  cat(
+    "Same ED-hex pairs:",
+    setequal(old$key,new$key),
+    "\n"
+  )
+  
+  cat(
+    "Common ED-hex pairs:",
+    length(common),
+    "\n"
+  )
+  
+  cat(
+    "Different proportion_intersected:",
+    length(prop_diff),
+    "\n"
+  )
+  
+  cat(
+    "Different area_intersect:",
+    length(area_diff),
+    "\n"
+  )
+  
+  if (length(prop_diff)>0){
+    
+    cat(
+      "Maximum proportion difference:",
+      max(
+        abs(
+          old_compare$proportion_intersected[prop_diff] -
+            new_compare$proportion_intersected[prop_diff]
+        )
+      ),
+      "\n"
+    )
+    
+  }
+  
+}
+
+
+
+
+
+
+############################################################
+######## DIRECTLY VERIFY BALANCED 1940 CS ##################
+############################################################
+
+new_balanced_dir="~/Desktop/Drive1/the_departed/intermediate_outputs/step_3_hex_mats_balanced"
+old_balanced_dir="/home/zach/Dropbox/corrected_intersections/hex_mats_balanced_1940_change"
+
+
+############################################################
+######## LOAD AND PREP 1940 INCARCERATION DATA #############
+############################################################
+
+load(
+  "intermediate_outputs/incarceration_rates/ed_incarceration_rates_1940.rda"
+)
+
+ed_incarceration_rates_1940[
+  is.na(ed_incarceration_rates_1940)
+]=0
+
+ed_incarceration_rates_1940$state_county=gsub(
+  "^([^_]*_[^_]*_).*$",
+  "\\1",
+  ed_incarceration_rates_1940$ed_state_county_id
+)
+
+ed_incarceration_rates_1940$ed=as.numeric(
+  substr(
+    ed_incarceration_rates_1940$enum_dist,
+    4,
+    nchar(ed_incarceration_rates_1940$enum_dist)
+  )
+)
+
+ed_incarceration_rates_1940$ed=as.character(
+  ed_incarceration_rates_1940$ed
+)
+
+ed_incarceration_rates_1940$ed=paste0(
+  ed_incarceration_rates_1940$state_county,
+  ed_incarceration_rates_1940$ed
+)
+
+
+############################################################
+######## CITIES #############################################
+############################################################
+
+cities=c(
+  "Brooklyn",
+  "Detroit",
+  "Manhattan"
+)
+
+prefixes=c(
+  Brooklyn="13_470_",
+  Detroit="23_1630_",
+  Manhattan="13_610_"
+)
+
+
+############################################################
+######## DIRECT RECONSTRUCTION ##############################
+############################################################
+
+for (city in cities){
+  
+  ##########################################################
+  # LOAD RAW 1930 INTERSECTION SHELL
+  ##########################################################
+  
+  f=paste0(
+    "intermediate_outputs/step_2_intersections/intersections_",
+    city,
+    "_1930.rda"
+  )
+  
+  xname=load(f)
+  intersections=get(xname[1])
+  rm(list=xname)
+  
+  intersections$ED=paste0(
+    prefixes[city],
+    intersections$ED
+  )
+  
+  intersections=st_drop_geometry(
+    intersections
+  )
+  
+  
+  ##########################################################
+  # ATTACH 1940 CS DATA
+  ##########################################################
+  
+  intersections$pop_cs=as.numeric(
+    ed_incarceration_rates_1940[
+      match(
+        intersections$ED,
+        ed_incarceration_rates_1940$ed
+      ),
+      "pop_tree"
+    ]
+  )
+  
+  intersections$incarc_cs=as.numeric(
+    ed_incarceration_rates_1940[
+      match(
+        intersections$ED,
+        ed_incarceration_rates_1940$ed
+      ),
+      "num_incarc_tree"
+    ]
+  )
+  
+  
+  ##########################################################
+  # WEIGHT BY 1930 INTERSECTION SHARE
+  ##########################################################
+  
+  intersections$pop_cs_weighted=
+    intersections$pop_cs*
+    intersections$proportion_intersected
+  
+  intersections$incarc_cs_weighted=
+    intersections$incarc_cs*
+    intersections$proportion_intersected
+  
+  
+  ##########################################################
+  # DIRECT HEX RECONSTRUCTION
+  ##########################################################
+  
+  direct=data.frame(
+    hex_id=unique(intersections$hex_id),
+    pop_cs=0,
+    incarc_cs=0
+  )
+  
+  for (i in 1:nrow(direct)){
+    
+    direct[i,"pop_cs"]=sum(
+      intersections$pop_cs_weighted[
+        which(
+          intersections$hex_id==
+            direct[i,"hex_id"]
+        )
+      ]
+    )
+    
+    direct[i,"incarc_cs"]=sum(
+      intersections$incarc_cs_weighted[
+        which(
+          intersections$hex_id==
+            direct[i,"hex_id"]
+        )
+      ]
+    )
+    
+  }
+  
+  
+  ##########################################################
+  # LOAD NEW BALANCED HEX MAT
+  ##########################################################
+  
+  fhex=paste0(
+    "hex_mat_",
+    city,
+    "_1940.rda"
+  )
+  
+  xname=load(
+    file.path(
+      new_balanced_dir,
+      fhex
+    )
+  )
+  
+  new=get(xname[1])
+  rm(list=xname)
+  
+  
+  ##########################################################
+  # LOAD OLD BALANCED_1940_CHANGE HEX MAT
+  ##########################################################
+  
+  xname=load(
+    file.path(
+      old_balanced_dir,
+      fhex
+    )
+  )
+  
+  old=get(xname[1])
+  rm(list=xname)
+  
+  
+  ##########################################################
+  # ALIGN BY HEX ID
+  ##########################################################
+  
+  new=new[
+    match(
+      direct$hex_id,
+      new$hex_id
+    ),
+  ]
+  
+  old=old[
+    match(
+      direct$hex_id,
+      old$hex_id
+    ),
+  ]
+  
+  
+  ##########################################################
+  # DIFFERENCE COUNTS
+  ##########################################################
+  
+  direct_new_pop_diff=which(
+    abs(
+      direct$pop_cs-
+        new$pop_cs
+    )>1e-10
+  )
+  
+  direct_old_pop_diff=which(
+    abs(
+      direct$pop_cs-
+        old$pop_cs
+    )>1e-10
+  )
+  
+  direct_new_incarc_diff=which(
+    abs(
+      direct$incarc_cs-
+        new$incarc_cs
+    )>1e-10
+  )
+  
+  direct_old_incarc_diff=which(
+    abs(
+      direct$incarc_cs-
+        old$incarc_cs
+    )>1e-10
+  )
+  
+  
+  ##########################################################
+  # RESULTS
+  ##########################################################
+  
+  cat("\n")
+  cat("====================================================\n")
+  cat(city,"\n")
+  cat("====================================================\n")
+  
+  
+  cat("\nPOP_CS\n")
+  
+  cat(
+    "Direct sum:",
+    sum(
+      direct$pop_cs,
+      na.rm=TRUE
+    ),
+    "\n"
+  )
+  
+  cat(
+    "New sum:",
+    sum(
+      new$pop_cs,
+      na.rm=TRUE
+    ),
+    "\n"
+  )
+  
+  cat(
+    "Old sum:",
+    sum(
+      old$pop_cs,
+      na.rm=TRUE
+    ),
+    "\n"
+  )
+  
+  cat(
+    "Direct vs new differences:",
+    length(
+      direct_new_pop_diff
+    ),
+    "\n"
+  )
+  
+  cat(
+    "Direct vs old differences:",
+    length(
+      direct_old_pop_diff
+    ),
+    "\n"
+  )
+  
+  
+  cat("\nINCARC_CS\n")
+  
+  cat(
+    "Direct sum:",
+    sum(
+      direct$incarc_cs,
+      na.rm=TRUE
+    ),
+    "\n"
+  )
+  
+  cat(
+    "New sum:",
+    sum(
+      new$incarc_cs,
+      na.rm=TRUE
+    ),
+    "\n"
+  )
+  
+  cat(
+    "Old sum:",
+    sum(
+      old$incarc_cs,
+      na.rm=TRUE
+    ),
+    "\n"
+  )
+  
+  cat(
+    "Direct vs new differences:",
+    length(
+      direct_new_incarc_diff
+    ),
+    "\n"
+  )
+  
+  cat(
+    "Direct vs old differences:",
+    length(
+      direct_old_incarc_diff
+    ),
+    "\n"
+  )
+  
+  
+  ##########################################################
+  # OPTIONAL: SHOW FIRST DIFFERENCES
+  ##########################################################
+  
+  if (length(direct_old_pop_diff)>0){
+    
+    cat("\nFirst direct vs old POP_CS differences:\n")
+    
+    print(
+      head(
+        data.frame(
+          hex_id=
+            direct$hex_id[
+              direct_old_pop_diff
+            ],
+          direct=
+            direct$pop_cs[
+              direct_old_pop_diff
+            ],
+          old=
+            old$pop_cs[
+              direct_old_pop_diff
+            ]
+        ),
+        10
+      ),
+      row.names=FALSE
+    )
+    
+  }
+  
+  
+  if (length(direct_old_incarc_diff)>0){
+    
+    cat("\nFirst direct vs old INCARC_CS differences:\n")
+    
+    print(
+      head(
+        data.frame(
+          hex_id=
+            direct$hex_id[
+              direct_old_incarc_diff
+            ],
+          direct=
+            direct$incarc_cs[
+              direct_old_incarc_diff
+            ],
+          old=
+            old$incarc_cs[
+              direct_old_incarc_diff
+            ]
+        ),
+        10
+      ),
+      row.names=FALSE
+    )
+    
+  }
+  
+}
+
+
+
+
+
+
+############################################################
+######## FINAL 1940 SOURCE CHECKS ###########################
+############################################################
+
+
+############################################################
+######## 1. OLD VS NEW 1940 HOUSEHOLD SAMPLES ##############
+############################################################
+
+old_household_dir="/home/zach/Dropbox/numident_link/outputs_for_hexagons"
+new_household_dir="intermediate_outputs/outputs_for_hexagons"
+
+
+prep_household=function(x){
+  
+  x=as.data.frame(x)
+  
+  x$enumdist=as.character(x$enumdist)
+  
+  x$ed=substr(
+    x$enumdist,
+    4,
+    nchar(x$enumdist)
+  )
+  
+  x$ed=gsub("^0+","",x$ed)
+  x$ed=gsub("0$","",x$ed)
+  
+  x$ed=paste0(
+    x$stateicp,
+    "_",
+    x$countyicp,
+    "_",
+    x$ed
+  )
+  
+  return(x)
+  
+}
+
+
+############################################################
+# ALL SICILIANS
+############################################################
+
+load(
+  file.path(
+    old_household_dir,
+    "household_sample_1940.rda"
+  )
+)
+
+old_all=prep_household(
+  household_sample_1940
+)
+
+rm(household_sample_1940)
+
+
+load(
+  file.path(
+    new_household_dir,
+    "household_sample_1940.rda"
+  )
+)
+
+new_all=prep_household(
+  household_sample_1940
+)
+
+rm(household_sample_1940)
+
+
+############################################################
+# MORI
+############################################################
+
+load(
+  file.path(
+    old_household_dir,
+    "household_sample_mori_1940.rda"
+  )
+)
+
+old_mori=prep_household(
+  household_sample_mori_1940
+)
+
+rm(household_sample_mori_1940)
+
+
+load(
+  file.path(
+    new_household_dir,
+    "household_sample_mori_1940.rda"
+  )
+)
+
+new_mori=prep_household(
+  household_sample_mori_1940
+)
+
+rm(household_sample_mori_1940)
+
+
+############################################################
+# NON-MORI
+############################################################
+
+load(
+  file.path(
+    old_household_dir,
+    "household_sample_non_mori_1940.rda"
+  )
+)
+
+old_non=prep_household(
+  household_sample_non_mori_1940
+)
+
+rm(household_sample_non_mori_1940)
+
+
+load(
+  file.path(
+    new_household_dir,
+    "household_sample_non_mori_1940.rda"
+  )
+)
+
+new_non=prep_household(
+  household_sample_non_mori_1940
+)
+
+rm(household_sample_non_mori_1940)
+
+
+############################################################
+# ED COUNTS
+############################################################
+
+eds=sort(
+  unique(
+    c(
+      old_all$ed,
+      new_all$ed,
+      old_mori$ed,
+      new_mori$ed,
+      old_non$ed,
+      new_non$ed
+    )
+  )
+)
+
+hh_compare=data.frame(
+  ed=eds,
+  old_all=0,
+  new_all=0,
+  old_mori=0,
+  new_mori=0,
+  old_non=0,
+  new_non=0
+)
+
+
+for (i in 1:nrow(hh_compare)){
+  
+  e=hh_compare$ed[i]
+  
+  hh_compare$old_all[i]=
+    nrow(old_all[which(old_all$ed==e),])
+  
+  hh_compare$new_all[i]=
+    nrow(new_all[which(new_all$ed==e),])
+  
+  hh_compare$old_mori[i]=
+    nrow(old_mori[which(old_mori$ed==e),])
+  
+  hh_compare$new_mori[i]=
+    nrow(new_mori[which(new_mori$ed==e),])
+  
+  hh_compare$old_non[i]=
+    nrow(old_non[which(old_non$ed==e),])
+  
+  hh_compare$new_non[i]=
+    nrow(new_non[which(new_non$ed==e),])
+  
+}
+
+
+changed=which(
+  hh_compare$old_all!=hh_compare$new_all |
+    hh_compare$old_mori!=hh_compare$new_mori |
+    hh_compare$old_non!=hh_compare$new_non
+)
+
+
+cat("\n")
+cat("====================================================\n")
+cat("1940 HOUSEHOLD SAMPLE COMPARISON\n")
+cat("====================================================\n")
+
+cat(
+  "Old all-Sicilian rows:",
+  nrow(old_all),
+  "\n"
+)
+
+cat(
+  "New all-Sicilian rows:",
+  nrow(new_all),
+  "\n"
+)
+
+cat(
+  "Old Mori rows:",
+  nrow(old_mori),
+  "\n"
+)
+
+cat(
+  "New Mori rows:",
+  nrow(new_mori),
+  "\n"
+)
+
+cat(
+  "Old non-Mori rows:",
+  nrow(old_non),
+  "\n"
+)
+
+cat(
+  "New non-Mori rows:",
+  nrow(new_non),
+  "\n"
+)
+
+cat(
+  "EDs with changed household counts:",
+  length(changed),
+  "\n"
+)
+
+if (length(changed)>0){
+  
+  print(
+    hh_compare[changed,],
+    row.names=FALSE
+  )
+  
+}
+
+
+############################################################
+######## 2. OLD VS NEW 1940 POPULATION SOURCE — CHICAGO ####
+############################################################
+
+load(
+  "/home/zach/Dropbox/mori_transfer/mori_work_on_ferry/transfer/population_1940_relevant.rda"
+)
+
+old_pop=pop_1940_relevant
+rm(pop_1940_relevant)
+
+
+load(
+  "intermediate_outputs/population_1940_relevant.rda"
+)
+
+new_pop=pop_1940_relevant
+rm(pop_1940_relevant)
+
+
+prep_pop=function(x){
+  
+  substr(
+    x$enum_dist_id,
+    nchar(x$enum_dist_id),
+    nchar(x$enum_dist_id)
+  )=
+    ifelse(
+      substr(
+        x$enum_dist_id,
+        nchar(x$enum_dist_id),
+        nchar(x$enum_dist_id)
+      )=="1",
+      "a",
+      ifelse(
+        substr(
+          x$enum_dist_id,
+          nchar(x$enum_dist_id),
+          nchar(x$enum_dist_id)
+        )=="2",
+        "b",
+        "0"
+      )
+    )
+  
+  x$enum_dist_id=gsub(
+    "^0+",
+    "",
+    x$enum_dist_id
+  )
+  
+  x$enum_dist_id=gsub(
+    "0$",
+    "",
+    x$enum_dist_id
+  )
+  
+  return(x)
+  
+}
+
+
+old_pop=prep_pop(old_pop)
+new_pop=prep_pop(new_pop)
+
+
+old_chicago=old_pop[
+  grepl(
+    "^21_310_",
+    old_pop$enum_dist_id
+  ),
+]
+
+new_chicago=new_pop[
+  grepl(
+    "^21_310_",
+    new_pop$enum_dist_id
+  ),
+]
+
+
+eds=sort(
+  unique(
+    c(
+      old_chicago$enum_dist_id,
+      new_chicago$enum_dist_id
+    )
+  )
+)
+
+
+pop_compare=data.frame(
+  ed=eds,
+  old_population=old_chicago[
+    match(
+      eds,
+      old_chicago$enum_dist_id
+    ),
+    "population"
+  ],
+  new_population=new_chicago[
+    match(
+      eds,
+      new_chicago$enum_dist_id
+    ),
+    "population"
+  ],
+  old_italian_population=old_chicago[
+    match(
+      eds,
+      old_chicago$enum_dist_id
+    ),
+    "italian_population"
+  ],
+  new_italian_population=new_chicago[
+    match(
+      eds,
+      new_chicago$enum_dist_id
+    ),
+    "italian_population"
+  ]
+)
+
+
+changed=which(
+  xor(
+    is.na(pop_compare$old_population),
+    is.na(pop_compare$new_population)
+  ) |
+    xor(
+      is.na(pop_compare$old_italian_population),
+      is.na(pop_compare$new_italian_population)
+    ) |
+    (
+      !is.na(pop_compare$old_population) &
+        !is.na(pop_compare$new_population) &
+        pop_compare$old_population!=
+        pop_compare$new_population
+    ) |
+    (
+      !is.na(pop_compare$old_italian_population) &
+        !is.na(pop_compare$new_italian_population) &
+        pop_compare$old_italian_population!=
+        pop_compare$new_italian_population
+    )
+)
+
+
+cat("\n")
+cat("====================================================\n")
+cat("CHICAGO 1940 POPULATION SOURCE\n")
+cat("====================================================\n")
+
+cat(
+  "Old Chicago EDs:",
+  nrow(old_chicago),
+  "\n"
+)
+
+cat(
+  "New Chicago EDs:",
+  nrow(new_chicago),
+  "\n"
+)
+
+cat(
+  "Changed EDs:",
+  length(changed),
+  "\n"
+)
+
+if (length(changed)>0){
+  
+  print(
+    pop_compare[changed,],
+    row.names=FALSE
+  )
+  
+}
