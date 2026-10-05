@@ -240,6 +240,7 @@ sicilia_2$mori=matching_matrix[match(sicilia_2$match_name, matching_matrix[,1]),
 sicilia_2$mori=as.numeric(sicilia_2$mori)
 
 sicilia$mori=sicilia_2$mori
+
 rm(sicilia_2)
 rm(matching_matrix)
 
@@ -275,6 +276,30 @@ sicilia$cutrera=ifelse(tolower(sicilia$match_name) %in% unique(maps$fuzzy_name[w
 sicilia$damiani=ifelse(tolower(sicilia$match_name) %in% unique(maps$fuzzy_name[which(maps$mafia1885>0)]), 1, 0)
 sicilia$either_mafia_map=ifelse((tolower(sicilia$match_name) %in% unique(maps$fuzzy_name[which(maps$mafia1885>0)]))|(tolower(sicilia$match_name) %in% unique(maps$fuzzy_name[which(maps$mafia1900>0)])), 1, 0)
 
+
+### replication of damiani and cutera map (together)
+ggplot() + 
+  geom_sf(data = sicilia, size = .5, color = "black", fill = ifelse(sicilia$either_mafia_map==0,"white", "red"), aes(geometry = geometry))+
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        rect = element_blank())
+
+### replication of cutera map
+ggplot() + 
+  geom_sf(data = sicilia, size = .5, color = "black", fill = ifelse(sicilia$cutrera==0,"white", "red"), aes(geometry = geometry))+
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        rect = element_blank())
+
+### replication of cutera map
+ggplot() + 
+  geom_sf(data = sicilia, size = .5, color = "black", fill = ifelse(sicilia$damiani==0,"white", "red"), aes(geometry = geometry))+
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        rect = element_blank())
 
 
 load("/intermediate_outputs/sicilian_numident.rda")
