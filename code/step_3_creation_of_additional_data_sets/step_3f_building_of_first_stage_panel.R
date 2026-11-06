@@ -25,6 +25,7 @@ dataframe_list=mget(
   envir=.GlobalEnv
 )
 
+dataframe_list=Filter(is.data.frame, dataframe_list)
 
 combined_df=do.call(
   rbind,
@@ -62,7 +63,10 @@ combined_df$fixed_mori_set=ifelse(combined_df$city_hex %in% fixed_mori_set, 1, 0
 
 combined_df$post_mori=combined_df$post*combined_df$fixed_mori_set
 
-
+cols=c(2:32,34:54,56:58)
+for (j in cols){
+  combined_df[,j]=as.numeric(combined_df[,j])
+}
 ########## NEIGHBORHOOD CHARACTERISTICS
 
 
@@ -276,12 +280,10 @@ combined_df$foreign_prop_1920=as.numeric(
 ###### INVCAERCATION RATES
 
 combined_df$incarc_abe_per_10k=
-  combined_df$incarc_abe_prop*
-  10000
+  combined_df$incarc_abe_prop*10000
 
 combined_df$incarc_cs_per_10k=
-  combined_df$incarc_cs_prop*
-  10000
+  combined_df$incarc_cs_prop*10000
 
 
 ############################################################

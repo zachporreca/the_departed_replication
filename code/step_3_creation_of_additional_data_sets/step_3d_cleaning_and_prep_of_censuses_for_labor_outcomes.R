@@ -29,7 +29,8 @@ hh1900 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
             owned_free = sum(MORTGAGE == 1, na.rm = TRUE), 
-            rent = sum(OWNERSHP == 2, na.rm = TRUE))
+            rent = sum(OWNERSHP == 2, na.rm = TRUE),
+            ownership_reported = as.integer(any(OWNERSHP %in% c(1, 2))))
 
 #Make ownership/rent variables binary
 hh_serial1900 <- hh1900 %>%
@@ -44,6 +45,7 @@ hh_serial1900 <- hh_serial1900 %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
             owned_free = sum(owned_free == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
+            hh_ownership_reported = sum(ownership_reported),
             rent = sum(rent == 1, na.rm = TRUE)
             
   )
@@ -53,9 +55,10 @@ hh_serial1900 <- hh_serial1900 %>%
 hh_id1900 <- data.frame(
   unique_id = hh_serial1900$unique_id,
   hh_1900 = hh_serial1900$hh,
-  owned_1900 = hh_serial1900$owned / hh_serial1900$hh,
-  owned_free_1900 = hh_serial1900$owned_free / hh_serial1900$owned,
-  rent_1900 = hh_serial1900$rent / hh_serial1900$hh
+  hh_ownership_reported_1900 = hh_serial1900$hh_ownership_reported,
+  owned_1900 = hh_serial1900$owned / pmax(hh_serial1900$hh_ownership_reported, 1),
+  owned_free_1900 = ifelse(hh_serial1900$owned > 0, hh_serial1900$owned_free / pmax(hh_serial1900$owned, 1), 0),
+  rent_1900 = hh_serial1900$rent / pmax(hh_serial1900$hh_ownership_reported, 1)
 )
 
 #EMPLOYMENT 
@@ -127,12 +130,6 @@ final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1900, ec
 
 
 
-#CLEAN
-#Make NaN values NA for ease
-final$owned_free_1900[is.nan(final$owned_free_1900)] <- NA 
-#Make values where homeownership not reported NA
-final$owned_1900[final$owned_1900 == 0 & final$rent_1900 == 0] <- NA
-final$rent_1900[is.na(final$owned_1900) & final$rent_1900 == 0] <- NA
 
 #SAVE
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1900.csv")
@@ -163,7 +160,8 @@ hh1910 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
             owned_free = sum(MORTGAGE == 1, na.rm = TRUE), 
-            rent = sum(OWNERSHP == 2, na.rm = TRUE))
+            rent = sum(OWNERSHP == 2, na.rm = TRUE),
+            ownership_reported = as.integer(any(OWNERSHP %in% c(1, 2))))
 
 #Make ownership/rent variables binary
 hh_serial1910 <- hh1910 %>%
@@ -178,6 +176,7 @@ hh_serial1910 <- hh_serial1910 %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
             owned_free = sum(owned_free == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
+            hh_ownership_reported = sum(ownership_reported),
             rent = sum(rent == 1, na.rm = TRUE)
             
   )
@@ -187,9 +186,10 @@ hh_serial1910 <- hh_serial1910 %>%
 hh_id1910 <- data.frame(
   unique_id = hh_serial1910$unique_id,
   hh_1910 = hh_serial1910$hh,
-  owned_1910 = hh_serial1910$owned / hh_serial1910$hh,
-  owned_free_1910 = hh_serial1910$owned_free / hh_serial1910$owned,
-  rent_1910 = hh_serial1910$rent / hh_serial1910$hh
+  hh_ownership_reported_1910 = hh_serial1910$hh_ownership_reported,
+  owned_1910 = hh_serial1910$owned / pmax(hh_serial1910$hh_ownership_reported, 1),
+  owned_free_1910 = ifelse(hh_serial1910$owned > 0, hh_serial1910$owned_free / pmax(hh_serial1910$owned, 1), 0),
+  rent_1910 = hh_serial1910$rent / pmax(hh_serial1910$hh_ownership_reported, 1)
 )
 
 #EMPLOYMENT 
@@ -268,13 +268,7 @@ ec1910 <- data1 %>%
 final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1910, ec1910, person1910, emp1910))
 
 
-
-#CLEAN
-#Make NaN values NA for ease
-final$owned_free_1910[is.nan(final$owned_free_1910)] <- NA 
-#Make values where homeownership not reported NA
-final$owned_1910[final$owned_1910 == 0 & final$rent_1910 == 0] <- NA
-final$rent_1910[is.na(final$owned_1910) & final$rent_1910 == 0] <- NA
+#### start to problem identified
 
 #SAVE
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1910.csv")
@@ -304,7 +298,8 @@ hh1920 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
             owned_free = sum(MORTGAGE == 1, na.rm = TRUE), 
-            rent = sum(OWNERSHP == 2, na.rm = TRUE))
+            rent = sum(OWNERSHP == 2, na.rm = TRUE),
+            ownership_reported = as.integer(any(OWNERSHP %in% c(1, 2))))
 
 #Make ownership/rent variables binary
 hh_serial1920 <- hh1920 %>%
@@ -319,6 +314,7 @@ hh_serial1920 <- hh_serial1920 %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
             owned_free = sum(owned_free == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
+            hh_ownership_reported = sum(ownership_reported),
             rent = sum(rent == 1, na.rm = TRUE)
             
   )
@@ -328,9 +324,10 @@ hh_serial1920 <- hh_serial1920 %>%
 hh_id1920 <- data.frame(
   unique_id = hh_serial1920$unique_id,
   hh_1920 = hh_serial1920$hh,
-  owned_1920 = hh_serial1920$owned / hh_serial1920$hh,
-  owned_free_1920 = hh_serial1920$owned_free / hh_serial1920$hh,
-  rent_1920 = hh_serial1920$rent / hh_serial1920$hh
+  hh_ownership_reported_1920 = hh_serial1920$hh_ownership_reported,
+  owned_1920 = hh_serial1920$owned / pmax(hh_serial1920$hh_ownership_reported, 1),
+  owned_free_1920 = ifelse(hh_serial1920$hh_ownership_reported > 0, hh_serial1920$owned_free / pmax(hh_serial1920$hh_ownership_reported, 1), 0),
+  rent_1920 = hh_serial1920$rent / pmax(hh_serial1920$hh_ownership_reported, 1)
 )
 
 #EMPLOYMENT 
@@ -408,12 +405,6 @@ final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1920, ec
 
 
 
-#CLEAN
-#Make NaN values NA for ease
-final$owned_free_1920[is.nan(final$owned_free_1920)] <- NA 
-#Make values where homeownership not reported NA
-final$owned_1920[final$owned_1920 == 0 & final$rent_1920 == 0] <- NA
-final$rent_1920[is.na(final$owned_1920) & final$rent_1920 == 0] <- NA
 
 #SAVE
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1920.csv")
@@ -442,7 +433,8 @@ data$SEI <- as.numeric(data$SEI)
 hh1930 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
-            rent = sum(OWNERSHP == 2, na.rm = TRUE))
+            rent = sum(OWNERSHP == 2, na.rm = TRUE),
+            ownership_reported = as.integer(any(OWNERSHP %in% c(1, 2))))
 
 #Make ownership/rent variables binary
 hh_serial1930 <- hh1930 %>%
@@ -455,6 +447,7 @@ hh_serial1930 <- hh_serial1930 %>%
   group_by(unique_id) %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
+            hh_ownership_reported = sum(ownership_reported),
             rent = sum(rent == 1, na.rm = TRUE)
             
   )
@@ -464,8 +457,9 @@ hh_serial1930 <- hh_serial1930 %>%
 hh_id1930 <- data.frame(
   unique_id = hh_serial1930$unique_id,
   hh_1930 = hh_serial1930$hh,
-  owned_1930 = hh_serial1930$owned / hh_serial1930$hh,
-  rent_1930 = hh_serial1930$rent / hh_serial1930$hh
+  hh_ownership_reported_1930 = hh_serial1930$hh_ownership_reported,
+  owned_1930 = hh_serial1930$owned / pmax(hh_serial1930$hh_ownership_reported, 1),
+  rent_1930 = hh_serial1930$rent / pmax(hh_serial1930$hh_ownership_reported, 1)
 )
 
 #EMPLOYMENT 
@@ -545,11 +539,6 @@ final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1930, ec
 
 
 
-#CLEAN
-#Make NaN values NA for ease
-#Make values where homeownership not reported NA
-final$owned_1930[final$owned_1930 == 0 & final$rent_1930 == 0] <- NA
-final$rent_1930[is.na(final$owned_1930) & final$rent_1930 == 0] <- NA
 
 #SAVE
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1930.csv")
@@ -578,7 +567,8 @@ data$SEI <- as.numeric(data$SEI)
 hh1940 <- data %>%
   group_by(SERIAL, unique_id) %>%
   summarise(owned = sum(OWNERSHP == 1, na.rm = TRUE),
-            rent = sum(OWNERSHP == 2, na.rm = TRUE))
+            rent = sum(OWNERSHP == 2, na.rm = TRUE),
+            ownership_reported = as.integer(any(OWNERSHP %in% c(1, 2))))
 
 #Make ownership/rent variables binary
 hh_serial1940 <- hh1940 %>%
@@ -591,6 +581,7 @@ hh_serial1940 <- hh_serial1940 %>%
   group_by(unique_id) %>%
   summarise(owned = sum(owned == 1, na.rm = TRUE),
             hh = n_distinct(SERIAL),
+            hh_ownership_reported = sum(ownership_reported),
             rent = sum(rent == 1, na.rm = TRUE)
             
   )
@@ -600,8 +591,9 @@ hh_serial1940 <- hh_serial1940 %>%
 hh_id1940 <- data.frame(
   unique_id = hh_serial1940$unique_id,
   hh_1940 = hh_serial1940$hh,
-  owned_1940 = hh_serial1940$owned / hh_serial1940$hh,
-  rent_1940 = hh_serial1940$rent / hh_serial1940$hh
+  hh_ownership_reported_1940 = hh_serial1940$hh_ownership_reported,
+  owned_1940 = hh_serial1940$owned / pmax(hh_serial1940$hh_ownership_reported, 1),
+  rent_1940 = hh_serial1940$rent / pmax(hh_serial1940$hh_ownership_reported, 1)
 )
 
 #EMPLOYMENT 
@@ -681,11 +673,6 @@ final <- Reduce(function(x, y) merge(x, y, by = "unique_id"), list(hh_id1940, ec
 
 
 
-#CLEAN
-#Make NaN values NA for ease
-#Make values where homeownership not reported NA
-final$owned_1940[final$owned_1940 == 0 & final$rent_1940 == 0] <- NA
-final$rent_1940[is.na(final$owned_1940) & final$rent_1940 == 0] <- NA
 
 #SAVE
 write.csv(final, "intermediate_outputs/census_with_labor/fullclean_1940.csv")

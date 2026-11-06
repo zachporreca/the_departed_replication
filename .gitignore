@@ -1,6 +1,7 @@
 # Sensitive / local data
 intermediate_outputs/
 input_data/
+analysis_data/
 tmp_transfer/
 github-token
   

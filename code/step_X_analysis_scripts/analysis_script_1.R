@@ -45,15 +45,28 @@ feols(mafia_book_geo~fixed_mori_set+any_sicilians+any_cutrera_or_damiani_maps_si
 
 
 #FIGURE 7
-coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
+coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df, cluster=~city_hex+year),keep="year::")
 coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+any_cutrera_or_damiani_maps_sicilians|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
 coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+any_cutrera_or_damiani_maps_sicilians+mafia_pre_geo|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
+coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+mafia_pre_geo|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
 
 #FIGURE 9
+combined_df$owned_test=ifelse(is.na(combined_df$owned), 0, combined_df$owned)
+
 coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
-coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$year>1900),], cluster=~city_hex),keep="year::")
+
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which((combined_df$city %in% c("Manhattan", "Detroit"))==FALSE),], cluster=~city_hex),keep="year::")
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which((combined_df$city %in% c("Manhattan"))==FALSE),], cluster=~city_hex),keep="year::")
+
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$year>1900 & combined_df$owned>0),], cluster=~city_hex),keep="year::")
 
 
+
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$owned_test>0 & combined_df$year>1900),], cluster=~city_hex),keep="year::")
+
+
+coefplot(feols(owned_test~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, 
+               data=combined_df[which((paste0(combined_df$city,"_",combined_df$year) %in% c("Philadelphia_1940", "Cleveland_1940", "Baltimore_1940"))==FALSE),], cluster=~city_hex),keep="year::")
 
 #RELEVANT REPLICATIONS OF FIGURE 5 WITH ALTERNATIVE EXPLANATION RESITRCITIONS PANEL B- PROPORTION OF FUTURE 1959 MAFIA ACTIVITY OCCURING IN 1920-FIXED MORI AREAS
     #RESTRICTIONS BASED ON PRE-1926 ORGANIZED CRIME ACTIVITY- GEOCODED LOCATIONS- REMOVE OVERLAP OF MORI AND PRE-1926 GEO FROM "MORI" POOL
