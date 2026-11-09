@@ -1,3 +1,11 @@
+############################################################################################################
+###################### ANALYSIS SCRIPT 1: THIS SCRIPT REPLICATES INTRODUCTORY RESULTS ######################
+######################                    FIGURES AND TABLES FOR OUTCOMES/FEATURES    ######################
+######################                    RELYING SOLELY ON CENSUS LINKAGE DATA       ######################
+######################                    FOR YEARS 1900-1940                         ######################
+############################################################################################################
+
+
 load("analysis_data/combined_df.rda")
 
 library(fixest)
@@ -7,20 +15,37 @@ mafia_book_hex=unique(combined_df[which(combined_df$mafia_book_hex==1), "city_he
 
 ####something to note: feols(fixed_mori_set~mafia_pre_geo|city, data=combined_df[which(combined_df$year==1920),])
 
+############################################################
+############## TABLE REPLICATIONS #########################
+###########################################################
 
-#FIGURE 5 PANEL B- PROPORTION OF FUTURE 1959 MAFIA ACTIVITY OCCURING IN 1920-FIXED MORI AREAS
-length(mafia_book_geo[which((mafia_book_geo %in% mori)==TRUE)])/length(mafia_book_geo)
-bs_vec=vector(mode="numeric", length=1000)
-for (i in 1:length(bs_vec)){
-  bs_sample=sample(unique(combined_df[which(combined_df$year==1920),"city_hex"]), size=length(mori), replace = FALSE)
-  bs_vec[i]=length(bs_sample[which((mafia_book_geo %in% bs_sample)==TRUE)])/length(bs_sample)
-}
-value=length(mafia_book_geo[which((mafia_book_geo %in% mori)==TRUE)])/length(mafia_book_geo)
-2*(1-pnorm(abs((value-mean(bs_vec))/sd(bs_vec))))
-hist(bs_vec, breaks = 20, xlim=c(0.00, 0.70),freq=FALSE, main="Samples Drawn from All Cities", xlab = "Proportion of Known Mafia Locations in Sample")
-abline(v=value, col="red", lwd=2, lty=2)
+#######################
+##### TABLE 1 #########
+#######################
 
-#FIGURE 5 PANEL A- PROPORTION OF FUTURE 1959 MAFIA MEMBERS' 1900-1920 CENSUS LOCATIONS OCCURING IN 1920-FIXED MORI AREAS
+#######################
+##### TABLE 2 #########
+#######################
+
+#######################
+##### TABLE 3 #########
+#######################
+feols(mafia_book_hex~fixed_mori_set|city, data=combined_df[which(combined_df$year==1920),])
+feols(mafia_book_hex~fixed_mori_set+any_sicilians|city, data=combined_df[which(combined_df$year==1920),])
+feols(mafia_book_hex~fixed_mori_set+any_sicilians+any_cutrera_or_damiani_maps_sicilians+mafia_pre_geo|city, data=combined_df[which(combined_df$year==1920),])
+
+feols(mafia_book_geo~fixed_mori_set|city, data=combined_df[which(combined_df$year==1920),])
+feols(mafia_book_geo~fixed_mori_set+any_sicilians|city, data=combined_df[which(combined_df$year==1920),])
+feols(mafia_book_geo~fixed_mori_set+any_sicilians+any_cutrera_or_damiani_maps_sicilians+mafia_pre_geo|city, data=combined_df[which(combined_df$year==1920),])
+
+############################################################
+############## FIGURE REPLICATIONS #########################
+############################################################
+
+########################
+##### FIGURE 1 #########
+########################
+#PANEL A- PROPORTION OF FUTURE 1959 MAFIA MEMBERS' 1900-1920 CENSUS LOCATIONS OCCURING IN 1920-FIXED MORI AREAS
 length(mafia_book_hex[which((mafia_book_hex %in% mori)==TRUE)])/length(mafia_book_hex)
 bs_vec=vector(mode="numeric", length=1000)
 for (i in 1:length(bs_vec)){
@@ -32,34 +57,38 @@ value=length(mafia_book_hex[which((mafia_book_hex %in% mori)==TRUE)])/length(maf
 hist(bs_vec, breaks = 10, xlim=c(0.00, 0.85), freq=FALSE, main="Samples Drawn from All Cities", xlab = "Proportion of Known Mafia in Census in Sample")
 abline(v=value, col="red", lwd=2, lty=2)
 
+#PANEL B- PROPORTION OF FUTURE 1959 MAFIA ACTIVITY OCCURING IN 1920-FIXED MORI AREAS
+length(mafia_book_geo[which((mafia_book_geo %in% mori)==TRUE)])/length(mafia_book_geo)
+bs_vec=vector(mode="numeric", length=1000)
+for (i in 1:length(bs_vec)){
+  bs_sample=sample(unique(combined_df[which(combined_df$year==1920),"city_hex"]), size=length(mori), replace = FALSE)
+  bs_vec[i]=length(bs_sample[which((mafia_book_geo %in% bs_sample)==TRUE)])/length(bs_sample)
+}
+value=length(mafia_book_geo[which((mafia_book_geo %in% mori)==TRUE)])/length(mafia_book_geo)
+2*(1-pnorm(abs((value-mean(bs_vec))/sd(bs_vec))))
+hist(bs_vec, breaks = 20, xlim=c(0.00, 0.70),freq=FALSE, main="Samples Drawn from All Cities", xlab = "Proportion of Known Mafia Locations in Sample")
+abline(v=value, col="red", lwd=2, lty=2)
 
-
-#TABLE 3 (CONLEY STANDARD ERRORS COMPUTED SEPERATELY)
-feols(mafia_book_hex~fixed_mori_set|city, data=combined_df[which(combined_df$year==1920),])
-feols(mafia_book_hex~fixed_mori_set+any_sicilians|city, data=combined_df[which(combined_df$year==1920),])
-feols(mafia_book_hex~fixed_mori_set+any_sicilians+any_cutrera_or_damiani_maps_sicilians+mafia_pre_geo|city, data=combined_df[which(combined_df$year==1920),])
-
-feols(mafia_book_geo~fixed_mori_set|city, data=combined_df[which(combined_df$year==1920),])
-feols(mafia_book_geo~fixed_mori_set+any_sicilians|city, data=combined_df[which(combined_df$year==1920),])
-feols(mafia_book_geo~fixed_mori_set+any_sicilians+any_cutrera_or_damiani_maps_sicilians+mafia_pre_geo|city, data=combined_df[which(combined_df$year==1920),])
-
-
-#FIGURE 7
+########################
+##### FIGURE 7 #########
+########################
 coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df, cluster=~city_hex+year),keep="year::")
 coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+any_cutrera_or_damiani_maps_sicilians|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
 coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+any_cutrera_or_damiani_maps_sicilians+mafia_pre_geo|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
 coefplot(feols(incarc_cs_per_10k~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+mafia_pre_geo|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
+  
+########################
+##### FIGURE 8 #########
+########################
+#(NEEDS WORK)
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$year>1900),], cluster=~city_hex),keep="year::")
 
-#FIGURE 9
-combined_df$owned_test=ifelse(is.na(combined_df$owned), 0, combined_df$owned)
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which((combined_df$city %in% c("Manhattan", "Detroit"))==FALSE),], cluster=~city_hex+year),keep="year::")
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop+cutrera_or_damiani_hex|city_hex+year+city, data=combined_df[which((combined_df$city %in% c("Manhattan"))==FALSE),], cluster=~city_hex+year),keep="year::")
 
-coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df, cluster=~city_hex),keep="year::")
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$owned>0 & (combined_df$city %in% c("Manhattan", "Detroit"))==FALSE),], cluster=~city_hex),keep="year::")
 
-coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which((combined_df$city %in% c("Manhattan", "Detroit"))==FALSE),], cluster=~city_hex),keep="year::")
-coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which((combined_df$city %in% c("Manhattan"))==FALSE),], cluster=~city_hex),keep="year::")
-
-coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$year>1900 & combined_df$owned>0),], cluster=~city_hex),keep="year::")
-
+coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year+city, data=combined_df[which((combined_df$city %in% c("Philadelphia", "Brooklyn"))==TRUE),], cluster=~city_hex+year),keep="year::")
 
 
 coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, data=combined_df[which(combined_df$owned_test>0 & combined_df$year>1900),], cluster=~city_hex),keep="year::")
@@ -68,6 +97,17 @@ coefplot(feols(owned~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|ci
 coefplot(feols(owned_test~i(year,fixed_mori_set, ref=1920)+any_sicilians+ital_prop|city_hex+year, 
                data=combined_df[which((paste0(combined_df$city,"_",combined_df$year) %in% c("Philadelphia_1940", "Cleveland_1940", "Baltimore_1940"))==FALSE),], cluster=~city_hex),keep="year::")
 
+
+
+
+
+#######################################################################################
+############## ADDITIONAL SUPPLEMENTAL RESULTS FOR ROBUSTNESS #########################
+#######################################################################################
+
+####################################
+##### FIGURE 5- ROBUSTNESS #########
+####################################
 #RELEVANT REPLICATIONS OF FIGURE 5 WITH ALTERNATIVE EXPLANATION RESITRCITIONS PANEL B- PROPORTION OF FUTURE 1959 MAFIA ACTIVITY OCCURING IN 1920-FIXED MORI AREAS
     #RESTRICTIONS BASED ON PRE-1926 ORGANIZED CRIME ACTIVITY- GEOCODED LOCATIONS- REMOVE OVERLAP OF MORI AND PRE-1926 GEO FROM "MORI" POOL
 mori=unique(combined_df$city_hex[which(combined_df$fixed_mori_set==1 & combined_df$mafia_pre_geo==0)])
