@@ -25,14 +25,14 @@ combined <- do.call(rbind, objs)
 ##### COMPUTING FIRST AND SECOND DEGREE NEIGHBORS
 nb=poly2nb(combined)
 nb_matrix=nb2mat(nb, style="B")
-mori_nb=nb_matrix[which(combined$hex_id %in% unique(combined_df[which(combined_df$any_mori_2==1),"city_hex"])),]
+mori_nb=nb_matrix[which(combined$hex_id %in% unique(combined_df[which(combined_df$fixed_mori_set==1),"city_hex"])),]
 vec=vector(mode="numeric", length=ncol(mori_nb))
 for (j in 1:ncol(mori_nb)){
   vec[j]=sum(mori_nb[,j])
 }
 neighbors=combined[which(vec>0), "hex_id"]
 neighbors=st_drop_geometry(neighbors)
-neighbors=neighbors[which((neighbors$hex_id %in% unique(combined_df[which(combined_df$any_mori_2==1),"city_hex"]))==FALSE),]
+neighbors=neighbors[which((neighbors$hex_id %in% unique(combined_df[which(combined_df$fixed_mori_set==1),"city_hex"]))==FALSE),]
 neighbors_2nd_degree_nb=nb_matrix[which(combined$hex_id %in% unique(neighbors)),]
 vec=vector(mode="numeric", length=ncol(neighbors_2nd_degree_nb))
 for (j in 1:ncol(neighbors_2nd_degree_nb)){
@@ -40,11 +40,11 @@ for (j in 1:ncol(neighbors_2nd_degree_nb)){
 }
 neighbors2=combined[which(vec>0), "hex_id"]
 neighbors2=st_drop_geometry(neighbors2)
-neighbors2=neighbors2[which((neighbors2$hex_id %in% unique(combined_df[which(combined_df$any_mori_2==1),"city_hex"]))==FALSE),]
+neighbors2=neighbors2[which((neighbors2$hex_id %in% unique(combined_df[which(combined_df$fixed_mori_set==1),"city_hex"]))==FALSE),]
 neighbors2=neighbors2[which((neighbors2 %in% unique(neighbors))==FALSE)]
 neighbors_1=neighbors
 neighbors=unique(append(neighbors_1, neighbors2))
-#neighbors=neighbors2
+neighbors=neighbors2
 
 combined_df$mori_neighbor=ifelse(combined_df$city_hex %in% neighbors, 1, 0)
 combined_df$post_mori_neighbor=combined_df$mori_neighbor*combined_df$post
