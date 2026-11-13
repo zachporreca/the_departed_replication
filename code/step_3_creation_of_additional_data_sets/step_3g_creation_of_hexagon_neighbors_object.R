@@ -44,7 +44,7 @@ neighbors2=neighbors2[which((neighbors2$hex_id %in% unique(combined_df[which(com
 neighbors2=neighbors2[which((neighbors2 %in% unique(neighbors))==FALSE)]
 neighbors_1=neighbors
 neighbors=unique(append(neighbors_1, neighbors2))
-neighbors=neighbors2
+neighbors=neighbors2 #LIMITING TO SECOND DEGREE NEIGHBORS
 
 combined_df$mori_neighbor=ifelse(combined_df$city_hex %in% neighbors, 1, 0)
 combined_df$post_mori_neighbor=combined_df$mori_neighbor*combined_df$post
