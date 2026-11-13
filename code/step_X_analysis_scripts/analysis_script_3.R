@@ -181,15 +181,6 @@ feols(college_rate_2010~ ital_prop+mori_neighbor|city, data = combined_df_oi, vc
 feols(college_rate_2010~ any_sicilians+ital_prop+mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
 
 #College Educated 2000
-feols(college_rate_2000~ mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
-feols(college_rate_2000~ ital_prop+mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
-feols(college_rate_2000~ any_sicilians+ital_prop+mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
-
-#Children employed Age 32
-feols(work_32_pooled~ mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
-feols(work_32_pooled~ ital_prop+mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
-feols(work_32_pooled~ any_sicilians+ital_prop+mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
-
 #Children employed Age 24
 feols(work_24_pooled~ mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
 feols(work_24_pooled~ ital_prop+mori_neighbor|city, data = combined_df_oi, vcov = conley(10) ~ lat + lon)
